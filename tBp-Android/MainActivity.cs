@@ -9,7 +9,7 @@ using Android.OS;
 
 namespace tBpAndroid
 {
-	[Activity (Label = "tBp-Android", MainLauncher = true, Icon = "@drawable/icon")]
+	[Activity (Label = "tBp", MainLauncher = true, Icon = "@drawable/icon")]
 	public class MainActivity : Activity
 	{
 		int count = 1;
