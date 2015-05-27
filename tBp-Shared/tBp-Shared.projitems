@@ -6,9 +6,18 @@
     <SharedGUID>{5C3AC9B7-1530-4445-921C-90C5D5C52451}</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>tBp-Shared</Import_RootNamespace>
+    <Import_RootNamespace>tBpShared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)MyClass.cs" />
+    <Folder Include="$(MSBuildThisFileDirectory)models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)models\User.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)models\TBPUser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)models\TBPEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Crypto.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)models\Event.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Persistence.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Factory.cs" />
   </ItemGroup>
 </Project>
