@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)models\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Persistence\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)models\User.cs" />
@@ -17,7 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)models\TBPEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Crypto.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)models\Event.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Persistence.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Factory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Persistence\EntityDatabase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Persistence\EntityRepository.cs" />
   </ItemGroup>
 </Project>

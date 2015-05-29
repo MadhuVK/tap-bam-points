@@ -2,9 +2,9 @@
 
 namespace tBpShared
 {
-	public class Persistence
+	public class EntityDatabase
 	{
-		public Persistence ()
+		public EntityDatabase ()
 		{
 		}
 	}

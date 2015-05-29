@@ -2,9 +2,9 @@ using System;
 
 namespace tBpShared
 {
-	public class Persistence
+	public class EntityRepository
 	{
-		public Persistence ()
+		public EntityRepository ()
 		{
 		}
 	}
