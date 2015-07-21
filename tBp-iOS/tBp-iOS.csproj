@@ -78,8 +78,6 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="SQLite">
-      <HintPath>..\Components\sqlite-net-1.0.8.3\lib\ios\SQLite.dll</HintPath>
     <Reference Include="zxing.portable">
       <HintPath>..\packages\ZXing.Net.0.14.0.1\lib\portable-win+net40+sl4+sl5+wp7+wp71+wp8\zxing.portable.dll</HintPath>
     </Reference>
@@ -109,11 +107,4 @@
   </ItemGroup>
   <Import Project="..\tBp-Shared\tBp-Shared.projitems" Label="Shared" Condition="Exists('..\tBp-Shared\tBp-Shared.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
-</Project>
-  <ItemGroup>
-    <XamarinComponentReference Include="sqlite-net">
-      <Version>1.0.8.3</Version>
-      <Visible>False</Visible>
-    </XamarinComponentReference>
-  </ItemGroup>
 </Project>
