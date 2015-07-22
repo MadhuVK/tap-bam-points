@@ -1,6 +1,7 @@
 CREATE DATABASE IF NOT EXISTS tBp;
 USE tBp;
 
+DROP TABLE IF EXISTS user_event;
 DROP TABLE IF EXISTS tbp_user;
 DROP TABLE IF EXISTS tbp_event;
 DROP TABLE IF EXISTS user;
@@ -46,4 +47,19 @@ PRIMARY KEY (parent_key),
 FOREIGN KEY (parent_key) REFERENCES event(primary_key)
 ON DELETE CASCADE
 
-) ENGINE=INNODB; 
+) ENGINE=INNODB;
+
+CREATE TABLE user_event (
+user_id     INT     NOT NULL,
+event_id    INT     NOT NULL,
+
+PRIMARY KEY (user_id, event_id),
+INDEX (user_id, event_id),
+FOREIGN KEY (user_id) REFERENCES user(primary_key) ON UPDATE CASCADE,
+FOREIGN KEY (event_id) REFERENCES event(primary_key) ON UPDATE CASCADE
+
+) ENGINE=INNODB;
+
+
+
+
