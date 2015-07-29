@@ -1,3 +1,12 @@
+/*
+1) Download MySQL and install (it may ask you to set a root password)
+2) Run mysql.server start
+3) mysql -u root -p PASSWORD_HERE
+4) Inside the mysql REPL, run source config.sql
+	This should create the Database named tBp, with the tables 
+	defined below. This command is a destructive create, it will 
+	reset everything about the tBp database.
+*/ 
 CREATE DATABASE IF NOT EXISTS tBp;
 USE tBp;
 
@@ -9,10 +18,13 @@ DROP TABLE IF EXISTS event;
 
 CREATE TABLE user (
 primary_key 	INT 				NOT NULL AUTO_INCREMENT,
-user_id		INT 				NOT NULL DEFAULT -1, 
+user_id			INT 				NOT NULL DEFAULT -1, 
+valid			BOOLEAN				NOT NULL DEFAULT False,
 last_name   	VARCHAR(255) 		NOT NULL DEFAULT '', 
 first_name  	VARCHAR(255) 		NOT NULL DEFAULT '', 
 barcode_hash 	VARCHAR(255)    	NOT NULL DEFAULT '',
+
+INDEX(user_id),
 PRIMARY KEY (primary_key)
 
 ) ENGINE=INNODB; 
@@ -20,8 +32,11 @@ PRIMARY KEY (primary_key)
 CREATE TABLE event (
 primary_key		INT 				NOT NULL AUTO_INCREMENT, 
 event_id 		INT 				NOT NULL DEFAULT -1, 
+valid			BOOLEAN				NOT NULL DEFAULT False,
 name 			VARCHAR(255) 		NOT NULL DEFAULT '',
 datetime 		DATETIME 			NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+INDEX(event_id),
 PRIMARY KEY (primary_key)
 
 ) ENGINE=INNODB; 
@@ -50,8 +65,9 @@ ON DELETE CASCADE
 ) ENGINE=INNODB;
 
 CREATE TABLE user_event (
-user_id     INT     NOT NULL,
-event_id    INT     NOT NULL,
+user_id     INT     				NOT NULL,
+event_id    INT     				NOT NULL,
+valid		BOOLEAN					NOT NULL DEFAULT False,
 
 PRIMARY KEY (user_id, event_id),
 INDEX (user_id, event_id),
