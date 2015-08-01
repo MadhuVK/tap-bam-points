@@ -1,12 +1,10 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET users listing. */
-
-// ROUTE /users
+// ROUTE /events
 router.route('/')
     .all(function(req, res, next) {
-        res.body = "Method call to route /users";
+        res.body = "Method call to route /events";
 
         next();
     })
@@ -24,10 +22,10 @@ router.route('/')
 
     });
 
-// Route /users/{id}
-router.route('/:uid(\\d+)')
+// Route /events/{id}
+router.route('/:eid(\\d+)')
     .all(function(req, res, next) {
-        res.body = 'Method call to route /users/' + req.params.uid;
+        res.body = 'Method call to route /events/' + req.params.eid;
 
         next();
     })
@@ -50,10 +48,10 @@ router.route('/:uid(\\d+)')
         next();
     });
 
-// Route /users/{id}/events/
-router.route('/:uid(\\d+)/events')
+// Route /events/{id}/users/
+router.route('/:eid(\\d+)/users')
     .all(function(req, res, next) {
-        res.body = 'Method call to route /users/' + req.params.uid + '/events';
+        res.body = 'Method call to route /events/' + req.params.eid + '/users';
 
         next();
     })
@@ -71,13 +69,12 @@ router.route('/:uid(\\d+)/events')
         next();
     });
 
-// Route /users/{id}events/{event_id}
-router.route('/:uid(\\d+)/events/:eid(\\d+)')
+// Route /events/{id}/users/{user_id}
+router.route('/:eid(\\d+)/useres/:uid(\\d+)')
     .all(function(req, res, next) {
-        res.body = 'Method call to route /users/' + req.params.uid + '/events/' + req.params.eid;
+        res.body = 'Method call to route /events/' + req.params.eid + '/users/' + req.params.uid;
 
         next();
-
     })
     .patch(function(req, res, next) {
         res.body += " PATCH REQUEST";
