@@ -25,13 +25,11 @@ function viewEngineSetup() {
 }
 
 function routesSetup() {
-  //TODO: Add M2M Routes
   app.use(errorRoutes);
   app.use('/', baseRoutes);
-  app.use('/users', userRoutes);
-  app.use('/events', eventRoutes);
+  app.use('/api/users', userRoutes);
+  app.use('/api/events', eventRoutes);
 }
-
 
 /* START BLOCK TODO: Move to errors */
 
