@@ -9,6 +9,8 @@ var userRoutes = require('./routes/users');
 var eventRoutes = require('./routes/events');
 var errorRoutes = require('./routes/errors');
 
+var dbHelper = require('./lib/dbhelper.js');
+
 var app = express();
 
 function baseSetup() {

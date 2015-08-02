@@ -1,3 +1,4 @@
+var mysql = require('mysql');
 //TODO: Build up from metadata
 
 var dbMap = {
@@ -20,4 +21,23 @@ var dbMap = {
     }
 };
 
+var connection = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: 'tBp'
+});
+
+connection.connect(function(err) {
+    if (err) {
+        console.error("Begin error");
+        console.error("error connection: " + err.stack);
+        console.error("End error");
+        return;
+    }
+
+    console.log("WORKS FLAWLESSLY");
+});
+
+module.exports = connection;
 
