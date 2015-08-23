@@ -2,19 +2,19 @@ var express = require('express');
 var router = express.Router();
 
 router.route('/')
-    .all(function(req, res, next) {
+    .all(function (req, res, next) {
         res.body = "Method call to route /users";
 
         next();
     })
-	.get(function (req, res) {
+	.get(function (req, res, next) {
         res.body += " GET REQUEST";
 		res.send(res.body);
 
         next();
 
 	})
-	.post(function (req, res) {
+	.post(function (req, res, next) {
         res.body += " POST REQUEST";
         res.send(res.body);
 
@@ -22,24 +22,24 @@ router.route('/')
     });
 
 router.route('/:user_id')
-    .all(function(req, res, next) {
+    .all(function (req, res, next) {
         res.body = "Method call to route /users/" + req.params.user_id;
 
         next();
     })
-	.get(function (req, res) {
+	.get(function (req, res, next) {
         res.body += " GET REQUEST";
         res.send(res.body);
 
         next();
     })
-	.patch(function (req, res) {
+	.patch(function (req, res, next) {
         res.body += " PATCH REQUEST";
         res.send(res.body);
 
         next();
     })
-	.delete(function (req, res) {
+	.delete(function (req, res, next) {
         res.body = " DELETE REQUEST";
         res.send(res.body);
 
@@ -47,40 +47,43 @@ router.route('/:user_id')
     });
 
 router.route('/:user_id/events')
-    .all(function(req, res, next) {
-        res.body = "Method call to route /users/"
+    .all(function (req, res, next) {
+        res.body = "Method call to route /users/" /
             + req.params.user_id + "/events";
 
         next();
     })
-	.get(function (req, res) {
+	.get(function (req, res, next) {
         res.body += " GET REQUEST";
         res.send(res.body);
 
+        next();
     })
 	.post(function (req, res) {
         res.body += " POST REQUEST";
         res.send(res.body);
 
-
+        next();
     });
 
 router.route('/:user_id/events/:event_id')
     .all(function(req, res, next) {
-        res.body = "Method call to route /users/"
-            + req.params.user_id + "/events/" + req.params.event_id;
+        res.body = "Method call to route /users/" +
+            req.params.user_id + "/events/" + req.params.event_id;
 
         next();
     })
-	.patch(function (req, res) {
+	.patch(function (req, res, next) {
         res.body += " PATCH REQUEST";
         res.send(res.body);
 
+        next();
     })
 	.delete(function (req, res) {
         res.body += " DELETE REQUEST";
         res.send(res.body);
 
+        next();
     });
 
 module.exports = router;
