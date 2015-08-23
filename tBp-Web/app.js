@@ -9,7 +9,7 @@ var userRoutes = require('./routes/users');
 var eventRoutes = require('./routes/events');
 var errorRoutes = require('./routes/errors');
 
-var dbHelper = require('./lib/dbhelper.js');
+var data = require('./src/data.js');
 
 var app = express();
 
@@ -27,6 +27,7 @@ function viewEngineSetup() {
 }
 
 function routesSetup() {
+  app.set('json spaces', 2);
   app.use(errorRoutes);
   app.use('/', baseRoutes);
   app.use('/api/users', userRoutes);

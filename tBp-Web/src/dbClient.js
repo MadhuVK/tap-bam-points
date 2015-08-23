@@ -36,7 +36,7 @@ connection.connect(function(err) {
         return;
     }
 
-    console.log("WORKS FLAWLESSLY");
+    console.log("dbClient: connected to localhost mysql");
 });
 
 module.exports = connection;
