@@ -12,7 +12,6 @@ CREATE DATABASE tBp;
 USE tBp;
 
 CREATE TABLE user (
-<<<<<<< Updated upstream
 id              INT                 NOT NULL AUTO_INCREMENT,
 valid           BOOLEAN             NOT NULL DEFAULT False,
 lastName        VARCHAR(255)        NOT NULL DEFAULT '',
@@ -60,6 +59,7 @@ CREATE TABLE user_event (
 userId      INT             NOT NULL AUTO_INCREMENT,
 eventId     INT             NOT NULL,
 valid       BOOLEAN         NOT NULL DEFAULT False,
+eventPatch  VARCHAR(1024)   NOT NULL,
 
 PRIMARY KEY (userId, eventId),
 INDEX (userId, eventId),
