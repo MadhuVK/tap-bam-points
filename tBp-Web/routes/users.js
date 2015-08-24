@@ -38,10 +38,10 @@ router.route('/:user_id')
     next();
   })
   .delete(function (req, res, next) {
-    res.body = " DELETE REQUEST";
-    res.send(res.body);
-
-    next();
+    data.deleteUserById(req.params.user_id, function() {
+      res.sendStatus(200);
+      next();
+    });
   });
 
 router.route('/:user_id/events')
