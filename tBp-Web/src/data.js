@@ -2,8 +2,8 @@ var dbClient = require('./dbClient.js');
 
 exports.getUsers = function(group, afterGet) {
   var groupTable = group + "_user";
-  dbClient.query("SELECT * FROM user JOIN ?? WHERE user.primary_key = ??",
-    [groupTable, groupTable + ".parent_key"],
+  dbClient.query("SELECT * FROM user JOIN ?? WHERE user.id = ??",
+    [groupTable, groupTable + ".parentId"],
     function(err, rows, fields) {
       if (err) throw err;
       afterGet(rows);
@@ -21,8 +21,8 @@ exports.addUser = function(user, afterAdd) {
 
 function insertUserBasics(user, afterAdd, callback) {
   dbClient.query(
-    "INSERT INTO user (user_id, valid, last_name, first_name, barcode_hash) VALUES (?, ?, ?, ?, ?)",
-    [user.user_id, true, user.last_name, user.first_name, user.barcode_hash],
+    "INSERT INTO user (valid, lastName, firstName, barcodeHash) VALUES (?, ?, ?, ?)",
+    [true, user.lastName, user.firstName, user.barcodeHash],
     function(err, result) {
       if (err) {
         return dbClient.rollback(function() {
@@ -35,10 +35,10 @@ function insertUserBasics(user, afterAdd, callback) {
   );
 }
 
-function insertUserDetails(user, parentKey, afterAdd) {
+function insertUserDetails(user, parentId, afterAdd) {
   dbClient.query(
-    "INSERT INTO tbp_user (parent_key, house_color, member_status) VALUES (?, ?, ?)",
-    [parentKey, user.house_color, user.member_status],
+    "INSERT INTO tbp_user (parentId, house, memberStatus) VALUES (?, ?, ?)",
+    [parentId, user.house, user.memberStatus],
     function(err, rows, fields) {
       if (err) {
         return dbClient.rollback(function() {
@@ -53,7 +53,7 @@ function insertUserDetails(user, parentKey, afterAdd) {
           });
         }
 
-        afterAdd(user.user_id);
+        afterAdd(user.id);
       });
     }
   );
@@ -62,7 +62,7 @@ function insertUserDetails(user, parentKey, afterAdd) {
 // afterGet : function(user)
 exports.getUserById = function(id, afterGet) {
   dbClient.query("SELECT * FROM user JOIN tbp_user " +
-                 "WHERE user.primary_key = tbp_user.parent_key AND user.user_id = ?",
+                 "WHERE user.id = ? AND user.id = tbp_user.parentId",
                  [id], function(err, result) {
     if (err) throw err;
 
@@ -72,5 +72,9 @@ exports.getUserById = function(id, afterGet) {
 
 // afterDelete : function()
 exports.deleteUserById = function(id, afterDelete) {
-  dbClient.query("DELETE FROM user WHERE user_id = ?", [id], callback);
+  dbClient.query("UPDATE user SET valid = false WHERE id = ?", [id], function(err) {
+    if (err) throw err;
+
+    afterDelete();
+  });
 };
