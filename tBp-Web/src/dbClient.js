@@ -24,14 +24,19 @@ var dbMap = {
 
 var totalConnections = 0;
 var totalEnqueues = 0;
+var connectOptions = {
+  connectionLimit: 50,
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: 'tBp'
+};
 
-var pool = mysql.createPool({
-    connectionLimit: 50,
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: 'tBp'
-});
+var pool = mysql.createPool(connectOptions);
+var connection = mysql.createConnection(connectOptions);
+
+exports.pool = pool;
+exports.connection = connection;
 
 pool.on('connection', function(connection) {
     console.log('Total Connections Available: ' + ++totalConnections);
