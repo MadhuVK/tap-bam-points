@@ -46,9 +46,9 @@ FOREIGN KEY (parentId) REFERENCES user(id) ON DELETE CASCADE
 
 CREATE TABLE tbp_event (
 parentId        INT                 NOT NULL,
-defaultPoints   INT                 NOT NULL DEFAULT 0,
+points          INT                 NOT NULL DEFAULT 0,
 officer         VARCHAR(255)        NOT NULL DEFAULT 'atonyguy',
-eventType       ENUM('academic', 'social', 'community', 'wildcard') NOT NULL,
+type            ENUM('academic', 'social', 'community', 'wildcard') NOT NULL,
 
 PRIMARY KEY (parentId),
 FOREIGN KEY (parentId) REFERENCES event(id) ON DELETE CASCADE
