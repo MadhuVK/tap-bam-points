@@ -25,7 +25,8 @@
 	DELETE /users/{id} - delete user
 
 	GET /users/{id}/events - get a user's event attendance history
-	POST /users/{id}/events - add an attendance record to the history
+	GET /users/{id}/events/{event_id} - get a user's attendance record for an event
+	PUT /users/{id}/events/{event_id} - create a user's attendance record for an event
 	PATCH /users/{id}/events/{event_id} - update attendance record
 	DELETE /users/{id}/events/{event_id} - remove a user's attendance record
 
@@ -36,6 +37,7 @@
 	DELETE /events/{id} - delete event
 
 	GET /events/{id}/users - get list of attendees
-	POST /events/{id}/users - add a user to an event's attendees collection
+	GET /events/{id}/users/{user_id} - alias of GET /users/{id}/events/{event_id}
+	PUT /events/{id}/users/{user_id} - alias of PUT /users/{id}/events/{event_id}
 	PATCH /events/{id}/users/{user_id} - alias of PATCH /users/{id}/events/{event_id}
 	DELETE /events/{id}/users/{user_id} - alias of DELETE /users/{id}/events/{event_id}
