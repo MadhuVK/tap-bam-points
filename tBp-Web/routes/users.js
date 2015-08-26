@@ -3,85 +3,69 @@ var router = express.Router();
 var data = require('../src/data.js');
 
 router.route('/')
-  .all(function (req, res, next) {
+  .all(function (req, res) {
     // for future things
-    next();
   })
-  .get(function (req, res, next) {
-    data.getUsers("tbp", function(rows) {
-      res.status(200).json(rows);
-      next();
+
+  .get(function (req, res) {
+    data.getUsers("tbp", function(users) {
+      res.status(200).json(users);
     });
   })
-  .post(function (req, res, next) {
+
+  .post(function (req, res) {
     data.addUser(req.body, function (user_id) {
       res.status(201).json(req.body);
-      next();
     });
   });
 
 router.route('/:user_id')
-  .all(function (req, res, next) {
-    // for future things
-    next();
-  })
-  .get(function (req, res, next) {
+  .get(function (req, res) {
     data.getUserById(req.params.user_id, function (user) {
       res.status(200).json(user);
-      next();
     });
   })
-  .patch(function (req, res, next) {
+
+  .patch(function (req, res) {
     res.body += " PATCH REQUEST";
     res.send(res.body);
-
-    next();
   })
-  .delete(function (req, res, next) {
+
+  .delete(function (req, res) {
     data.deleteUserById(req.params.user_id, function() {
       res.sendStatus(200);
-      next();
     });
   });
 
 router.route('/:user_id/events')
-  .all(function (req, res, next) {
-    res.body = "Method call to route /users/" /
-      + req.params.user_id + "/events";
-
-    next();
-  })
-  .get(function (req, res, next) {
-    res.body += " GET REQUEST";
-    res.send(res.body);
-
-    next();
-  })
-  .post(function (req, res) {
-    res.body += " POST REQUEST";
-    res.send(res.body);
-
-    next();
+  .get(function (req, res) {
+    data.getUserAttendanceHistory(req.params.user_id, function(history) {
+      res.json(history);
+    });
   });
 
 router.route('/:user_id/events/:event_id')
-  .all(function(req, res, next) {
-    res.body = "Method call to route /users/" +
-      req.params.user_id + "/events/" + req.params.event_id;
-
-    next();
+  .get(function (req, res) {
+    data.getUserEventAttendance(req.params.user_id, req.params.event_id, function(attendance) {
+      res.json(attendance);
+    });
   })
-  .patch(function (req, res, next) {
+
+  .put(function (req, res) {
+    data.addUserToEvent(req.params.user_id, req.body, function() {
+      res.sendStatus(201);
+    });
+  })
+
+  .patch(function (req, res) {
     res.body += " PATCH REQUEST";
     res.send(res.body);
-
-    next();
   })
-  .delete(function (req, res) {
-    res.body += " DELETE REQUEST";
-    res.send(res.body);
 
-    next();
+  .delete(function (req, res) {
+    data.deleteUserEventAttendance(req.params.user_id, req.params.event_id, function() {
+      res.sendStatus(200);
+    });
   });
 
 module.exports = router;

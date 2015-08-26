@@ -138,6 +138,83 @@ exports.deleteEventById = function(id, afterDelete) {
   });
 };
 
+// afterGet : function(attendees : Object[])
+exports.getEventAttendees = function(id, afterGet) {
+  connection.query(
+    "SELECT user.id, firstName, lastName FROM user_event JOIN user WHERE user_event.eventId = ?",
+    [id],
+    function(err, result) {
+      if (err)
+        throw err;
+      afterGet(result);
+    }
+  );
+};
+
+// afterAdd : function()
+exports.addUserToEvent = function(userId, event, afterAdd) {
+  exports.getEventById(event.id, function(eventTemplate) {
+    var patch = jsonpatch.compare(eventTemplate, event);
+    addUserToPatchedEvent(userId, event.id, patch, afterAdd);
+  });
+};
+
+function addUserToPatchedEvent(userId, eventId, patch, afterAdd) {
+  connection.query(
+    "INSERT INTO user_event (userId, eventId, valid, eventPatch) VALUES (?, ?, ?, ?)",
+    [userId, eventId, true, JSON.stringify(patch)],
+    function(err) {
+      if (err)
+        throw err;
+      afterAdd();
+    }
+  );
+}
+
+exports.getUserEventAttendance = function(userId, eventId, afterGet) {
+  exports.getEventById(eventId, function(eventTemplate) {
+    connection.query("SELECT eventPatch FROM user_event WHERE userId = ? AND eventId = ?",
+      [userId, eventId], function(err, rows, fields) {
+        if (err)
+          throw err;
+        var patch = rows[0].eventPatch;
+        jsonpatch.apply(eventTemplate, JSON.parse(patch));
+        delete eventTemplate.id;
+        afterGet(eventTemplate);
+      }
+    );
+  });
+};
+
+exports.deleteUserEventAttendance = function(userId, eventId, afterDelete) {
+  connection.query("UPDATE user_event SET valid = false WHERE userId = ? AND eventId = ?",
+    [userId, eventId], function(err) {
+    if (err)
+      throw err;
+    afterDelete();
+  });
+};
+
+exports.getUserAttendanceHistory = function(userId, afterGet) {
+  var fields = "event.id, name, points, type, datetime, eventPatch";
+  connection.query(
+    "SELECT " + fields + " FROM event JOIN tbp_event JOIN user_event " +
+    "WHERE event.id = tbp_event.parentId AND event.id = user_event.eventId " +
+    "AND event.valid = true AND user_event.valid = true",
+    function (err, history) {
+      if (err)
+        throw err;
+
+      for (var event of history) {
+        jsonpatch.apply(event, JSON.parse(event.eventPatch));
+        delete event.eventPatch;
+      }
+
+      afterGet(history);
+    }
+  );
+};
+
 function rollbackRequired(err) {
   if (err) {
     connection.rollback(function() { throw err; });
