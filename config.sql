@@ -13,7 +13,7 @@ USE tBp;
 
 CREATE TABLE user (
 id              INT                 NOT NULL AUTO_INCREMENT,
-valid           BOOLEAN             NOT NULL DEFAULT False,
+valid           BOOLEAN             NOT NULL DEFAULT True,
 lastName        VARCHAR(255)        NOT NULL DEFAULT '',
 firstName       VARCHAR(255)        NOT NULL DEFAULT '',
 barcodeHash     VARCHAR(255)        NOT NULL DEFAULT '',
@@ -25,7 +25,7 @@ PRIMARY KEY (id)
 
 CREATE TABLE event (
 id              INT                 NOT NULL AUTO_INCREMENT,
-valid           BOOLEAN             NOT NULL DEFAULT False,
+valid           BOOLEAN             NOT NULL DEFAULT True,
 name            VARCHAR(255)        NOT NULL DEFAULT '',
 datetime        DATETIME            NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -56,9 +56,9 @@ FOREIGN KEY (parentId) REFERENCES event(id) ON DELETE CASCADE
 ) ENGINE=INNODB;
 
 CREATE TABLE user_event (
-userId      INT             NOT NULL AUTO_INCREMENT,
+userId      INT             NOT NULL,
 eventId     INT             NOT NULL,
-valid       BOOLEAN         NOT NULL DEFAULT False,
+valid       BOOLEAN         NOT NULL DEFAULT True,
 eventPatch  VARCHAR(1024)   NOT NULL,
 
 PRIMARY KEY (userId, eventId),

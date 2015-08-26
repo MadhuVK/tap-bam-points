@@ -14,7 +14,7 @@ var people = [
     "firstName": "Mel",
     "lastName": "D",
     "barcodeHash": "456",
-    "house": "green",
+    "house": "blue",
     "memberStatus": "active"
   },
   {
@@ -37,7 +37,7 @@ var events = [
     "name": "The Chocolate Room",
     "datetime": "2015-10-01 10:30:00",
     "points": 1,
-    "officer": "August Gloop",
+    "officer": "Augustus Gloop",
     "type": "social"
   },
   {
