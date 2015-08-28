@@ -3,10 +3,6 @@ var router = express.Router();
 var data = require('../src/data.js');
 
 router.route('/')
-  .all(function (req, res) {
-    // for future things
-  })
-
   .get(function (req, res) {
     data.getUsers("tbp", function(users) {
       res.status(200).json(users);

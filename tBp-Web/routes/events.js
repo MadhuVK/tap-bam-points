@@ -3,11 +3,6 @@ var router = express.Router();
 var data = require('../src/data.js');
 
 router.route('/')
-  .all(function(req, res, next) {
-    // future things
-    next();
-  })
-
   .get(function (req, res) {
     data.getEvents('tbp', function(events) {
       res.json(events);
