@@ -170,6 +170,7 @@ exports.getEventById = function(id, afterGet) {
         throw err;
       var event = result[0];
       delete event.parentId;
+      delete event.valid;
       afterGet(event);
   });
 };
@@ -210,6 +211,7 @@ exports.getEventAttendees = function(id, afterGet) {
 
 // afterAdd : function()
 exports.addUserToEvent = function(userId, event, afterAdd) {
+  event.datetime = new Date(event.datetime);
   exports.getEventById(event.id, function(eventTemplate) {
     var patch = jsonpatch.compare(eventTemplate, event);
     addUserToPatchedEvent(userId, event.id, patch, afterAdd);
