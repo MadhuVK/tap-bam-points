@@ -23,9 +23,10 @@ router.route('/:event_id')
   })
 
   .patch(function (req, res) {
-    res.body += " PATCH REQUEST";
-    res.send(res.body);
-
+    var patch = req.body;
+    data.updateEventByPatch(req.params.event_id, patch, function() {
+      res.sendStatus(200);
+    });
   })
 
   .delete(function (req, res) {

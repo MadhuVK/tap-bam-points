@@ -23,8 +23,10 @@ router.route('/:user_id')
   })
 
   .patch(function (req, res) {
-    res.body += " PATCH REQUEST";
-    res.send(res.body);
+    var patch = req.body;
+    data.updateUserByPatch(req.params.user_id, patch, function() {
+      res.sendStatus(200);
+    });
   })
 
   .delete(function (req, res) {
@@ -54,8 +56,10 @@ router.route('/:user_id/events/:event_id')
   })
 
   .patch(function (req, res) {
-    res.body += " PATCH REQUEST";
-    res.send(res.body);
+    var eventPatch = req.body;
+    data.updateUserEventAttendanceByPatch(req.params.user_id, req.params.event_id, eventPatch, function(eventPatch) {
+      res.sendStatus(200);
+    });
   })
 
   .delete(function (req, res) {

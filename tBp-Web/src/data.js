@@ -58,7 +58,49 @@ exports.getUserById = function(id, afterGet) {
     function(err, result) {
       if (err)
         throw err;
-      afterGet(result[0]);
+      var user = result[0];
+      delete user.parentId;
+      afterGet(user);
+    }
+  );
+};
+
+exports.updateUserByPatch = function(userId, patch, afterUpdate) {
+  exports.getUserById(userId, function(oldUser) {
+    jsonpatch.apply(oldUser, patch);
+    var newUser = oldUser;
+    updateUser(newUser, afterUpdate);
+  });
+};
+
+function updateUser(newUser, afterUpdate) {
+  connection.query(
+    "UPDATE user JOIN tbp_user SET firstName = ?, lastName = ?, barcodeHash = ?, house = ?, memberStatus = ? " +
+    "WHERE user.id = ? AND user.id = tbp_user.parentId",
+    [newUser.firstName, newUser.lastName, newUser.barcodeHash, newUser.house, newUser.memberStatus, newUser.id],
+    function(err) {
+      if (err)
+        throw err;
+      afterUpdate();
+    }
+  );
+}
+
+exports.getUserAttendanceHistory = function(userId, afterGet) {
+  var fields = "event.id, name, points, type, datetime, eventPatch";
+  connection.query(
+    "SELECT " + fields + " FROM event JOIN tbp_event JOIN user_event " +
+    "WHERE event.id = tbp_event.parentId AND event.id = user_event.eventId " +
+    "AND event.valid = true AND user_event.valid = true",
+    function (err, history) {
+      if (err)
+        throw err;
+
+      for (var event of history) {
+        jsonpatch.apply(event, JSON.parse(event.eventPatch));
+        delete event.eventPatch;
+      }
+      afterGet(history);
     }
   );
 };
@@ -126,17 +168,32 @@ exports.getEventById = function(id, afterGet) {
     function(err, result) {
       if (err)
         throw err;
-      afterGet(result[0]);
+      var event = result[0];
+      delete event.parentId;
+      afterGet(event);
   });
 };
 
-exports.deleteEventById = function(id, afterDelete) {
-  connection.query("UPDATE event SET valid = false WHERE id = ?", [id], function(err) {
-    if (err)
-      throw err;
-    afterDelete();
+exports.updateEventByPatch = function(eventId, patch, afterUpdate) {
+  exports.getEventById(eventId, function(oldEvent) {
+    jsonpatch.apply(oldEvent, patch);
+    var newEvent = oldEvent;
+    updateEvent(newEvent, afterUpdate);
   });
 };
+
+function updateEvent(newEvent, afterUpdate) {
+  connection.query(
+    "UPDATE event JOIN tbp_event SET name = ?, datetime = ?, points = ?, officer = ?, type = ? " +
+    "WHERE event.id = ? AND event.id = tbp_event.parentId",
+    [newEvent.name, newEvent.datetime, newEvent.points, newEvent.officer, newEvent.type, newEvent.id],
+    function(err) {
+      if (err)
+        throw err;
+      afterUpdate();
+    }
+  );
+}
 
 // afterGet : function(attendees : Object[])
 exports.getEventAttendees = function(id, afterGet) {
@@ -171,6 +228,14 @@ function addUserToPatchedEvent(userId, eventId, patch, afterAdd) {
   );
 }
 
+exports.deleteEventById = function(id, afterDelete) {
+  connection.query("UPDATE event SET valid = false WHERE id = ?", [id], function(err) {
+    if (err)
+      throw err;
+    afterDelete();
+  });
+};
+
 exports.getUserEventAttendance = function(userId, eventId, afterGet) {
   exports.getEventById(eventId, function(eventTemplate) {
     connection.query("SELECT eventPatch FROM user_event WHERE userId = ? AND eventId = ?",
@@ -179,11 +244,24 @@ exports.getUserEventAttendance = function(userId, eventId, afterGet) {
           throw err;
         var patch = rows[0].eventPatch;
         jsonpatch.apply(eventTemplate, JSON.parse(patch));
-        delete eventTemplate.id;
+        delete eventTemplate.parentId;
         afterGet(eventTemplate);
       }
     );
   });
+};
+
+// afterUpdate : function(patchApplied)
+exports.updateUserEventAttendanceByPatch = function(userId, eventId, eventPatch, afterUpdate) {
+  connection.query(
+    "UPDATE user_event SET eventPatch = ? WHERE userId = ? AND eventId = ?",
+    [JSON.stringify(eventPatch), userId, eventId],
+    function(err, rows) {
+      if (err)
+        throw err;
+      afterUpdate(eventPatch);
+    }
+  );
 };
 
 exports.deleteUserEventAttendance = function(userId, eventId, afterDelete) {
@@ -193,26 +271,6 @@ exports.deleteUserEventAttendance = function(userId, eventId, afterDelete) {
       throw err;
     afterDelete();
   });
-};
-
-exports.getUserAttendanceHistory = function(userId, afterGet) {
-  var fields = "event.id, name, points, type, datetime, eventPatch";
-  connection.query(
-    "SELECT " + fields + " FROM event JOIN tbp_event JOIN user_event " +
-    "WHERE event.id = tbp_event.parentId AND event.id = user_event.eventId " +
-    "AND event.valid = true AND user_event.valid = true",
-    function (err, history) {
-      if (err)
-        throw err;
-
-      for (var event of history) {
-        jsonpatch.apply(event, JSON.parse(event.eventPatch));
-        delete event.eventPatch;
-      }
-
-      afterGet(history);
-    }
-  );
 };
 
 function rollbackRequired(err) {
