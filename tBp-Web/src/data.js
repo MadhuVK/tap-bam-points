@@ -4,7 +4,7 @@ var jsonpatch = require('fast-json-patch');
 
 exports.getUsers = function(group, afterGet) {
   var groupTable = group + "_user";
-  connection.query("SELECT * FROM user JOIN ?? WHERE user.id = ??",
+  connection.query("SELECT * FROM user JOIN ?? WHERE user.id = ?? AND valid = true",
     [groupTable, groupTable + ".parentId"],
     function(err, rows, fields) {
       if (err) throw err;
@@ -23,8 +23,8 @@ exports.addUser = function(user, afterAdd) {
 
 function insertUserBasics(user, afterAdd, callback) {
   connection.query(
-    "INSERT INTO user (valid, lastName, firstName, barcodeHash) VALUES (?, ?, ?, ?)",
-    [true, user.lastName, user.firstName, user.barcodeHash],
+    "INSERT INTO user (valid, lastName, firstName, barcodeHash) VALUES (true, ?, ?, ?)",
+    [user.lastName, user.firstName, user.barcodeHash],
     function(err, result) {
       if (rollbackRequired(err))
         return;
@@ -53,7 +53,7 @@ function insertUserDetails(user, parentId, afterAdd) {
 // afterGet : function(user)
 exports.getUserById = function(id, afterGet) {
   connection.query(
-    "SELECT * FROM user JOIN tbp_user WHERE user.id = ? AND user.id = tbp_user.parentId",
+    "SELECT * FROM user JOIN tbp_user WHERE user.id = ? AND user.id = tbp_user.parentId AND user.valid = true",
     [id],
     function(err, result) {
       if (err)
@@ -115,7 +115,7 @@ exports.deleteUserById = function(id, afterDelete) {
 
 exports.getEvents = function(group, afterGet) {
   var groupTable = group + "_event";
-  connection.query("SELECT * FROM event JOIN ?? WHERE event.id = ??",
+  connection.query("SELECT * FROM event JOIN ?? WHERE event.id = ?? AND event.valid = true",
     [groupTable, groupTable + ".parentId"],
     function(err, rows, fields) {
       if (err) throw err;
@@ -163,7 +163,7 @@ function insertEventDetails(event, parentId, afterAdd) {
 
 exports.getEventById = function(id, afterGet) {
   connection.query(
-    "SELECT * FROM event JOIN tbp_event WHERE event.id = ? AND event.id = tbp_event.parentId",
+    "SELECT * FROM event JOIN tbp_event WHERE event.id = ? AND event.id = tbp_event.parentId AND valid = true",
     [id],
     function(err, result) {
       if (err)
@@ -198,7 +198,7 @@ function updateEvent(newEvent, afterUpdate) {
 // afterGet : function(attendees : Object[])
 exports.getEventAttendees = function(id, afterGet) {
   connection.query(
-    "SELECT user.id, firstName, lastName FROM user_event JOIN user WHERE user_event.eventId = ?",
+    "SELECT user.id, firstName, lastName FROM user_event JOIN user WHERE user_event.eventId = ? AND user_event.valid = true",
     [id],
     function(err, result) {
       if (err)
@@ -218,8 +218,8 @@ exports.addUserToEvent = function(userId, event, afterAdd) {
 
 function addUserToPatchedEvent(userId, eventId, patch, afterAdd) {
   connection.query(
-    "INSERT INTO user_event (userId, eventId, valid, eventPatch) VALUES (?, ?, ?, ?)",
-    [userId, eventId, true, JSON.stringify(patch)],
+    "INSERT INTO user_event (userId, eventId, valid, eventPatch) VALUES (?, ?, true, ?)",
+    [userId, eventId, JSON.stringify(patch)],
     function(err) {
       if (err)
         throw err;
@@ -238,7 +238,7 @@ exports.deleteEventById = function(id, afterDelete) {
 
 exports.getUserEventAttendance = function(userId, eventId, afterGet) {
   exports.getEventById(eventId, function(eventTemplate) {
-    connection.query("SELECT eventPatch FROM user_event WHERE userId = ? AND eventId = ?",
+    connection.query("SELECT eventPatch FROM user_event WHERE userId = ? AND eventId = ? AND valid = true",
       [userId, eventId], function(err, rows, fields) {
         if (err)
           throw err;
