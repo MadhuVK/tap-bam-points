@@ -1,6 +1,52 @@
 body {
-  padding: 50px;
+  margin: auto;
+  margin-top: 30px;
+  padding-left: 30px;
+  padding-right: 30px;
+  max-width: 950px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+#top {
+  display: flex;
+  align-items: center;
+}
+
+#bio {
+  display: flex;
+  flex-direction: column;
+}
+
+#bio-details {
+  margin-top: -.9em;
+  font-style: italic;
+}
+
+#point-stats {
+  margin-top: 20px;
+  margin-left: 30%;
+}
+
+#history {
+  border-collapse: collapse;
+  margin: auto;
+  width: 97%;
+}
+
+#history th {
+  padding: 5px;
+}
+
+#history td {
+  padding: 10px;
+}
+
+#history tr {
+  border-bottom: 1px solid black;
+}
+
+.center {
+  text-align: center;
 }
 
 a {

@@ -1,0 +1,35 @@
+extends layout
+
+block content
+  main
+    section#top
+      #bio
+        #bio-name
+          h1 #{user.firstName} #{user.lastName}
+        #bio-details
+          span #{user.memberStatus}, #{user.house} house
+      #point-stats
+        table
+          tr
+            td Place
+            td Holder
+          tr
+            td Text
+            td Yep
+    section#events
+      h2 Events
+      table#history
+        thead
+          th Name
+          th Points
+          th Type
+          th Date
+        tbody
+          for event in user.history
+            tr
+              td= event.name
+              td.center= event.points
+              td= event.type
+              td= event.datetime
+          else
+            li no events attended
