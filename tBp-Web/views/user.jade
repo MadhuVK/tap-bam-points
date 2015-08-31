@@ -8,14 +8,23 @@ block content
           h1 #{user.firstName} #{user.lastName}
         #bio-details
           span #{user.memberStatus}, #{user.house} house
-      #point-stats
-        table
-          tr
-            td Place
-            td Holder
-          tr
-            td Text
-            td Yep
+      #point-stats-div
+        table#point-stats
+          thead
+            th Event Type
+            th.right Total
+            th.right Required
+          for stat in pointStats
+            if stat.fulfilled
+              tr.fulfilled
+                td= stat.type
+                td.right= stat.total
+                td.right= stat.required
+            else
+              tr.unfulfilled
+                td= stat.type
+                td.right= stat.total
+                td.right= stat.required
     section#events
       h2 Events
       table#history

@@ -8,7 +8,7 @@ var people = [
     "lastName": "Ngonye",
     "barcodeHash": "123",
     "house": "red",
-    "memberStatus": "officer"
+    "memberStatus": "initiate"
   },
   {
     "firstName": "Mel",
@@ -29,7 +29,7 @@ var people = [
     "lastName": "Beard",
     "barcodeHash": "090",
     "house": "green",
-    "memberStatus": "initiate"
+    "memberStatus": "officer"
   }
 ];
 var events = [
