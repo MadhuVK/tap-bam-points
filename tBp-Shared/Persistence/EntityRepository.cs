@@ -44,71 +44,73 @@ namespace tBpShared
 		public List<User> getUsers() 
 		{ 
 			var request = new RestRequest ("users", Method.GET); 
-			return this.Execute<List<User>> (request); 
+			return Execute<List<User>> (request); 
 		}
 
 		public List<Event> getEvents() 
 		{ 
 			var request = new RestRequest ("events", Method.GET); 
-			return this.Execute<List<Event>> (request); 
+			return Execute<List<Event>> (request); 
 		}
 
 		public List<Event> getEventsForUser(int userId) 
 		{ 
 			var request = new RestRequest ("users/{id}/events", Method.GET); 
-			request.AddUrlSegment("id", userId.ToString);
+			request.AddUrlSegment("id", userId.ToString());
 
-			return this.Execute<List<Event>> (request); 
+			return Execute<List<Event>> (request); 
 		}
 		public List<User> getUsersForEvent(int eventId) 
 		{ 
 			var request = new RestRequest ("events/{id}/users", Method.GET); 
-			request.AddUrlSegment("id", eventId.ToString);
+			request.AddUrlSegment("id", eventId.ToString());
 
-			return this.Execute<List<User>> (request); 
+			return Execute<List<User>> (request); 
 		}
 
 		public User getUser(int userId) 
 		{ 
 			var request = new RestRequest ("users/{id}", Method.GET); 
-			request.AddUrlSegment("id", userId.ToString);
+			request.AddUrlSegment("id", userId.ToString());
 
-			return this.Execute<User> (request); 
+			return null;
+			//return Execute<User> (request); 
 		}
 		public Event getEvent(int eventId) 
 		{ 
 			var request = new RestRequest ("events/{id}", Method.GET); 
-			request.AddUrlSegment ("id", eventId.ToString); 
+			request.AddUrlSegment ("id", eventId.ToString()); 
 
-			return this.Execute<Event> (request); 
+			return null; 
+			//return this.Execute<Event> (request); 
 		}
 
 		public int addUser(User user) 
 		{ 
 			var request = new RestRequest ("users", Method.POST); 
 
-			return this.Execute<int> (request); 
+			return Execute<int> (request); 
 		}
 		public int addEvent(Event e) 
 		{ 
 			var request = new RestRequest ("events", Method.POST); 
 
-			return this.Execute<int> (request); 
+			return Execute<int> (request); 
 		}
 
 		public void deleteUser(int userId) {
 			var request = new RestRequest ("users/{id}", Method.DELETE); 
-			request.AddUrlSegment ("id", userId.ToString); 
+			request.AddUrlSegment ("id", userId.ToString()); 
 
-			this.Execute<String> (request); 
+			//this.Execute<String> (request); 
 			
 		}
 		public void deleteEvent(int eventId) 
 		{
 			var request = new RestRequest ("users/{id}", Method.DELETE); 
-			request.AddUrlSegment ("id", eventId.ToString); 
+			request.AddUrlSegment ("id", eventId.ToString()); 
 
-			this.Execute<String> (request); 
+			//this.Execute<String> (request); 
 			
 		}
 

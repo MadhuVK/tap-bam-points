@@ -8,8 +8,8 @@ namespace tBpShared
 		public enum Status { Active, Inactive, Initiate, Officer };
 		public enum House { Red, Green, Blue };
 
-		public Status MemberStatus { get; private set; }
-		public House HouseColor { get; private set; }
+		public Status MemberStatus { get; set; }
+		public House HouseColor { get; set; }
 
 		public TBPUser(int? uid, string fname, string lname, string barcode,
 			Status status, House house) : base(uid, fname, lname, barcode)

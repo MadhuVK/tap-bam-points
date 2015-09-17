@@ -8,9 +8,9 @@ namespace tBpShared
 
 		public enum Category { Academic, Social, Community, Wildcard };
 
-		public Category EventType { get; private set; }
-		public int DefaultPoints { get; private set; }
-		public string Officer { get; private set; }
+		public Category EventType { get; set; }
+		public int DefaultPoints { get; set; }
+		public string Officer { get; set; }
 
 
 

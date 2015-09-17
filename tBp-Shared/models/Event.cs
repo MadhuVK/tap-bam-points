@@ -4,9 +4,9 @@ namespace tBpShared
 {
 	public abstract class Event
 	{
-		public int? EID { get; protected set; } 
-		public string Name { get; protected set; }
-		public DateTime Date { get; protected set; }
+		public int? EID { get; set; } 
+		public string Name { get; set; }
+		public DateTime Date { get; set; }
 
 		protected Event(int? id, string name, DateTime? date)
 		{

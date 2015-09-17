@@ -5,10 +5,12 @@ namespace tBpShared
 	public abstract class User 
 	{
 
-		public int? UID { get; private set; }
-		public string LastName { get; private set; } 
-		public string FirstName { get; private set; }
-		public byte[] BarcodeHash { get; private set; }
+		public int? UID { get; set; }
+		public string LastName { get; set; } 
+		public string FirstName { get; set; }
+		public byte[] BarcodeHash { get; set; }
+
+		public User() { }
 
 		protected User(int? uid, string fname, string lname, string barcode)
 		{
