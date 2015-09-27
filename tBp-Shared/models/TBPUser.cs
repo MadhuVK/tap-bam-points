@@ -11,6 +11,7 @@ namespace tBpShared
 		public Status MemberStatus { get; set; }
 		public House HouseColor { get; set; }
 
+		public TBPUser() {}
 		public TBPUser(int? uid, string fname, string lname, string barcode,
 			Status status, House house) : base(uid, fname, lname, barcode)
 		{

@@ -10,7 +10,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)models\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Persistence\" />
+    <Folder Include="$(MSBuildThisFileDirectory)rest\" />
+    <Folder Include="$(MSBuildThisFileDirectory)persistence\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)models\User.cs" />
@@ -18,7 +19,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)models\TBPEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Crypto.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)models\Event.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Persistence\EntityDatabase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Persistence\EntityRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)rest\IEntityRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)rest\EntityRepositoryImpl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)rest\EntityRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)persistence\EntityDatabase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)rest\MobileRestClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)rest\MobileJsonConverter.cs" />
   </ItemGroup>
 </Project>

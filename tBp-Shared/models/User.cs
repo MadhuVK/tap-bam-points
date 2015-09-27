@@ -10,8 +10,7 @@ namespace tBpShared
 		public string FirstName { get; set; }
 		public byte[] BarcodeHash { get; set; }
 
-		public User() { }
-
+		protected User() {}
 		protected User(int? uid, string fname, string lname, string barcode)
 		{
 			UID = uid;

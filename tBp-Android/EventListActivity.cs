@@ -168,7 +168,7 @@ namespace tBpAndroid
 			NotifyItemChanged (position); 
 
 			var activity = new Intent (mAdapterContext, typeof(IndividualEventActivity));
-			JsonSerializerSettings settings = new JsonSerializerSettings 
+			var settings = new JsonSerializerSettings 
 			{ 
 				TypeNameHandling = TypeNameHandling.All
 			}; 

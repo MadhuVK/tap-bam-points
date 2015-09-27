@@ -48,9 +48,6 @@
     <Reference Include="zxing.monoandroid">
       <HintPath>..\packages\ZXing.Net.0.14.0.1\lib\MonoAndroid\zxing.monoandroid.dll</HintPath>
     </Reference>
-    <Reference Include="RestSharp.MonoDroid">
-      <HintPath>..\packages\restsharp-105.0.1.0\lib\android\RestSharp.MonoDroid.dll</HintPath>
-    </Reference>
     <Reference Include="Xamarin.Android.Support.v7.CardView">
       <HintPath>..\packages\Xamarin.Android.Support.v7.CardView.22.2.1.0\lib\MonoAndroid403\Xamarin.Android.Support.v7.CardView.dll</HintPath>
     </Reference>
@@ -59,6 +56,9 @@
     </Reference>
     <Reference Include="Xamarin.Android.Support.v7.RecyclerView">
       <HintPath>..\packages\Xamarin.Android.Support.v7.RecyclerView.22.2.1.0\lib\MonoAndroid403\Xamarin.Android.Support.v7.RecyclerView.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp">
+      <HintPath>..\packages\restsharp\lib\android\RestSharp.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

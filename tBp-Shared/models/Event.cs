@@ -8,6 +8,7 @@ namespace tBpShared
 		public string Name { get; set; }
 		public DateTime Date { get; set; }
 
+		protected Event() {}
 		protected Event(int? id, string name, DateTime? date)
 		{
 			EID = id; 

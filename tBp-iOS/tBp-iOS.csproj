@@ -81,8 +81,8 @@
     <Reference Include="zxing.portable">
       <HintPath>..\packages\ZXing.Net.0.14.0.1\lib\portable-win+net40+sl4+sl5+wp7+wp71+wp8\zxing.portable.dll</HintPath>
     </Reference>
-    <Reference Include="RestSharp.MonoTouch">
-      <HintPath>..\packages\restsharp-105.0.1.0\lib\ios\RestSharp.MonoTouch.dll</HintPath>
+    <Reference Include="RestSharp">
+      <HintPath>..\packages\restsharp\lib\ios\RestSharp.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

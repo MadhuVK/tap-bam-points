@@ -13,7 +13,7 @@ namespace tBpShared
 		public string Officer { get; set; }
 
 
-
+		public TBPEvent() {}
 		public TBPEvent(int? id, string name, DateTime? date, 
 			Category type, int points, string officer) : base(id, name, date)
 		{
