@@ -5,7 +5,7 @@ namespace tBpShared
 	public abstract class User 
 	{
 
-		public int? UID { get; set; }
+		public int? Id { get; set; }
 		public string LastName { get; set; } 
 		public string FirstName { get; set; }
 		public byte[] BarcodeHash { get; set; }
@@ -13,7 +13,7 @@ namespace tBpShared
 		protected User() {}
 		protected User(int? uid, string fname, string lname, string barcode)
 		{
-			UID = uid;
+			Id = uid;
 			FirstName = fname; 
 			LastName = lname; 
 			BarcodeHash = Crypto.Hash (barcode);
@@ -21,7 +21,7 @@ namespace tBpShared
 
 		protected User(int? uid, string fname, string lname, byte[] barcodeHash)
 		{
-			UID = uid;
+			Id = uid;
 			FirstName = fname; 
 			LastName = lname; 
 			BarcodeHash = barcodeHash; 

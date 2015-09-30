@@ -1,19 +1,21 @@
 ﻿using System;
 
+using RestSharp.Deserializers; 
+
 namespace tBpShared
 {
 	public abstract class Event
 	{
-		public int? EID { get; set; } 
+		public int? Id { get; set; } 
 		public string Name { get; set; }
-		public DateTime Date { get; set; }
+		public DateTime DateTime { get; set; }
 
 		protected Event() {}
 		protected Event(int? id, string name, DateTime? date)
 		{
-			EID = id; 
+			Id = id; 
 			Name = name; 
-			Date = date ?? DateTime.Today;
+			DateTime = date ?? DateTime.Today;
 		}
 
 		public abstract int? save (); 

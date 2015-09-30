@@ -8,7 +8,7 @@ namespace tBpShared
 	{
 		static readonly IEntityRepository connection = new EntityRepositoryImpl(); 
 
-		public IEntityRepository get() {
+		public static IEntityRepository get() {
 			return connection; 
 		}
 
@@ -17,13 +17,13 @@ namespace tBpShared
 		public virtual List<User> getUsers() {
 			return new List<User> {
 				new TBPUser(uid: 0, fname: "Harry", lname: "Potter", barcode: "123456789", 
-					status: TBPUser.Status.Active, house: TBPUser.House.Blue), 
+					status: TBPUser.Status.Active, house: TBPUser.HouseColor.Blue), 
 				new TBPUser(uid: 1, fname: "Atticus", lname: "Finch", barcode: "111111111", 
-					status: TBPUser.Status.Initiate, house: TBPUser.House.Green), 
+					status: TBPUser.Status.Initiate, house: TBPUser.HouseColor.Green), 
 				new TBPUser(uid: 2, fname: "Nick", lname: "Davies", barcode: "222222222", 
-					status: TBPUser.Status.Active, house: TBPUser.House.Red), 
+					status: TBPUser.Status.Active, house: TBPUser.HouseColor.Red), 
 				new TBPUser(uid: 3, fname: "Bobby", lname: "Pendragon", barcode: "333333333", 
-					status: TBPUser.Status.Inactive, house: TBPUser.House.Red), 
+					status: TBPUser.Status.Inactive, house: TBPUser.HouseColor.Red), 
 			}; 
 		}
 
@@ -48,7 +48,7 @@ namespace tBpShared
 
 		public virtual List<Event> getEventsForUser(int userId) {
 			var result = from e in getEvents ()
-				         where e.EID % 2 == userId % 2
+				         where e.Id % 2 == userId % 2
 				         select e; 
 			return result.ToList (); 
 		}
@@ -56,21 +56,21 @@ namespace tBpShared
 
 		public virtual List<User> getUsersForEvent(int eventId) {
 			var result = from u in getUsers ()
-					where u.UID % 2 == eventId % 2
+					where u.Id % 2 == eventId % 2
 				         select u; 
 			return result.ToList (); 
 		}
 
 		public virtual User getUser(int userId) {
 			var result = from u in getUsers ()
-			             where u.UID == userId
+			             where u.Id == userId
 			             select u; 
 			return result == null ? result.ElementAt(0) : null; 
 		}
 
 		public virtual Event getEvent(int eventId) {
 			var result = from e in getEvents ()
-			             where e.EID == eventId
+			             where e.Id == eventId
 			             select e; 
 			return result == null ? result.ElementAt(0) : null; 
 		}

@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using RestSharp.Deserializers; 
 
 namespace tBpShared
 {
@@ -8,8 +9,8 @@ namespace tBpShared
 
 		public enum Category { Academic, Social, Community, Wildcard };
 
-		public Category EventType { get; set; }
-		public int DefaultPoints { get; set; }
+		public Category Type { get; set; }
+		public int Points { get; set; }
 		public string Officer { get; set; }
 
 
@@ -17,8 +18,8 @@ namespace tBpShared
 		public TBPEvent(int? id, string name, DateTime? date, 
 			Category type, int points, string officer) : base(id, name, date)
 		{
-			EventType = type; 
-			DefaultPoints = points; 
+			Type = type; 
+			Points = points; 
 			Officer = officer; 
 		}
 
