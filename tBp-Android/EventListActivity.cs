@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
 using Android.App;
 using Android.Content;
-using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
@@ -24,30 +22,14 @@ namespace tBpAndroid
 		EventListAdapter mAdapter;
 		List<Event> mEventList;
 
-		private List<Event> getEvents() {
-			//TODO: Use DB. These are temporary values
-			var recentEvents = new List<Event> {
-				new TBPEvent(id: null, name: "STUPIDLY LONG ASS TBP EVENT NAME", date: new DateTime(1994, 03, 01), 
-					type:TBPEvent.Category.Community, points: 20, officer:"ATonyGuy"),
-				new TBPEvent(id: null, name: "Event2", date: new DateTime(2000, 04, 01), 
-					type:TBPEvent.Category.Wildcard, points: 20, officer:"Juby"),
-				new TBPEvent(id: null, name: "Event3", date: new DateTime(2015, 05, 01), 
-					type:TBPEvent.Category.Academic, points: 20, officer:"BeardedOne"),
-				new TBPEvent(id: null, name: "Event3", date: new DateTime(2016, 06, 01), 
-					type:TBPEvent.Category.Social, points: 20, officer:"aAron"),
-				new TBPEvent(id: null, name: "Event3", date: new DateTime(2016, 07, 01), 
-					type:TBPEvent.Category.Community, points: 20, officer:"aAron"),
-				new TBPEvent(id: null, name: "Event3", date: new DateTime(2016, 08, 01), 
-					type:TBPEvent.Category.Social, points: 20, officer:"aAron"),
-				new TBPEvent(id: null, name: "Event3", date: new DateTime(2016, 09, 30), 
-					type:TBPEvent.Category.Community, points: 20, officer:"aAron"),
-			}; 
-			return recentEvents;
+		List<Event> getEvents() {
+			var database = EntityDatabase.get (); 
+			return database.getEvents (); 
 		}
 
-		protected override void OnCreate (Bundle bundle)
+		protected override void OnCreate (Bundle savedInstanceState)
 		{
-			base.OnCreate (bundle);
+			base.OnCreate (savedInstanceState);
 
 			// Instantiate the events
 			mEventList = getEvents(); 
@@ -65,7 +47,7 @@ namespace tBpAndroid
 
 			// Manage Button
 			Button temporaryButton = FindViewById<Button> (Resource.Id.placeholderButton); 
-			temporaryButton.Click += (object sender, EventArgs e) => 
+			temporaryButton.Click += (sender, e) => 
 				Toast.MakeText(this, "Clicked temporary button", ToastLength.Short).Show(); 
 			temporaryButton.Visibility = ViewStates.Gone;
 		}
@@ -88,8 +70,8 @@ namespace tBpAndroid
 			CaptionType = itemView.FindViewById<TextView> (Resource.Id.eventCardType); 
 			CaptionName = itemView.FindViewById<TextView> (Resource.Id.eventCardName); 
 			CaptionDate = itemView.FindViewById<TextView> (Resource.Id.eventCardDate); 
-			itemView.Click += (sender, e) => onClick (itemView, base.AdapterPosition); 
-			itemView.LongClick += (sender, e) => onLongClick (itemView, base.AdapterPosition); 
+			itemView.Click += (sender, e) => onClick (itemView, AdapterPosition); 
+			itemView.LongClick += (sender, e) => onLongClick (itemView, AdapterPosition); 
 		}
 
 	}
@@ -103,13 +85,11 @@ namespace tBpAndroid
 
 		public EventListAdapter (Context c, List<Event> events)
 		{
-			events.Sort ((a, b) => b.Date.CompareTo (a.Date)); 
+			events.Sort ((a, b) => b.DateTime.CompareTo (a.DateTime)); 
 			mEventList = events; 
 
 			mExpandView = new List<bool> (); 
-			foreach (var v in events) {
-				mExpandView.Add (false);
-			}
+			events.ForEach (v => mExpandView.Add (false)); 
 
 			mAdapterContext = c;
 		}
@@ -120,23 +100,23 @@ namespace tBpAndroid
 			View itemView = LayoutInflater.From (parent.Context).
 				Inflate (Resource.Layout.EventCardView, parent, false);
 
-			EventViewHolder vh = new EventViewHolder (itemView, OnClick, OnLongClick); 
+			var vh = new EventViewHolder (itemView, OnClick, OnLongClick); 
 			return vh;
 		}
 
 		public override void 
 		OnBindViewHolder (RecyclerView.ViewHolder holder, int position)
 		{
-			EventViewHolder vh = holder as EventViewHolder;
+			var vh = holder as EventViewHolder;
 			vh.CaptionName.Text = mEventList [position].Name;
-			vh.CaptionDate.Text = mEventList [position].Date.ToString("M"); // Month Day Formatting
+			vh.CaptionDate.Text = mEventList [position].DateTime.ToString("M"); // Month Day Formatting
 			vh.ExtraLayout.Visibility = mExpandView[position] ? ViewStates.Visible : ViewStates.Gone; 
 
 			// TODO: Temporary and ugly
-			if (mEventList[position] is TBPEvent) {
-				TBPEvent e = mEventList [position] as TBPEvent; 
-				vh.CaptionType.Text = e.EventType.ToString (); 
-				switch (e.EventType) {
+			var e = mEventList[position] as TBPEvent; 
+			if (e != null) {
+				vh.CaptionType.Text = e.Type.ToString (); 
+				switch (e.Type) {
 				case TBPEvent.Category.Academic: 
 					vh.CaptionType.Text = "A";
 					vh.CaptionType.SetBackgroundResource (Resource.Drawable.circle_academic); 
@@ -152,8 +132,6 @@ namespace tBpAndroid
 				case TBPEvent.Category.Wildcard: 
 					vh.CaptionType.Text = "W";
 					vh.CaptionType.SetBackgroundResource (Resource.Drawable.circle_wildcard); 
-					break; 
-				default: 
 					break; 
 				}
 			}

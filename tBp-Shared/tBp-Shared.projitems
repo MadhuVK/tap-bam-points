@@ -11,7 +11,7 @@
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)models\" />
     <Folder Include="$(MSBuildThisFileDirectory)rest\" />
-    <Folder Include="$(MSBuildThisFileDirectory)persistence\" />
+    <Folder Include="$(MSBuildThisFileDirectory)database\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)models\User.cs" />
@@ -22,8 +22,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)rest\IEntityRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)rest\EntityRepositoryImpl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)rest\EntityRepository.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)persistence\EntityDatabase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)rest\MobileRestClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)rest\MobileJsonConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)database\EntityDatabase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)database\IEntityDatabase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)database\EntityDatabaseImpl.cs" />
   </ItemGroup>
 </Project>
