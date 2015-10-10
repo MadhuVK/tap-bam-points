@@ -90,8 +90,9 @@
     <AndroidResource Include="Resources\drawable\circle_social.xml" />
     <AndroidResource Include="Resources\drawable\circle_wildcard.xml" />
     <AndroidResource Include="Resources\layout\Login.axml" />
-    <AndroidResource Include="Resources\layout\IndividualEvent.axml" />
     <AndroidResource Include="Resources\layout\EventCardView.axml" />
+    <AndroidResource Include="Resources\layout\IndividualEventCardView.axml" />
+    <AndroidResource Include="Resources\layout\UserCardView.axml" />
   </ItemGroup>
   <Import Project="..\tBp-Shared\tBp-Shared.projitems" Label="Shared" Condition="Exists('..\tBp-Shared\tBp-Shared.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />

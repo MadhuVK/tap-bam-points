@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,31 +9,122 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using Newtonsoft.Json; 
+using Android.Support.V7.Widget;
+using Newtonsoft.Json;
 
-using tBpShared; 
+using tBpShared;
 
 namespace tBpAndroid
 {
-	[Activity (Label = "IndividualEventActivity")]			
+	[Activity (Label = "Individual Event Activity")]			
 	public class IndividualEventActivity : Activity
 	{
-		Event mEvent; 
-		protected override void OnCreate (Bundle bundle)
-		{
-			base.OnCreate (bundle);
+		Event Event { get; set; }
+		List<User> Users { get; set; }
+		TextView NameField { get; set; }
+		TextView DateField { get; set; }
+		Button ScanButton { get; set; }
 
-			string jsonEvent = Intent.GetStringExtra ("event"); 
-			JsonSerializerSettings settings = new JsonSerializerSettings
-			{
+		RecyclerView mRecyclerView;
+		RecyclerView.LayoutManager mLayoutManager;
+		UserListAdapter mAdapter;
+
+
+		Event GetEvent ()
+		{
+			var jsonEvent = Intent.GetStringExtra ("event"); 
+			JsonSerializerSettings settings = new JsonSerializerSettings {
 				TypeNameHandling = TypeNameHandling.All
 			};
-			mEvent = JsonConvert.DeserializeObject<Event> (jsonEvent, settings); 
-
-			SetContentView (Resource.Layout.IndividualEvent); 
-			TextView v = FindViewById<TextView> (Resource.Id.individualEventText);
-			v.Text = mEvent.ToString (); 
+			return JsonConvert.DeserializeObject<Event> (jsonEvent, settings); 
 		}
+
+		void SetUIElementsForAccess ()
+		{
+			NameField = FindViewById<TextView> (Resource.Id.CardName); 
+			DateField = FindViewById<TextView> (Resource.Id.CardDate); 
+			ScanButton = FindViewById<Button> (Resource.Id.CardButton); 
+		}
+
+		protected override void OnCreate (Bundle savedInstanceState)
+		{
+			base.OnCreate (savedInstanceState);
+
+			Event = GetEvent (); 
+			if (Event.Id == null) {
+				throw new Exception ("Invalid event id on load"); 
+			} else {
+				Users = EntityDatabase.get ().getUsersForEvent (Event.Id.GetValueOrDefault ()); 
+			}
+
+			SetContentView (Resource.Layout.IndividualEventCardView); 
+			mRecyclerView = FindViewById<RecyclerView> (Resource.Id.recyclerViewUsers); 
+			mLayoutManager = new LinearLayoutManager (this); 
+			mRecyclerView.SetLayoutManager (mLayoutManager); 
+			SetUIElementsForAccess (); 
+
+			mAdapter = new UserListAdapter (this, Users); 
+			mRecyclerView.SetAdapter (mAdapter); 
+
+			NameField.Text = Event.Name; 
+			DateField.Text = Event.DateTime.ToString ("M"); 
+			//ScanButton.Click += (sender, v) => StartActivity(typeof(ScanActivity));
+		}
+
+	}
+
+	public class UserViewHolder : RecyclerView.ViewHolder
+	{
+
+		public TextView CaptionName { get; private set; }
+		public TextView CaptionType { get; private set; }
+
+		// Get references to the views defined in the CardView layout.
+		public UserViewHolder (View itemView)
+			: base (itemView)
+		{
+			CaptionName = itemView.FindViewById<TextView> (Resource.Id.userCardName); 
+			CaptionType = itemView.FindViewById<TextView> (Resource.Id.userCardType); 
+		}
+
+	}
+
+	public class UserListAdapter : RecyclerView.Adapter
+	{
+		public List<User> mUserList;
+		public Context mAdapterContext;
+
+		public UserListAdapter (Context c, List<User> users)
+		{
+			users.Sort ((a, b) => (a.LastName + a.FirstName).CompareTo (b.LastName + b.FirstName));
+			mUserList = users; 
+			mAdapterContext = c;
+		}
+
+		public override RecyclerView.ViewHolder 
+		OnCreateViewHolder (ViewGroup parent, int viewType)
+		{
+			View itemView = LayoutInflater.From (parent.Context).
+				Inflate (Resource.Layout.UserCardView, parent, false);
+
+			var vh = new UserViewHolder (itemView); 
+			return vh;
+		}
+
+		public override void 
+		OnBindViewHolder (RecyclerView.ViewHolder holder, int position)
+		{
+			var vh = holder as UserViewHolder;
+			var user = mUserList [position] as TBPUser; 
+			vh.CaptionName.Text = String.Format ("{0} {1}", user.FirstName, user.LastName); 
+			vh.CaptionType.Text = user.MemberStatus.ToString (); 
+
+		}
+
+		public override int ItemCount {
+			get { return mUserList.Count; }
+		}
+
 	}
 }
 

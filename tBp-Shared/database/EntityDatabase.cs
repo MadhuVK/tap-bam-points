@@ -31,6 +31,12 @@ namespace tBpShared
 			}; 
 		}
 
+		public virtual List<User> getUsers(Func<User, bool> condition) 
+		{
+			return getUsers ().Where (condition).ToList(); 
+		}
+
+
 		public virtual List<Event> getEvents()
 		{
 			return new List<Event> {
@@ -49,6 +55,11 @@ namespace tBpShared
 				new TBPEvent(id: 6, name: "Event7", date: new DateTime(2016, 09, 30), 
 					type:TBPEvent.Category.Community, points: 20, officer:"aAron"),
 			}; 
+		}
+
+		public virtual List<Event> getEvents(Func<Event, bool> condition)
+		{
+			return getEvents ().Where (condition).ToList(); 
 		}
 
 		public virtual List<Event> getEventsForUser(int userId)

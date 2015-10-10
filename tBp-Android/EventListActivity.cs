@@ -22,21 +22,16 @@ namespace tBpAndroid
 		EventListAdapter mAdapter;
 		List<Event> mEventList;
 
-		List<Event> getEvents() {
-			var database = EntityDatabase.get (); 
-			return database.getEvents (); 
-		}
-
 		protected override void OnCreate (Bundle savedInstanceState)
 		{
 			base.OnCreate (savedInstanceState);
 
 			// Instantiate the events
-			mEventList = getEvents(); 
+			mEventList = EntityDatabase.get().getEvents(); 
 
 			// Set our view from the "EventList" layout resource:
 			SetContentView (Resource.Layout.EventList);
-			mRecyclerView = FindViewById<RecyclerView> (Resource.Id.recyclerView);
+			mRecyclerView = FindViewById<RecyclerView> (Resource.Id.recyclerViewEvents);
 			mLayoutManager = new LinearLayoutManager (this);
 			mRecyclerView.SetLayoutManager (mLayoutManager);
 
@@ -142,9 +137,6 @@ namespace tBpAndroid
 		}
 
 		void OnClick(View v, int position) {
-			mEventList [position].Name = "Clicked"; 
-			NotifyItemChanged (position); 
-
 			var activity = new Intent (mAdapterContext, typeof(IndividualEventActivity));
 			var settings = new JsonSerializerSettings 
 			{ 
@@ -155,7 +147,6 @@ namespace tBpAndroid
 		}
 
 		void OnLongClick(View v, int position) {
-			mEventList [position].Name = "Long Clicked"; 
 			mExpandView [position] = !mExpandView[position]; 
 			NotifyItemChanged (position); 
 		}
