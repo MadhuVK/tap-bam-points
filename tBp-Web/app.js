@@ -9,6 +9,8 @@ var userRoutes = require('./routes/users');
 var eventRoutes = require('./routes/events');
 var errorRoutes = require('./routes/errors');
 
+var engines = require('consolidate')
+
 var data = require('./src/data.js');
 
 var app = express();
@@ -24,6 +26,8 @@ function baseSetup() {
 function viewEngineSetup() {
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'jade');
+  app.engine('jade', require('jade').__express);
+  app.engine('html', require('ejs').__express); 
 }
 
 function routesSetup() {
