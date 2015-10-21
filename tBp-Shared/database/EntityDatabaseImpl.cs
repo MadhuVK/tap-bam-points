@@ -31,6 +31,11 @@ namespace tBpShared
 			return default(TBPUser); 
 		}
 
+		public new User getUserByBarcode(string barcode)
+		{
+			return default(TBPUser);
+		}
+
 		public new Event getEvent (int eventId)
 		{
 			return default(TBPEvent); 

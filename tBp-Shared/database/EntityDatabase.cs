@@ -20,11 +20,11 @@ namespace tBpShared
 		public virtual List<User> getUsers() 
 		{
 			return new List<User> {
-				new TBPUser(uid: 0, fname: "Harry", lname: "Potter", barcode: "123456789", 
+				new TBPUser(uid: 0, fname: "Young", lname: "Geezy", barcode: "21822054882867", 
 					status: TBPUser.Status.Active, house: TBPUser.HouseColor.Blue), 
-				new TBPUser(uid: 1, fname: "Atticus", lname: "Finch", barcode: "111111111", 
+				new TBPUser(uid: 1, fname: "Madhu", lname: "IsFat", barcode: "21822054855681", 
 					status: TBPUser.Status.Initiate, house: TBPUser.HouseColor.Green), 
-				new TBPUser(uid: 2, fname: "Nick", lname: "Davies", barcode: "222222222", 
+				new TBPUser(uid: 2, fname: "Juby", lname: "Juby", barcode: "21822054826575", 
 					status: TBPUser.Status.Active, house: TBPUser.HouseColor.Red), 
 				new TBPUser(uid: 3, fname: "Bobby", lname: "Pendragon", barcode: "333333333", 
 					status: TBPUser.Status.Inactive, house: TBPUser.HouseColor.Red), 
@@ -83,7 +83,19 @@ namespace tBpShared
 			var result = from u in getUsers ()
 			             where u.Id == userId
 			             select u; 
-			return result == null ? result.ElementAt(0) : null; 
+			return result == null ? null : result.ElementAt(0); 
+		}
+
+		public virtual User getUserByBarcode(string barcode)
+		{
+			
+			byte[] bHash = Crypto.Hash (barcode);
+			var result = from u in getUsers() 
+					where u.BarcodeHash.SequenceEqual(bHash)
+				select u;
+			
+
+			return result == null ? null : result.ElementAt(0);
 		}
 
 		public virtual Event getEvent(int eventId)
@@ -91,7 +103,7 @@ namespace tBpShared
 			var result = from e in getEvents ()
 			             where e.Id == eventId
 			             select e; 
-			return result == null ? result.ElementAt(0) : null; 
+			return result == null ? null : result.ElementAt(0); 
 		}
 
 		public virtual int saveUser(User user)

@@ -47,7 +47,7 @@
                     android:text="Scan Barcodes"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/CardButton" />
+                    android:id="@+id/eventCardScan" />
             </LinearLayout>
             <LinearLayout
                 android:layout_row="2"

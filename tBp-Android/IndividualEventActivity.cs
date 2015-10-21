@@ -30,9 +30,9 @@ namespace tBpAndroid
 		UserListAdapter mAdapter;
 
 
-		Event GetEvent ()
+		Event GetEvent (string jsonEvent)
 		{
-			var jsonEvent = Intent.GetStringExtra ("event"); 
+			
 			JsonSerializerSettings settings = new JsonSerializerSettings {
 				TypeNameHandling = TypeNameHandling.All
 			};
@@ -43,14 +43,16 @@ namespace tBpAndroid
 		{
 			NameField = FindViewById<TextView> (Resource.Id.CardName); 
 			DateField = FindViewById<TextView> (Resource.Id.CardDate); 
-			ScanButton = FindViewById<Button> (Resource.Id.CardButton); 
+			ScanButton = FindViewById<Button> (Resource.Id.eventCardScan); 
 		}
 
 		protected override void OnCreate (Bundle savedInstanceState)
 		{
 			base.OnCreate (savedInstanceState);
 
-			Event = GetEvent (); 
+			var jsonEvent = Intent.GetStringExtra ("event"); 
+
+			Event = GetEvent (jsonEvent); 
 			if (Event.Id == null) {
 				throw new Exception ("Invalid event id on load"); 
 			} else {
@@ -68,7 +70,11 @@ namespace tBpAndroid
 
 			NameField.Text = Event.Name; 
 			DateField.Text = Event.DateTime.ToString ("M"); 
-			//ScanButton.Click += (sender, v) => StartActivity(typeof(ScanActivity));
+
+			var scanActivity = new Intent (this, typeof(ScanEventActivity));
+			scanActivity.PutExtra ("event", jsonEvent);
+
+			ScanButton.Click += (sender, e) => StartActivity (scanActivity);
 		}
 
 	}

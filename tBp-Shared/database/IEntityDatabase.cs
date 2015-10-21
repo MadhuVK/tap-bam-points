@@ -23,6 +23,7 @@ namespace tBpShared
 		List<User> getUsersForEvent(int eventId); 
 
 		User getUser(int userId); 
+		User getUserByBarcode (string barcode);
 		Event getEvent(int eventId); 
 
 		int saveUser(User user); 
