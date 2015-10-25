@@ -19,7 +19,6 @@ router.get('/me', function(req, res) {
   });
 });
 
-
 router.get('/admin', adminLogin); // Generic catch all that will be used by most people
 router.get('/admin_console', adminConsole);
 

@@ -36,12 +36,13 @@
             </thead>
             <tbody>
             <tr>
-                <td>Column1</td>
-                <td>Column2</td>
-                <td>Column3</td>
-                <td>Column4</td>
-                <td>Column5</td>
-                <td>Column6</td>
+                <% users.forEach(function(user){ %>
+                <tr>
+                    <% var name = user.firstName + ' ' + user.lastName %>
+                    <td> <%= name %> </td>
+                    <td> <%= user.memberStatus %> </td>
+                </tr>
+                <% }) %>
             </tr>
             </tbody>
         </table>
@@ -51,26 +52,32 @@
         <table>
             <thead>
             <tr>
-                <th width="30%">Event</th>
-                <th width="30%">Member Type</th>
-                <th width="10%">CS/O Points</th>
-                <th width="10%">A/P Points</th>
-                <th width="10%">S/H Points</th>
-                <th width="10%">Total Points</th>
+                <th width="40%">Event</th>
+                <th width="10%">Points</th>
+                <th width="10%">Points Type</th>
+                <th width="30%">Date</th>
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td>Column1</td>
-                <td>Column2</td>
-                <td>Column3</td>
-                <td>Column4</td>
-                <td>Column5</td>
-                <td>Column6</td>
-            </tr>
+                <% events.forEach(function(event){ %>
+                <tr>
+                    <td> <%= event.name %> </td>
+                    <td> <%= event.points %> </td>
+                    <td> <%= event.type %> </td>
+                    <% var d = event.datetime %>
+                    <% date = new Date(d)%>
+                    <td> <%= date.toDateString() %> </td>
+                </tr>
+                <% }) %>
             </tbody>
         </table>
-    </div>
+
+    <form action="/event_create" method="get">
+        <input type="submit" value="Create Event" 
+         name="Submit" id="Create Event" />
+    </form>
+
+     </div>
 
 </div>
 
