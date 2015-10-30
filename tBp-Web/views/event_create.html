@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Event Creation</title>
+</head>
+<body>
+<% if(errCode == "true") { %>
+    <h>Invalid Date, Try again</h> <% } %>
+
+<form action="/event_create" method="post">
+    Event Name:<br>
+    <input type="text" name="eventName" placeholder="Event Name"><br>
+    Date: (yyyy-mm-dd)<br>
+    <input type="date" name="eventDate" ><br>
+    Time: () <br>
+    <input type="time" name="eventTime" ><br>
+    Officer:<br>
+    <input type="text" name="eventOfficer" placeholder="Officer"><br>
+    Default Points:<br>
+    <input type="number" name="eventPoints" min="0.5" max="5" step="0.5" value="1"><br>
+    Category<br>
+    <select name="eventCategory">
+        <option value="academic">Academic</option>
+        <option value="community">Community Service</option>
+        <option value="social">Social</option>
+        <option value="wildcard">Wildcard</option>
+    </select> <br>
+    <br>
+    <input type="submit" value="Submit">
+</form>
+</body>
+</html>

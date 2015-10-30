@@ -50,5 +50,57 @@ function validateLogin(req, res) {
   res.redirect("/admin_console");
 }
 
+router.get('/event_create', eventForm);
+router.post('/event_create', createEvent);
+
+function eventForm(req, res) {
+  res.render('event_create.html', {errCode:"false"});
+}
+
+function createEvent(req, res) {
+  console.log(req.body);
+  var body = req.body;
+  var dateExp = /^(20)\d\d([- /.])(0[1-9]|1[012])\2(0[1-9]|[12][0-9]|3[01])$/;
+  var date = body["eventDate"];
+  var dateTime = body["eventDate"] + " " + body["eventTime"];
+
+  if (dateExp.test(date)) {
+    data.addEvent({name:body["eventName"], datetime:dateTime, points:body["eventPoints"], officer:body["eventOfficer"], type:body["eventCategory"]},
+        function(id) {
+          res.redirect("/admin_console")
+        });
+
+  }
+  else {
+    res.render('event_create.html', {errCode:"true"});
+  }
+
+
+  //res.redirect('/admin_console');
+}
+
+router.post('/event_delete', eventDelete);
+
+function eventDelete(req, res) {
+  var body = req.body;
+  var e_id = body["id"];
+  console.log(e_id);
+  data.getEventAttendees(e_id, function(retrievedUsers) {
+    if (retrievedUsers.length == 0) {
+      data.deleteEventById(e_id,
+          function() {
+            res.redirect("/admin_console");
+          });
+    }
+    else {
+      console.log("Event not empty")
+      res.redirect("/admin_console");
+    }
+
+  });
+
+
+}
+
 
 module.exports = router;
