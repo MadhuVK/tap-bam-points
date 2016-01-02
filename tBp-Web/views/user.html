@@ -36,6 +36,7 @@
                         <td class="right"><% stat.total %></td>
                         <td class="right"><% stat.required %></td>
                     </tr>
+                    <% } %>
                 </table>
             </div>
         </section>
@@ -59,8 +60,9 @@
                         <td><% event.type %></td>
                         <td><% event.datetime %></td>
                     </tr>
-                    <% } else { %>
+                    <% }) } else { %>
                     <span>No events attended</span>
+                    <% } %>
                 </tbody>
             </table>
         </section>
