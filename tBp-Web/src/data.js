@@ -65,6 +65,28 @@ exports.getUserById = function(id, afterGet) {
   );
 };
 
+exports.getUserByBarcode = function(bcode, afterGet) {
+  var bhash = bcode;
+  connection.query(
+      "SELECT * FROM user JOIN tbp_user WHERE user.barcodeHash = ? AND user.id = tbp_user.parentId AND user.valid = true",
+      [bhash],
+      function(err, result) {
+        if (err)
+          throw err;
+        var user;
+        if(result.length != 0) {
+          user = result[0];
+          delete user.parentId;
+        }
+        else
+          user = result;
+
+        afterGet(user);
+      }
+  );
+};
+
+
 exports.updateUserByPatch = function(userId, patch, afterUpdate) {
   exports.getUserById(userId, function(oldUser) {
     jsonpatch.apply(oldUser, patch);
@@ -199,7 +221,7 @@ function updateEvent(newEvent, afterUpdate) {
 // afterGet : function(attendees : Object[])
 exports.getEventAttendees = function(id, afterGet) {
   connection.query(
-    "SELECT user.id, firstName, lastName FROM user_event JOIN user WHERE user_event.eventId = ? AND user_event.valid = true",
+    "SELECT user.id, firstName, lastName FROM user_event JOIN user ON user.id = user_event.userId WHERE user_event.eventId = ? AND user_event.valid = true",
     [id],
     function(err, result) {
       if (err)

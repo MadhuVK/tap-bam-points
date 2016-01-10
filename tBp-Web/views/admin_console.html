@@ -68,8 +68,14 @@
                     <% date = new Date(d)%>
                     <td> <%= date.toDateString() %> </td>
                     <td>
+                        <form action="/event_view" method="post">
+                            <input type="hidden" name="v_id" value=<%= event.id %> >
+                            <input type="submit" value="View" name="viewEvent" >
+                        </form>
+                    </td>
+                    <td>
                         <form action="/event_delete" method="post">
-                            <input type="hidden" name="id" value=<%= event.id %> >
+                            <input type="hidden" name="d_id" value=<%= event.id %> >
                             <input type="submit" value="Delete" name="deleteEvent" >
                         </form>
                     </td>
