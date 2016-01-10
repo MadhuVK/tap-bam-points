@@ -65,6 +65,19 @@ exports.getUserById = function(id, afterGet) {
   );
 };
 
+exports.getUserIdByHash = function(hash, afterGet) {
+  connection.query("SELECT id FROM user WHERE barcodeHash = ? AND user.valid = true", [hash], function(err, result) {
+    if (err) {
+      throw err;
+    }
+    if (result.length == 0) {
+      afterGet( {id: -1} );
+    } else {
+      afterGet(result[0]);
+    }
+  });
+};
+
 exports.updateUserByPatch = function(userId, patch, afterUpdate) {
   exports.getUserById(userId, function(oldUser) {
     jsonpatch.apply(oldUser, patch);

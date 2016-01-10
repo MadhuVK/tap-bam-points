@@ -1,6 +1,10 @@
 #Autosave files
 *~
 
+#Packages
+packages/
+
+
 # Build/test output
 obj
 bin

@@ -19,6 +19,7 @@ firstName       VARCHAR(255)        NOT NULL DEFAULT '',
 barcodeHash     VARCHAR(255)        NOT NULL DEFAULT '',
 
 INDEX(id),
+INDEX(barcodeHash),
 PRIMARY KEY (id)
 
 ) ENGINE=INNODB; 
