@@ -14,7 +14,7 @@ router.get('/me', function(req, res) {
     data.getUserAttendanceHistory(USER, function(history) {
       user.history = history;
       pointStats = historyAnalyze(history, user.memberStatus);
-      res.render('user', { title: 'Your TBP profile', user: user, pointStats: pointStats});
+      res.render('user.html', { title: 'Your TBP profile', user: user, pointStats: pointStats});
     });
   });
 });
