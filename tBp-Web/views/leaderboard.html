@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title><%= title %></title>
+		<link rel="stylesheet" href="/stylesheets/leaderboard.css">
+    </head>
+
+    <body>
+   		<table id="leaderboard">
+   			<thead>
+   				<th>Name</th>
+   				<th>Points</th>
+   			</thead>
+
+			<% for (user of users.sort(function (a, b) {
+				return a.points.total - b.points.total;
+				}).reverse()) { %>
+			<tr>
+				<td><%= user.firstName %> <% user.lastName %></td>
+				<td><%= user.points.total %></td>
+			</tr>
+			<% } %>
+		</table>
+	</body>
+</html>
