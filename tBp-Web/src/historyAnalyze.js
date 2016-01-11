@@ -22,15 +22,17 @@ function analyze(history, requirements) {
   var totalPoints = getTotalPoints(pointTypeTotals);
 
   var result = [];
-  for (var type of Object.keys(eventTypes)) {
-    var total = pointTypeTotals.get(type);
-    var required = requirements.eventType[type];
-    result.push({
-      type: type,
-      total: total,
-      required: required,
-      fulfilled: total >= required
-    });
+  if (requirements.eventType !== null) {
+    for (var type in requirements.eventType) {
+      var total = pointTypeTotals.get(type);
+      var required = requirements.eventType[type];
+      result.push({
+        type: type,
+        total: total,
+        required: required,
+        fulfilled: total >= required
+      });
+    }
   }
 
   result.push({
@@ -54,7 +56,8 @@ function getPointTypeTotals(history) {
 
 function initPointsMap() {
   var map = new Map();
-  Object.keys(eventTypes).forEach(function (type) { map.set(type, 0); });
+  for (type in eventTypes)
+    map.set(type, 0);
   return map;
 }
 
