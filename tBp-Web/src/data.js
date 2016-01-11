@@ -59,6 +59,7 @@ exports.getUserById = function(id, afterGet) {
       if (err)
         throw err;
       var user = result[0];
+      delete user.valid;
       delete user.parentId;
       afterGet(user);
     }

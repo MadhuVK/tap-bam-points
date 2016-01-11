@@ -3,6 +3,7 @@ const router = express.Router();
 const data = require('../src/data.js');
 const historyAnalyze = require('../src/historyAnalyze.js');
 const session_login = require("../src/session_login.js");
+const computePoints = require('../src/computePoints.js');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -25,6 +26,21 @@ router.get('/me', function(req, res) {
   });
 });
 
+router.get('/leaderboard', function(req, res) {
+  data.getUsers('tbp', function(users) {
+    computePoints(undefined, function(points) {
+      var lookup = {};
+      for (var i = 0; i < users.length; i++) {
+        lookup[users[i].id] = i;
+      }
+
+      // Tack on points data to list of user objects
+      points.forEach(pointRecord => users[lookup[pointRecord.id]].points = pointRecord);
+
+      res.render('leaderboard.html', { title: 'Leaderboard', users: users});
+    });
+  });
+});
 
 router.get('/admin', adminLogin); // Generic catch all that will be used by most people
 router.post('/admin', validateAdminLogin);
