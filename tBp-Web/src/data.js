@@ -86,6 +86,18 @@ exports.getUserByBarcode = function(bcode, afterGet) {
   );
 };
 
+exports.getUserIdByHash = function(hash, afterGet) {
+  connection.query("SELECT id FROM user WHERE barcodeHash = ? AND user.valid = true", [hash], function(err, result) {
+    if (err) {
+      throw err;
+    }
+    if (result.length == 0) {
+      afterGet( {id: -1} );
+    } else {
+      afterGet(result[0]);
+    }
+  });
+};
 
 exports.updateUserByPatch = function(userId, patch, afterUpdate) {
   exports.getUserById(userId, function(oldUser) {
@@ -182,6 +194,17 @@ function insertEventDetails(event, parentId, afterAdd) {
     }
   );
 }
+
+exports.getEventsNotAttendedByUserID = function(id, afterGet) {
+  connection.query(
+      "SELECT * FROM event where id not in (SELECT eventID from user_event where userId = ?) and valid",
+      [id],
+      function(err, result) {
+        if(err)
+          throw err;
+        afterGet(result)
+      });
+};
 
 exports.getEventById = function(id, afterGet) {
   connection.query(

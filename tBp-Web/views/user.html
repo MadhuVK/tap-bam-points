@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title><%= title %></title>
+        <link rel="stylesheet" href="/stylesheets/style.css">
+    </head>
+
+    <body>
+        <section id="top">
+            <div id="bio">
+                <div id="bio-name">
+                    <h1><%= user.firstName %> <%= user.lastName %></h1>
+                </div>
+                <div id="bio-details">
+                    <span><%= user.memberStatus %>, <%= user.house %> house</span>
+                </div>
+            </div>
+
+            <div id="point-stats-div">
+                <table id="point-stats">
+                    <thead>
+                        <th>Event Type</th>
+                        <th class="right">Total</th>
+                        <th class="right">Required</th>
+                    </thead>
+
+                    <% pointStats.forEach(function (stat) { %>
+                    <% if (stat.fulfilled) { %>
+                    <tr class="fulfilled">
+                        <td><%= stat.type %></td>
+                        <td class="right"><%= stat.total %></td>
+                        <td class="right"><%= stat.required %></td>
+                    <% } else { %>
+
+                    <tr class="unfulfilled">
+                        <td><%= stat.type %></td>
+                        <td class="right"><%= stat.total %></td>
+                        <td class="right"><%= stat.required %></td>
+                    </tr>
+                    <% } }) %>
+                </table>
+            </div>
+        </section>
+
+        <section id="events">
+            <h2>Events</h2>
+            <table id="history">
+                <thead>
+                    <th>Name</th>
+                    <th>Points</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                </thead>
+
+                <tbody>
+                    <% if (user.history.length > 0) { %>
+                    <% user.history.forEach(function (event) { %>
+                    <tr>
+                        <td><%= event.name %></td>
+                        <td class="center"><%= event.points %></td>
+                        <td><%= event.type %></td>
+                        <td><%= event.datetime %></td>
+                    </tr>
+                    <% }) } else { %>
+                    <span>No events attended</span>
+                    <% } %>
+                </tbody>
+            </table>
+        </section>
+    </body>
+</html>
