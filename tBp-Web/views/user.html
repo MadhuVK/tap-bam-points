@@ -67,5 +67,17 @@
                 </tbody>
             </table>
         </section>
+
+        <section id="addevent">
+            <h2>Add Event</h2>
+            <form action="add_user_event" method="post">
+                <input type="hidden" name="u_id" value= <%=user.id %> >
+                <select name="addEventID">
+                    <% eventsAdd.forEach(function (event) { %>
+                    <option value= < %event.id %>> <% event.name %> </option>
+                    <% }) %>
+                </select>
+            </form>
+        </section>
     </body>
 </html>
