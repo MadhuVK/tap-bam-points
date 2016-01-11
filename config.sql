@@ -38,7 +38,7 @@ PRIMARY KEY (id)
 CREATE TABLE tbp_user (
 parentId        INT                             NOT NULL,
 house           ENUM('red', 'green', 'blue')    NOT NULL,
-memberStatus    ENUM('active', 'inactive', 'initiate', 'officer') NOT NULL,
+memberStatus    ENUM('initiate', 'member', 'officer') NOT NULL,
 
 PRIMARY KEY (parentId),
 FOREIGN KEY (parentId) REFERENCES user(id) ON DELETE CASCADE
