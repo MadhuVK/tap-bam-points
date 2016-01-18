@@ -15,14 +15,14 @@ var people = [
     "lastName": "D",
     "barcodeHash": "456",
     "house": "blue",
-    "memberStatus": "active"
+    "memberStatus": "member"
   },
   {
     "firstName": "Mad",
     "lastName": "Brown Dog",
     "barcodeHash": "789",
     "house": "red",
-    "memberStatus": "inactive"
+    "memberStatus": "member"
   },
   {
     "firstName": "Spencer",
