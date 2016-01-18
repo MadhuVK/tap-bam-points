@@ -72,14 +72,20 @@
 
         <section id="addevent">
             <h2>Add Event</h2>
-            <form action="add_user_event" method="post">
+
+            <form action="add_user_event" method="post" name="addEvent">
                 <input type="hidden" name="u_id" value= <%=user.id %> >
-                <select name="addEventID">
-                    <% eventsAdd.forEach(function (event) { %>
-                    <option value= < %event.id %>> <% event.name %> </option>
+                Event: <select name="addEventId">
+                    <% unattendedEvents.forEach( function (event) { %>
+                    <%var eDate = new Date(event.datetime) %>
+                    <option value="<%= event.id%>"><%= event.name%> <%= eDate.toDateString()%></option>
                     <% }) %>
-                </select>
+                </select> <br>
+
+                Points: <input type="number" name="points" min="0.5" max ="5" step="0.5" value="1"> <br>
+                <input type="submit" value="Add">
             </form>
+
         </section>
     </body>
 </html>

@@ -15,12 +15,9 @@ router.get('/me', function(req, res) {
   data.getUserById(USER, function(user) {
     data.getUserAttendanceHistory(USER, function(history) {
       data.getEventsNotAttendedByUserID(user.id, function(events) {
-        console.log(events);
         user.history = history;
-        console.log(user);
-        console.log(user.memberStatus);
         pointStats = historyAnalyze(history, user.memberStatus);
-        res.render('user.html', {title: 'Your TBP profile', user: user, pointStats: pointStats, eventsAdd:events});
+        res.render('user.html', {title: 'Your TBP profile', user: user, pointStats: pointStats, unattendedEvents:events});
       });
     });
   });
@@ -196,8 +193,28 @@ function addUsertoEvent(req, res) {
   });
 }
 
+router.post('/add_user_event', addEventToUser);
 function addEventToUser(req, res) {
   var body = req.body;
+  var e_id = body["addEventId"];
+  var u_id = body["u_id"];
+  var points = body["points"];
+
+  data.getEventById(e_id, function(e) {
+
+    var attendance = {
+      "id": e.id,
+      "name": e.name,
+      "datetime": e.datetime,
+      "points": points,
+      "officer": e.officer,
+      "type": e.type
+    };
+
+    data.addUserToEvent(u_id, attendance, function() {
+      res.redirect('/me');
+    });
+  });
 }
 
 module.exports = router;
