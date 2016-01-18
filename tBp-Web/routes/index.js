@@ -24,6 +24,8 @@ router.get('/me', function(req, res) {
 router.get('/admin', adminLogin); // Generic catch all that will be used by most people
 router.post('/admin', validateAdminLogin);
 
+router.post("/mobile_login", validateMobileLogin);
+
 // TODO: Need to do Cookie Session Access thingies to check if logged in.
 router.get('/admin_login', adminLogin);
 router.get('/admin_console', adminConsole);
@@ -41,6 +43,12 @@ function adminLogin(req, res) {
   }
 }
 
+function validateMobileLogin(req, res) {
+  var valid = session_login.login_admin("tbp@ucsd.edu", req.body["pass_hash"]);
+
+  res.status(200).json(valid);
+}
+
 function userLogin(req, res) {
   var loggedIn = false;
   if (loggedIn) {
@@ -53,7 +61,7 @@ function userLogin(req, res) {
 function validateAdminLogin(req, res) {
   session_login.validate_captcha(req, session_login.captchaSecret, function onValidate(valid_captcha) {
     if (valid_captcha) {
-      if (session_login.login_admin(req.body["user"], req.body["password"])) {
+      if (session_login.login_admin(req.body["user"], session_login.hash(req.body["password"]))) {
         res.redirect("/admin_console");
       } else {
         res.redirect("/admin_login");
@@ -65,7 +73,7 @@ function validateAdminLogin(req, res) {
 }
 
 function validateUserLogin(req, res) {
-  session_login.login_user(req.body["password"], function onLogin(userId) {
+  session_login.login_user(session_login.hash(req.body["password"]), function onLogin(userId) {
 
     console.log(userId);
 
