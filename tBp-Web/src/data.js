@@ -122,11 +122,11 @@ function updateUser(newUser, afterUpdate) {
 }
 
 exports.getUserAttendanceHistory = function(userId, afterGet) {
-  var fields = "event.id, name, points, type, datetime, eventPatch";
+  var fields = "userId, event.id, name, points, type, datetime, eventPatch";
   connection.query(
     "SELECT " + fields + " FROM event JOIN tbp_event JOIN user_event " +
     "WHERE event.id = tbp_event.parentId AND event.id = user_event.eventId " +
-    "AND event.valid = true AND user_event.valid = true",
+    "AND userId = " + userId + " AND event.valid = true AND user_event.valid = true",
     function (err, history) {
       if (err)
         throw err;

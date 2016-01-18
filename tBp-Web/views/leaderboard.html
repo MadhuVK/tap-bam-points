@@ -10,14 +10,22 @@
    		<table id="leaderboard">
    			<thead>
    				<th>Name</th>
-   				<th>Points</th>
+   				<th>Member Type</th>
+   				<th>Academic</th>
+   				<th>Community Service</th>
+   				<th>Social</th>
+   				<th>Total</th>
    			</thead>
 
 			<% for (user of users.sort(function (a, b) {
 				return a.points.total - b.points.total;
 				}).reverse()) { %>
 			<tr>
-				<td><%= user.firstName %> <% user.lastName %></td>
+				<td><%= user.firstName %> <%= user.lastName %></td>
+				<td><%= user.memberStatus %></td>
+				<td><%= user.points.academic %></td>
+				<td><%= user.points.community %></td>
+				<td><%= user.points.social %></td>
 				<td><%= user.points.total %></td>
 			</tr>
 			<% } %>
