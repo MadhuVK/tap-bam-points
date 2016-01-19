@@ -1,47 +1,68 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title><%= title %></title>
-        <link rel="stylesheet" href="/stylesheets/style.css">
-    </head>
 
-    <body>
+<head>
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+
+<body>
+    <div id="me-page">
         <section id="top">
             <div id="bio">
                 <div id="bio-name">
-                    <h1><%= user.firstName %> <%= user.lastName %></h1>
+                    <h1>
+                        <%= user.firstName %>
+                            <%= user.lastName %>
+                    </h1>
                 </div>
                 <div id="bio-details">
-                    <span><%= user.memberStatus %>, <%= user.house %> house</span>
+                    <span>
+                        <%= user.memberStatus %>,
+                            <%= user.house %> house</span>
                 </div>
             </div>
 
             <% if (pointStats.length > 0) { %>
-            <div id="point-stats-div">
-                <table id="point-stats">
-                    <thead>
-                        <th>Event Type</th>
-                        <th class="right">Total</th>
-                        <th class="right">Required</th>
-                    </thead>
+                <div id="point-stats-div">
+                    <table id="point-stats">
+                        <thead>
+                            <th>Event Type</th>
+                            <th class="right">Total</th>
+                            <th class="right">Required</th>
+                        </thead>
 
-                    <% pointStats.forEach(function (stat) { %>
-                    <% if (stat.fulfilled) { %>
-                    <tr class="fulfilled">
-                        <td><%= stat.type %></td>
-                        <td class="right"><%= stat.total %></td>
-                        <td class="right"><%= stat.required %></td>
-                    <% } else { %>
+                        <% pointStats.forEach(function (stat) { %>
+                            <% if (stat.fulfilled) { %>
+                                <tr class="fulfilled">
+                                    <td>
+                                        <%= stat.type %>
+                                    </td>
+                                    <td class="right">
+                                        <%= stat.total %>
+                                    </td>
+                                    <td class="right">
+                                        <%= stat.required %>
+                                    </td>
+                                    <% } else { %>
 
-                    <tr class="unfulfilled">
-                        <td><%= stat.type %></td>
-                        <td class="right"><%= stat.total %></td>
-                        <td class="right"><%= stat.required %></td>
-                    </tr>
-                    <% } }) %>
-                </table>
-            </div>
-            <% } %>
+                                        <tr class="unfulfilled">
+                                            <td>
+                                                <%= stat.type %>
+                                            </td>
+                                            <td class="right">
+                                                <%= stat.total %>
+                                            </td>
+                                            <td class="right">
+                                                <%= stat.required %>
+                                            </td>
+                                        </tr>
+                                        <% } }) %>
+                    </table>
+                </div>
+                <% } %>
         </section>
 
         <section id="events">
@@ -56,16 +77,26 @@
 
                 <tbody>
                     <% if (user.history.length > 0) { %>
-                    <% user.history.forEach(function (event) { %>
-                    <tr>
-                        <td><%= event.name %></td>
-                        <td class="center"><%= event.points %></td>
-                        <td><%= event.type %></td>
-                        <td><%= event.datetime %></td>
-                    </tr>
-                    <% }) } else { %>
-                    <tr><td colspan="6" class="center">No events attended</tr></td>
-                    <% } %>
+                        <% user.history.forEach(function (event) { %>
+                            <tr>
+                                <td>
+                                    <%= event.name %>
+                                </td>
+                                <td class="center">
+                                    <%= event.points %>
+                                </td>
+                                <td>
+                                    <%= event.type %>
+                                </td>
+                                <td>
+                                    <%= event.datetime %>
+                                </td>
+                            </tr>
+                            <% }) } else { %>
+                                <tr>
+                                    <td colspan="6" class="center">No events attended</tr>
+                                </td>
+                                <% } %>
                 </tbody>
             </table>
         </section>
@@ -74,18 +105,23 @@
             <h2>Add Event</h2>
 
             <form action="add_user_event" method="post" name="addEvent">
-                <input type="hidden" name="u_id" value= <%=user.id %> >
-                Event: <select name="addEventId">
+                <input type="hidden" name="u_id" value=< %=user.id %> > Event:
+                <select name="addEventId">
                     <% unattendedEvents.forEach( function (event) { %>
-                    <%var eDate = new Date(event.datetime) %>
-                    <option value="<%= event.id%>"><%= event.name%> <%= eDate.toDateString()%></option>
-                    <% }) %>
-                </select> <br>
-
-                Points: <input type="number" name="points" min="0.5" max ="5" step="0.5" value="1"> <br>
+                        <%var eDate = new Date(event.datetime) %>
+                            <option value="<%= event.id%>">
+                                <%= event.name%>
+                                    <%= eDate.toDateString()%>
+                            </option>
+                            <% }) %>
+                </select>
+                <br> Points:
+                <input type="number" name="points" min="0.5" max="5" step="0.5" value="1">
+                <br>
                 <input type="submit" value="Add">
             </form>
-
         </section>
-    </body>
+    </div>
+</body>
+
 </html>
