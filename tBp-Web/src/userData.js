@@ -1,14 +1,19 @@
-var dbClient = require('./dbClient.js');
-var connection = dbClient.connection;
+var db = require('./dbClient.js');
 var jsonpatch = require('fast-json-patch');
 
-exports.getUsers = function(group, afterGet) {
-  var groupTable = group + "_user";
-  connection.query("SELECT * FROM user JOIN ?? WHERE user.id = ?? AND valid = true",
-    [groupTable, groupTable + ".parentId"],
-    function(err, rows, fields) {
-      if (err) throw err;
-      afterGet(rows);
+exports.getUsers = function (group) {
+  return db(connection => {
+    return new Promise((resolve, reject) => {
+      var groupTable = group + "_user";
+      connection.query(
+        "SELECT * FROM user JOIN ?? WHERE user.id = ?? AND valid = true",
+        [groupTable, groupTable + ".parentId"],
+        (err, rows, fields) => {
+          if (err) reject(err);
+          resolve(rows);
+        }
+      );
+    });
   });
 };
 

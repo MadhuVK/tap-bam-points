@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const data = require('../src/data.js');
+//const data = require('../src/data.js');
 const historyAnalyze = require('../src/historyAnalyze.js');
 const session_login = require("../src/session_login.js");
 const points = require('../src/points.js');

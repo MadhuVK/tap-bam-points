@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var data = require('../src/data.js');
+//var data = require('../src/data.js');
 
 router.route('/')
   .get(function (req, res) {

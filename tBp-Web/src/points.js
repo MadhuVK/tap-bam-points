@@ -1,7 +1,6 @@
 // Compute point standings for an individual or for all users
 
-var dbClient = require('./dbClient.js');
-var connection = dbClient.connection;
+var db = require('./dbClient.js');
 var jsonpatch = require('fast-json-patch');
 var eventTypes = require('./eventTypes.js');
 

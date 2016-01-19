@@ -11,7 +11,7 @@ var errorRoutes = require('./routes/errors');
 
 var engines = require('consolidate')
 
-var data = require('./src/data.js');
+//var data = require('./src/data.js');
 
 var app = express();
 

@@ -1,12 +1,11 @@
 var express = require('express');
 var router = express.Router();
-var data = require('../src/data.js');
+var data = require('../src/userData.js');
 
 router.route('/')
   .get(function (req, res) {
-    data.getUsers("tbp", function(users) {
-      res.status(200).json(users);
-    });
+    data.getUsers("tbp")
+    .then(users => res.status(200).json(users));
   })
 
   .post(function (req, res) {

@@ -1,4 +1,4 @@
-const data = require("./data.js");
+//const data = require("./data.js");
 const crypto = require("crypto");
 const request = require('request');
 
