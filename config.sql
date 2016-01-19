@@ -49,7 +49,8 @@ CREATE TABLE tbp_event (
 parentId        INT                 NOT NULL,
 points          INT                 NOT NULL DEFAULT 0,
 officer         VARCHAR(255)        NOT NULL DEFAULT 'atonyguy',
-type            ENUM('academic', 'social', 'community', 'wildcard') NOT NULL,
+type            ENUM('academic', 'social', 'community') NOT NULL,
+wildcard        BOOLEAN             NOT NULL DEFAULT False,
 
 PRIMARY KEY (parentId),
 FOREIGN KEY (parentId) REFERENCES event(id) ON DELETE CASCADE
@@ -60,7 +61,8 @@ CREATE TABLE user_event (
 userId      INT             NOT NULL,
 eventId     INT             NOT NULL,
 valid       BOOLEAN         NOT NULL DEFAULT True,
-eventPatch  VARCHAR(1024)   NOT NULL,
+pointsEarned INT            NOT NULL,
+type        ENUM('academic', 'social', 'community') NOT NULL,
 
 PRIMARY KEY (userId, eventId),
 INDEX (userId, eventId),
