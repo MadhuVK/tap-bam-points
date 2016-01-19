@@ -1,0 +1,8 @@
+#point-table {
+	border-spacing: 10px 5px;
+}
+
+.point-cell {
+	text-align: right;
+	padding-right: 50px;
+}

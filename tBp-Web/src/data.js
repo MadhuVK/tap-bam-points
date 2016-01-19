@@ -66,6 +66,27 @@ exports.getUserById = function(id, afterGet) {
   );
 };
 
+exports.getUserByBarcode = function(bcode, afterGet) {
+  var bhash = bcode;
+  connection.query(
+      "SELECT * FROM user JOIN tbp_user WHERE user.barcodeHash = ? AND user.id = tbp_user.parentId AND user.valid = true",
+      [bhash],
+      function(err, result) {
+        if (err)
+          throw err;
+        var user;
+        if(result.length != 0) {
+          user = result[0];
+          delete user.parentId;
+        }
+        else
+          user = result;
+
+        afterGet(user);
+      }
+  );
+};
+
 exports.getUserIdByHash = function(hash, afterGet) {
   connection.query("SELECT id FROM user WHERE barcodeHash = ? AND user.valid = true", [hash], function(err, result) {
     if (err) {
@@ -101,11 +122,11 @@ function updateUser(newUser, afterUpdate) {
 }
 
 exports.getUserAttendanceHistory = function(userId, afterGet) {
-  var fields = "event.id, name, points, type, datetime, eventPatch";
+  var fields = "userId, event.id, name, points, type, datetime, eventPatch";
   connection.query(
     "SELECT " + fields + " FROM event JOIN tbp_event JOIN user_event " +
     "WHERE event.id = tbp_event.parentId AND event.id = user_event.eventId " +
-    "AND event.valid = true AND user_event.valid = true",
+    "AND userId = " + userId + " AND event.valid = true AND user_event.valid = true",
     function (err, history) {
       if (err)
         throw err;
@@ -175,6 +196,17 @@ function insertEventDetails(event, parentId, afterAdd) {
   );
 }
 
+exports.getEventsNotAttendedByUserID = function(id, afterGet) {
+  connection.query(
+      "SELECT * FROM event where id not in (SELECT eventID from user_event where userId = ?) and valid",
+      [id],
+      function(err, result) {
+        if(err)
+          throw err;
+        afterGet(result)
+      });
+};
+
 exports.getEventById = function(id, afterGet) {
   connection.query(
     "SELECT * FROM event JOIN tbp_event WHERE event.id = ? AND event.id = tbp_event.parentId AND valid = true",
@@ -213,7 +245,7 @@ function updateEvent(newEvent, afterUpdate) {
 // afterGet : function(attendees : Object[])
 exports.getEventAttendees = function(id, afterGet) {
   connection.query(
-    "SELECT user.id, firstName, lastName FROM user_event JOIN user WHERE user_event.eventId = ? AND user_event.valid = true",
+    "SELECT user.id, firstName, lastName FROM user_event JOIN user ON user.id = user_event.userId WHERE user_event.eventId = ? AND user_event.valid = true",
     [id],
     function(err, result) {
       if (err)

@@ -64,10 +64,28 @@
                         <td><%= event.datetime %></td>
                     </tr>
                     <% }) } else { %>
-                    <span>No events attended</span>
+                    <tr><td colspan="6" class="center">No events attended</tr></td>
                     <% } %>
                 </tbody>
             </table>
+        </section>
+
+        <section id="addevent">
+            <h2>Add Event</h2>
+
+            <form action="add_user_event" method="post" name="addEvent">
+                <input type="hidden" name="u_id" value= <%=user.id %> >
+                Event: <select name="addEventId">
+                    <% unattendedEvents.forEach( function (event) { %>
+                    <%var eDate = new Date(event.datetime) %>
+                    <option value="<%= event.id%>"><%= event.name%> <%= eDate.toDateString()%></option>
+                    <% }) %>
+                </select> <br>
+
+                Points: <input type="number" name="points" min="0.5" max ="5" step="0.5" value="1"> <br>
+                <input type="submit" value="Add">
+            </form>
+
         </section>
     </body>
 </html>

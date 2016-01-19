@@ -3,7 +3,7 @@ const router = express.Router();
 const data = require('../src/data.js');
 const historyAnalyze = require('../src/historyAnalyze.js');
 const session_login = require("../src/session_login.js");
-const computePoints = require('../src/computePoints.js');
+const points = require('../src/points.js');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -11,27 +11,21 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/me', function(req, res) {
-  const USER = 1;
+  const USER = 2;
   data.getUserById(USER, function(user) {
     data.getUserAttendanceHistory(USER, function(history) {
-      user.history = history;
-      pointStats = historyAnalyze(history, user.memberStatus);
-      res.render('user.html', { title: 'Your TBP profile', user: user, pointStats: pointStats});
+      data.getEventsNotAttendedByUserID(user.id, function(events) {
+        user.history = history;
+        pointStats = historyAnalyze(history, user.memberStatus);
+        res.render('user.html', {title: 'Your TBP profile', user: user, pointStats: pointStats, unattendedEvents:events});
+      });
     });
   });
 });
 
 router.get('/leaderboard', function(req, res) {
   data.getUsers('tbp', function(users) {
-    computePoints(undefined, function(points) {
-      var lookup = {};
-      for (var i = 0; i < users.length; i++) {
-        lookup[users[i].id] = i;
-      }
-
-      // Tack on points data to list of user objects
-      points.forEach(pointRecord => users[lookup[pointRecord.id]].points = pointRecord);
-
+    points.addDataToUsers(users, function () {
       res.render('leaderboard.html', { title: 'Leaderboard', users: users});
     });
   });
@@ -103,12 +97,14 @@ function validateUserLogin(req, res) {
 }
 
 function adminConsole(req, res) {
-  data.getUsers('tbp', function(retreivedUsers) {
+  data.getUsers('tbp', function(retrievedUsers) {
     data.getEvents('tbp', function(retrievedEvents) {
-      res.render('admin_console.html',
-          { title: 'Admin Console',
-            users: retreivedUsers,
-            events: retrievedEvents});
+      points.addDataToUsers(retrievedUsers, function () {
+        res.render('admin_console.html',
+            { title: 'Admin Console',
+              users: retrievedUsers,
+              events: retrievedEvents});
+      });
     });
   });
 }
@@ -146,11 +142,11 @@ router.post('/event_delete', eventDelete);
 
 function eventDelete(req, res) {
   var body = req.body;
-  var e_id = body["id"];
-  console.log(e_id);
-  data.getEventAttendees(e_id, function(retrievedUsers) {
+  var id = body["d_id"];
+  console.log(id);
+  data.getEventAttendees(id, function(retrievedUsers) {
     if (retrievedUsers.length == 0) {
-      data.deleteEventById(e_id,
+      data.deleteEventById(id,
           function() {
             res.redirect("/admin_console");
           });
@@ -163,6 +159,64 @@ function eventDelete(req, res) {
   });
 
 
+}
+
+router.post('/event_view', eventView);
+
+function eventView(req, res) {
+  var body = req.body;
+  var id = body["v_id"];
+  data.getEventById(id, function(retrievedEvent) {
+    data.getEventAttendees(id, function(retrievedUsers) {
+      res.render('event_view.html', {event: retrievedEvent, users: retrievedUsers, errCode :false});
+    });
+  });
+}
+
+router.post('/add_event_user', addUsertoEvent);
+
+function addUsertoEvent(req, res) {
+  var body = req.body;
+  var e_id = body["e_id"];
+  var b_code = body["b_code"];
+  var e_code = true;
+  console.log(body);
+
+  data.getUserByBarcode(b_code, function(rUser) {
+    console.log(rUser);
+    data.getEventById(e_id, function(retrievedEvent) {
+      if(rUser.length !=0) {
+        e_code = false;
+        data.addUserToEvent(rUser.id, retrievedEvent, function(){
+        });
+      }
+      res.redirect('/event_view', {v_id:e_id});
+    });
+  });
+}
+
+router.post('/add_user_event', addEventToUser);
+function addEventToUser(req, res) {
+  var body = req.body;
+  var e_id = body["addEventId"];
+  var u_id = body["u_id"];
+  var points = body["points"];
+
+  data.getEventById(e_id, function(e) {
+
+    var attendance = {
+      "id": e.id,
+      "name": e.name,
+      "datetime": e.datetime,
+      "points": points,
+      "officer": e.officer,
+      "type": e.type
+    };
+
+    data.addUserToEvent(u_id, attendance, function() {
+      res.redirect('/me');
+    });
+  });
 }
 
 module.exports = router;

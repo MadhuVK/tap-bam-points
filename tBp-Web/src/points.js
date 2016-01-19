@@ -6,11 +6,24 @@ var jsonpatch = require('fast-json-patch');
 var eventTypes = require('./eventTypes.js');
 
 const unique = function(value, index, arr) {return arr.indexOf(value) === index;};
-  
+
+// Tack on points data to array of user objects
+exports.addDataToUsers = function (users, callback) {
+  exports.compute(undefined, function(points) {
+    var lookup = {};
+    for (var i = 0; i < users.length; i++) {
+      lookup[users[i].id] = i;
+    }
+
+    points.forEach(pointRecord => users[lookup[pointRecord.id]].points = pointRecord);
+    callback(users);
+  });
+};
+
 // id defined: {'total': Number, 'academic': Number, 'social': Number, etc.}
 // id undefined: [{'id': Number, 'total': Number, 'academic': Number, etc.}, ...]
 // TODO: filter query for invalid events
-module.exports = function(userId, callback) {
+exports.compute = function (userId, callback) {
   var fields = "user.id, tbp_event.points, tbp_event.type, user_event.eventPatch";
   connection.query(
     "SELECT " + fields + " " +
@@ -55,7 +68,7 @@ function prepAllPoints(history) {
 function prepIndividualPoints(history) {
   points = {total: 0};
 
-  for (var type of Object.keys(eventTypes)) {
+  for (var type in eventTypes) {
     eventsOfSameType = history.filter(rec => rec.type === type);
     points[type] = eventsOfSameType.reduce((prev, curr) => prev + curr.points, 0);
     points.total += points[type];

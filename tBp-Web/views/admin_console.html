@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/admin_console.css">
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
     <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
     <title><% title %></title>
@@ -23,15 +24,15 @@
     </ul>
 
     <div id="user-tab">
-        <table>
+        <table id="point-table">
             <thead>
             <tr>
-                <th width="30%">Name</th>
-                <th width="30%">Member Type</th>
-                <th width="10%">CS Points</th>
-                <th width="10%">Academic Points</th>
-                <th width="10%">Social Points</th>
-                <th width="10%">Total Points</th>
+                <th width="20%">Name</th>
+                <th width="20%">Member Type</th>
+                <th width="15%">Academic</th>
+                <th width="15%">Community Service</th>
+                <th width="15%">Social</th>
+                <th width="15%">Total</th>
             </tr>
             </thead>
             <tbody>
@@ -41,11 +42,10 @@
                     <% var name = user.firstName + ' ' + user.lastName %>
                     <td> <%= name %> </td>
                     <td> <%= user.memberStatus %> </td>
-                    <td> <%= user.memberStatus %> </td>
-                    <td> <%= user.memberStatus %> </td>
-                    <td> <%= user.memberStatus %> </td>
-                    <td> <%= user.memberStatus %> </td>
-                    <td> <%= user.memberStatus %> </td>
+                    <td class="point-cell"> <%= user.points.academic %> </td>
+                    <td class="point-cell"> <%= user.points.community %> </td>
+                    <td class="point-cell"> <%= user.points.social %> </td>
+                    <td class="point-cell"> <%= user.points.total %> </td>
                 </tr>
                 <% }) %>
             </tr>
@@ -73,8 +73,14 @@
                     <% date = new Date(d)%>
                     <td> <%= date.toDateString() %> </td>
                     <td>
+                        <form action="/event_view" method="post">
+                            <input type="hidden" name="v_id" value=<%= event.id %> >
+                            <input type="submit" value="View" name="viewEvent" >
+                        </form>
+                    </td>
+                    <td>
                         <form action="/event_delete" method="post">
-                            <input type="hidden" name="id" value=<%= event.id %> >
+                            <input type="hidden" name="d_id" value=<%= event.id %> >
                             <input type="submit" value="Delete" name="deleteEvent" >
                         </form>
                     </td>
