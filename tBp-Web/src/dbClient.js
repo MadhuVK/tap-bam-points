@@ -1,4 +1,5 @@
 var mysql = require('mysql');
+var config = require('../bin/config')[process.env.NODE_ENV]; 
 
 //TODO: Build up from metadata
 // May not need this anymore
@@ -24,16 +25,9 @@ var dbMap = {
 
 var totalConnections = 0;
 var totalEnqueues = 0;
-var connectOptions = {
-  connectionLimit: 50,
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: 'tBp'
-};
 
-var pool = mysql.createPool(connectOptions);
-var connection = mysql.createConnection(connectOptions);
+var pool = mysql.createPool(config.db_connection);
+var connection = mysql.createConnection(config.db_connection);
 
 exports.pool = pool;
 exports.connection = connection;

@@ -10,8 +10,7 @@ var eventRoutes = require('./routes/events');
 var errorRoutes = require('./routes/errors');
 
 var engines = require('consolidate')
-
-var data = require('./src/data.js');
+var config = require('./bin/config')[process.env.NODE_ENV]
 
 var app = express();
 
@@ -21,6 +20,7 @@ function baseSetup() {
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(cookieParser());
   app.use(express.static(path.join(__dirname, 'public')));
+  app.set('json spaces', 2);
 }
 
 function viewEngineSetup() {
@@ -28,51 +28,18 @@ function viewEngineSetup() {
   app.engine('html', require('ejs').__express); 
 }
 
+
+
 function routesSetup() {
-  app.set('json spaces', 2);
   app.use(errorRoutes);
   app.use('/', baseRoutes);
   app.use('/api/users', userRoutes);
   app.use('/api/events', eventRoutes);
 }
 
-/* START BLOCK TODO: Move to errors */
-
-/*
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
-
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err
-    });
-  });
-}
-
-// production error handler
-// no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
-  });
-});
-*/
-
-/* END BLOCK*/
-
 baseSetup();
 viewEngineSetup();
 routesSetup();
 
+app.config = config; 
 module.exports = app;
