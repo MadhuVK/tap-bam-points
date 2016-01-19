@@ -3,6 +3,7 @@
 
 #Packages
 packages/
+node_modules/
 
 
 # Build/test output
