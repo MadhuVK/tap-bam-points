@@ -2,112 +2,85 @@ const express = require('express');
 const router = express.Router();
 const data = require('../src/data.js');
 const historyAnalyze = require('../src/historyAnalyze.js');
-const session_login = require("../src/session_login.js");
+const auth_helper = require("../src/auth_helper");
 const points = require('../src/points.js');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-    res.render('index', { title: 'Express' });
+  if (req.session.logged_in) {
+    res.redirect('/me'); 
+  } else {
+    res.redirect('/leaderboard'); 
+  }
 });
 
 router.get('/me', function(req, res) {
-  const USER = 2;
-  data.getUserById(USER, function(user) {
-    data.getUserAttendanceHistory(USER, function(history) {
-      data.getEventsNotAttendedByUserID(user.id, function(events) {
-        user.history = history;
-        pointStats = historyAnalyze(history, user.memberStatus);
-        res.render('user.html', {title: 'Your TBP profile', user: user, pointStats: pointStats, unattendedEvents:events});
+  if (!req.session.logged_in) {
+    res.redirect('/leaderboard'); 
+  } else {
+    const USER = req.session.logged_in; 
+    data.getUserById(USER, function(user) {
+      data.getUserAttendanceHistory(USER, function(history) {
+        data.getEventsNotAttendedByUserID(user.id, function(events) {
+          user.history = history;
+          pointStats = historyAnalyze(history, user.memberStatus);
+          res.render('user.html', {
+            title: 'Your TBP profile', 
+            user: user, 
+            pointStats: pointStats, 
+            unattendedEvents: events
+          });
+        });
       });
     });
-  });
+  }
 });
 
 router.get('/leaderboard', function(req, res) {
   data.getUsers('tbp', function(users) {
     points.addDataToUsers(users, function () {
-      res.render('leaderboard.html', { title: 'Leaderboard', users: users});
+      res.render('leaderboard.html', { 
+        title: 'Leaderboard', 
+        users: users, 
+        logged_out: !req.session.logged_in
+      });
     });
   });
 });
 
-router.get('/admin', adminLogin); // Generic catch all that will be used by most people
-router.post('/admin', validateAdminLogin);
-
 router.post("/mobile_login", validateMobileLogin);
-
-// TODO: Need to do Cookie Session Access thingies to check if logged in.
-router.get('/admin_login', adminLogin);
-router.get('/admin_console', adminConsole);
-
-router.get('/login', userLogin);
-router.post('/login', validateUserLogin);
-
-
-function adminLogin(req, res) {
-  var loggedIn = false; // TODO
-  if (loggedIn) {
-    res.redirect("/admin_console");
-  } else {
-    res.render('admin_login.html', {sitekey: session_login.captchaSite});
-  }
-}
+router.post('/user_login', validateUserLogin);
 
 function validateMobileLogin(req, res) {
-  var valid = session_login.login_admin("tbp@ucsd.edu", req.body["pass_hash"]);
+  var valid = auth_helper.login_admin("tbp@ucsd.edu", req.body["pass_hash"]);
 
   res.status(200).json(valid);
 }
 
 function userLogin(req, res) {
-  var loggedIn = false;
+  var loggedIn = req.session.logged_in; 
   if (loggedIn) {
     res.redirect("/me");
   } else {
-    res.render("user_login.html", {});
+    res.redirect("/leaderboard"); 
   }
 }
 
-function validateAdminLogin(req, res) {
-  session_login.validate_captcha(req, session_login.captchaSecret, function onValidate(valid_captcha) {
-    if (valid_captcha) {
-      if (session_login.login_admin(req.body["user"], session_login.hash(req.body["password"]))) {
-        res.redirect("/admin_console");
-      } else {
-        res.redirect("/admin_login");
-      }
-    } else {
-      res.redirect("/admin_login");
-    }
-  });
-}
-
 function validateUserLogin(req, res) {
-  session_login.login_user(session_login.hash(req.body["password"]), function onLogin(userId) {
+  auth_helper.login_user(auth_helper.hash(req.body["password"]), function onLogin(userId) {
 
     console.log(userId);
 
     if (userId['id'] == -1) {
-      res.redirect("/login");
+      res.redirect("/leaderboard");
     } else {
       console.log(userId)
+      req.session.logged_in = userId['id']
       res.redirect("/me"); //TODO: Use userId to store session
     }
   });
 }
 
-function adminConsole(req, res) {
-  data.getUsers('tbp', function(retrievedUsers) {
-    data.getEvents('tbp', function(retrievedEvents) {
-      points.addDataToUsers(retrievedUsers, function () {
-        res.render('admin_console.html',
-            { title: 'Admin Console',
-              users: retrievedUsers,
-              events: retrievedEvents});
-      });
-    });
-  });
-}
 
 router.get('/event_create', eventForm);
 router.post('/event_create', createEvent);
@@ -157,8 +130,6 @@ function eventDelete(req, res) {
     }
 
   });
-
-
 }
 
 router.post('/event_view', eventView);

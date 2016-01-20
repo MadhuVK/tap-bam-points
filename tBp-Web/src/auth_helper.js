@@ -3,10 +3,8 @@ const crypto = require("crypto");
 const request = require('request');
 
 const captchaSite = "6LfuTg4TAAAAABkpca63EfsbuSIZk7egO8EYRIOG";
-exports.captchaSite = captchaSite;
-
 const captchaSecret = "6LfuTg4TAAAAAIKMgPpnkYEM6zcLhEbTB0oIqOnv";
-exports.captchaSecret = captchaSecret;
+
 
 exports.validate_captcha = function(req, captcha_secret, callback) {
     request.post(
@@ -41,7 +39,7 @@ exports.login_admin = function(user, pass_hash) {
 };
 
 exports.hash = function(data) {
-    return crypto.createHash('sha256').update(pass).digest('hex')
+    return crypto.createHash('sha256').update(data).digest('hex')
 }
 
 exports.login_user = function(pass_hash, afterLogin) {
@@ -50,4 +48,7 @@ exports.login_user = function(pass_hash, afterLogin) {
 
     data.getUserIdByHash(pass_hash.toLowerCase(), afterLogin);
 };
+
+exports.captchaSite = captchaSite;
+exports.captchaSecret = captchaSecret;
 
