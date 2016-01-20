@@ -200,7 +200,7 @@ function addEventToUser(req, res) {
   var body = req.body;
   var e_id = body["addEventId"];
   var u_id = body["u_id"];
-  var points = body["points"];
+  var points = Number(body["points"]);
 
   data.getEventById(e_id, function(e) {
 
