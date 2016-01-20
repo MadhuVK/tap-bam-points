@@ -99,7 +99,7 @@ function createEvent(req, res) {
   if (dateExp.test(date)) {
     data.addEvent({name:body["eventName"], datetime:dateTime, points:body["eventPoints"], officer:body["eventOfficer"], type:body["eventCategory"]},
         function(id) {
-          res.redirect("/admin_console")
+          res.redirect("/admin")
         });
 
   }
@@ -108,7 +108,6 @@ function createEvent(req, res) {
   }
 
 
-  //res.redirect('/admin_console');
 }
 
 router.post('/event_delete', eventDelete);
@@ -121,25 +120,26 @@ function eventDelete(req, res) {
     if (retrievedUsers.length == 0) {
       data.deleteEventById(id,
           function() {
-            res.redirect("/admin_console");
+            res.redirect("/admin");
           });
     }
     else {
       console.log("Event not empty")
-      res.redirect("/admin_console");
+      res.redirect("/admin");
     }
 
   });
 }
 
-router.post('/event_view', eventView);
+router.get('/event_view', eventView);
 
 function eventView(req, res) {
-  var body = req.body;
-  var id = body["v_id"];
+  var id = req.param('v_id');
   data.getEventById(id, function(retrievedEvent) {
     data.getEventAttendees(id, function(retrievedUsers) {
-      res.render('event_view.html', {event: retrievedEvent, users: retrievedUsers, errCode :false});
+      data.getEventNonAttendees(id, function(addUsers) {
+        res.render('event_view.html', {event: retrievedEvent, users: retrievedUsers, addUsers:addUsers, errCode: false});
+      });
     });
   });
 }
@@ -149,21 +149,27 @@ router.post('/add_event_user', addUsertoEvent);
 function addUsertoEvent(req, res) {
   var body = req.body;
   var e_id = body["e_id"];
-  var b_code = body["b_code"];
-  var e_code = true;
+  var points = Number(body["points"]);
+  var u_id = body["addUserId"];
   console.log(body);
 
-  data.getUserByBarcode(b_code, function(rUser) {
-    console.log(rUser);
-    data.getEventById(e_id, function(retrievedEvent) {
-      if(rUser.length !=0) {
-        e_code = false;
-        data.addUserToEvent(rUser.id, retrievedEvent, function(){
-        });
-      }
-      res.redirect('/event_view', {v_id:e_id});
+
+  data.getEventById(e_id, function(rEvent) {
+    var attendance = {
+      "id":rEvent.id,
+      "name":rEvent.name,
+      "datetime":rEvent.datetime,
+      "points":points,
+      "officer":rEvent.officer,
+      "type":rEvent.type
+    }
+    data.addUserToEvent(u_id, attendance, function(){
     });
+
+    var path = '?v_id=' + e_id;
+    res.redirect('/event_view' + path);
   });
+
 }
 
 router.post('/add_user_event', addEventToUser);

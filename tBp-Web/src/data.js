@@ -255,6 +255,17 @@ exports.getEventAttendees = function(id, afterGet) {
   );
 };
 
+exports.getEventNonAttendees = function(id, afterGet) {
+    connection.query(
+        "SELECT user.id, firstName, lastName FROM user where id not in (SELECT userId FROM user_event where eventID = ? and valid) and valid",
+        [id],
+        function(err, result) {
+            if(err)
+                throw err;
+            afterGet(result)
+        });
+};
+
 // afterAdd : function()
 exports.addUserToEvent = function(userId, event, afterAdd) {
   event.datetime = new Date(event.datetime);
