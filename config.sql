@@ -11,20 +11,35 @@ DROP DATABASE IF EXISTS tBp;
 CREATE DATABASE tBp;
 USE tBp;
 
-CREATE TABLE user (
+CREATE TABLE user_base (
 id              INT                 NOT NULL AUTO_INCREMENT,
 valid           BOOLEAN             NOT NULL DEFAULT True,
-lastName        VARCHAR(255)        NOT NULL DEFAULT '',
 firstName       VARCHAR(255)        NOT NULL DEFAULT '',
+lastName        VARCHAR(255)        NOT NULL DEFAULT '',
 barcodeHash     VARCHAR(255)        NOT NULL DEFAULT '',
 
 INDEX(id),
 INDEX(barcodeHash),
 PRIMARY KEY (id)
 
-) ENGINE=INNODB; 
+) ENGINE=INNODB;
 
-CREATE TABLE event (
+CREATE TABLE user_extensions (
+parentId        INT                             NOT NULL,
+house           ENUM('red', 'green', 'blue')    NOT NULL,
+userType        ENUM('initiate', 'member', 'officer') NOT NULL,
+
+PRIMARY KEY (parentId),
+FOREIGN KEY (parentId) REFERENCES user_base(id) ON DELETE CASCADE
+
+) ENGINE=INNODB;
+
+CREATE OR REPLACE VIEW users AS
+SELECT id, firstName, lastName, barcodeHash, house, userType, valid
+FROM user_base INNER JOIN user_extensions
+ON user_base.id = user_extensions.parentId;
+
+CREATE TABLE event_base (
 id              INT                 NOT NULL AUTO_INCREMENT,
 valid           BOOLEAN             NOT NULL DEFAULT True,
 name            VARCHAR(255)        NOT NULL DEFAULT '',
@@ -35,38 +50,33 @@ PRIMARY KEY (id)
 
 ) ENGINE=INNODB; 
 
-CREATE TABLE tbp_user (
-parentId        INT                             NOT NULL,
-house           ENUM('red', 'green', 'blue')    NOT NULL,
-memberStatus    ENUM('initiate', 'member', 'officer') NOT NULL,
-
-PRIMARY KEY (parentId),
-FOREIGN KEY (parentId) REFERENCES user(id) ON DELETE CASCADE
-
-) ENGINE=INNODB; 
-
-CREATE TABLE tbp_event (
+CREATE TABLE event_extensions (
 parentId        INT                 NOT NULL,
 points          INT                 NOT NULL DEFAULT 0,
 officer         VARCHAR(255)        NOT NULL DEFAULT 'atonyguy',
 type            ENUM('academic', 'social', 'community') NOT NULL,
-wildcard        BOOLEAN             NOT NULL DEFAULT False,
+wildcard        BOOLEAN             NOT NULL DEFAULT FALSE,
 
 PRIMARY KEY (parentId),
-FOREIGN KEY (parentId) REFERENCES event(id) ON DELETE CASCADE
+FOREIGN KEY (parentId) REFERENCES event_base(id) ON DELETE CASCADE
 
 ) ENGINE=INNODB;
+
+CREATE OR REPLACE VIEW events AS
+SELECT id, name, datetime, points, officer, type, wildcard, valid
+FROM event_base INNER JOIN event_extensions
+ON event_base.id = event_extensions.parentId;
 
 CREATE TABLE user_event (
 userId      INT             NOT NULL,
 eventId     INT             NOT NULL,
-valid       BOOLEAN         NOT NULL DEFAULT True,
+valid       BOOLEAN         NOT NULL DEFAULT TRUE,
 pointsEarned INT            NOT NULL,
 type        ENUM('academic', 'social', 'community') NOT NULL,
 
 PRIMARY KEY (userId, eventId),
 INDEX (userId, eventId),
-FOREIGN KEY (userId) REFERENCES user(id),
-FOREIGN KEY (eventId) REFERENCES event(id)
+FOREIGN KEY (userId) REFERENCES user_base(id),
+FOREIGN KEY (eventId) REFERENCES event_base(id)
 
 ) ENGINE=INNODB;
