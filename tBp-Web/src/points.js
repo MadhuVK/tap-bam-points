@@ -1,55 +1,49 @@
 // Compute point standings for an individual or for all users
 
-var db = require('./dbClient.js');
+var pool = require('./dbClient.js');
 var jsonpatch = require('fast-json-patch');
 var eventTypes = require('./eventTypes.js');
 
 const unique = function(value, index, arr) {return arr.indexOf(value) === index;};
 
 // Tack on points data to array of user objects
-exports.addDataToUsers = function (users, callback) {
-  exports.compute(undefined, function(points) {
-    var lookup = {};
-    for (var i = 0; i < users.length; i++) {
-      lookup[users[i].id] = i;
-    }
+exports.addDataToUsers = function (users) {
+  return exports.compute(undefined)
+    .then(points => {
+      var lookup = {};
+      for (var i = 0; i < users.length; i++) {
+        lookup[users[i].id] = i;
+      }
 
-    points.forEach(pointRecord => users[lookup[pointRecord.id]].points = pointRecord);
-    callback(users);
-  });
+      points.forEach(pointRecord => {
+        var id = pointRecord.id;
+        delete pointRecord.id;
+        users[lookup[id]].points = pointRecord;
+      });
+
+      return users;
+    });
 };
 
 // id defined: {'total': Number, 'academic': Number, 'social': Number, etc.}
 // id undefined: [{'id': Number, 'total': Number, 'academic': Number, etc.}, ...]
 // TODO: filter query for invalid events
-exports.compute = function (userId, callback) {
-  var fields = "user.id, tbp_event.points, tbp_event.type, user_event.eventPatch";
-  connection.query(
+exports.compute = function (userId) {
+  var fields = "users.id, pointsEarned, user_event.type";
+  return pool.query(
     "SELECT " + fields + " " +
-    "FROM (user RIGHT JOIN tbp_user on user.id=tbp_user.parentId) " +
-    "LEFT OUTER JOIN (user_event JOIN tbp_event) " +
-    "ON (user.id=user_event.userId AND tbp_event.parentId=user_event.eventId)",
-    function (err, history) {
-      if (err)
-        throw err;
-      
-      for (var event of history) {
-        if (event.eventPatch === null) continue;
-
-        jsonpatch.apply(event, JSON.parse(event.eventPatch));
-        delete event.eventPatch;
-      }
-      
-      if (userId === undefined)
-        prepAllPoints(history);
-      else {
-        individualHistory = history.filter(rec => rec.id === userId);
-        prepIndividualPoints(individualHistory);
-      }
-
-      callback(points);
+    "FROM users LEFT OUTER JOIN (user_event JOIN events) " +
+    "ON (users.id = user_event.userId AND events.id = user_event.eventId)")
+  .then(history => {
+    if (userId === undefined)
+      prepAllPoints(history);
+    else {
+      individualHistory = history.filter(rec => rec.id === userId);
+      prepIndividualPoints(individualHistory);
     }
-  );
+
+    return points;
+  });
 };
 
 function prepAllPoints(history) {
@@ -69,7 +63,7 @@ function prepIndividualPoints(history) {
 
   for (var type in eventTypes) {
     eventsOfSameType = history.filter(rec => rec.type === type);
-    points[type] = eventsOfSameType.reduce((prev, curr) => prev + curr.points, 0);
+    points[type] = eventsOfSameType.reduce((prev, curr) => prev + curr.pointsEarned, 0);
     points.total += points[type];
   }
 

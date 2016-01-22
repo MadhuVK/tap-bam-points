@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-//const data = require('../src/data.js');
+const userData = require('../src/userData.js');
 const historyAnalyze = require('../src/historyAnalyze.js');
 const session_login = require("../src/session_login.js");
 const points = require('../src/points.js');
@@ -24,11 +24,9 @@ router.get('/me', function(req, res) {
 });
 
 router.get('/leaderboard', function(req, res) {
-  data.getUsers('tbp', function(users) {
-    points.addDataToUsers(users, function () {
-      res.render('leaderboard.html', { title: 'Leaderboard', users: users});
-    });
-  });
+  userData.getAll()
+  .then(users => points.addDataToUsers(users))
+  .then(users => res.render('leaderboard.html', { title: 'Leaderboard', users: users }));
 });
 
 router.get('/admin', adminLogin); // Generic catch all that will be used by most people
