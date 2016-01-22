@@ -1,40 +1,20 @@
-var mysql = require('mysql');
+var mysql = require('promise-mysql');
 
-var totalConnections = 0;
-var totalEnqueues = 0;
-
-var connectOptions = {
-  connectionLimit: 50,
+var poolConfig = {
   host: 'localhost',
   user: 'root',
   password: '',
-  database: 'tBp'
+  database: 'tBp',
+  connectionLimit: 50
 };
 
-var pool = mysql.createPool(connectOptions);
+var pool = mysql.createPool(poolConfig);
+module.exports = pool;
 
-// connected : Promise Function(connection)
-var connect = function (connected) {
-  var connection;
-  return new Promise((resolve, reject) => {
-    pool.getConnection((err, newConnection) => {
-      if (err) reject(err);
-      connection = newConnection;
-      resolve(connection);
-    });
-  })
-  .then(connected)
-  .then(value => {
-    connection.release();
-    return Promise.resolve(value);
-  })
-  .catch(err => {throw err;});
-};
-
-module.exports = connect;
+var totalConnections = 0;
 
 var logPrefix = '[db pool] ';
 pool.on('connection', function(connection) {
-  console.log(logPrefix + 'Connections in pool: ' + ++totalConnections);
-  console.log(logPrefix + 'New connection id: ' + connection.threadId);
+  console.log(logPrefix + 'Added connection (id ' + connection.threadId +
+    '), total ' + ++totalConnections);
 });

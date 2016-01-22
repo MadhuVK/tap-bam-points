@@ -1,57 +1,40 @@
-var db = require('./dbClient.js');
+var pool = require('./dbClient.js');
 var jsonpatch = require('fast-json-patch');
 
-exports.getUsers = function (group) {
-  return db(connection => {
-    return new Promise((resolve, reject) => {
-      var groupTable = group + "_user";
-      connection.query(
-        "SELECT * FROM user JOIN ?? WHERE user.id = ?? AND valid = true",
-        [groupTable, groupTable + ".parentId"],
-        (err, rows, fields) => {
-          if (err) reject(err);
-          resolve(rows);
-        }
-      );
-    });
-  });
+exports.getUsers = function () {
+  return pool.query("SELECT * FROM users WHERE valid = TRUE");
 };
 
-// TODO: currently: only can add users to tbp_user. How should we do multiple groups?
-// afterAdd : function(userId)
-exports.addUser = function(user, afterAdd) {
-  connection.beginTransaction(function(err) {
-    if (err) throw err;
-    insertUserBasics(user, afterAdd, insertUserDetails);
-  });
+exports.addUser = function (user) {
+  var connection;
+  return pool.getConnection()
+    .then(c => {
+      connection = c;
+      return connection.beginTransaction();
+    })
+    .then(() => insertUserBase(connection, user))
+    .then(result => {
+      user.id = result.insertId;
+      return insertUserExtensions(connection, user);
+    })
+    .then(() => connection.commit())
+    .catch(() => connection.rollback())
+    .then(() => pool.releaseConnection(connection))
+    .then(() => user.id)
+  ;
 };
 
-function insertUserBasics(user, afterAdd, callback) {
-  connection.query(
-    "INSERT INTO user (valid, lastName, firstName, barcodeHash) VALUES (true, ?, ?, ?)",
-    [user.lastName, user.firstName, user.barcodeHash],
-    function(err, result) {
-      if (rollbackRequired(err))
-        return;
-      callback(user, result.insertId, afterAdd);
-    }
+function insertUserBase(connection, user) {
+  return connection.query(
+    "INSERT INTO user_base (firstName, lastName, barcodeHash) VALUES (?, ?, ?)",
+    [user.firstName, user.lastName, user.barcodeHash]
   );
 }
 
-function insertUserDetails(user, parentId, afterAdd) {
-  connection.query(
-    "INSERT INTO tbp_user (parentId, house, memberStatus) VALUES (?, ?, ?)",
-    [parentId, user.house, user.memberStatus],
-    function(err, rows, fields) {
-      if (rollbackRequired(err))
-        return;
-
-      connection.commit(function(err) {
-        if (rollbackRequired(err))
-          return;
-        afterAdd(parentId);
-      });
-    }
+function insertUserExtensions(connection, user) {
+  return connection.query(
+    "INSERT INTO user_extensions (parentId, house, memberStatus) VALUES (?, ?, ?)",
+    [user.id, user.house, user.memberStatus]
   );
 }
 

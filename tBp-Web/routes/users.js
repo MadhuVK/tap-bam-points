@@ -9,9 +9,8 @@ router.route('/')
   })
 
   .post(function (req, res) {
-    data.addUser(req.body, function (user_id) {
-      res.status(201).json(req.body);
-    });
+    data.addUser(req.body)
+    .then(userId => res.status(201).json({'id': userId}));
   });
 
 router.route('/:user_id')
