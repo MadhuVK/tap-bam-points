@@ -27,7 +27,7 @@ PRIMARY KEY (id)
 CREATE TABLE user_extensions (
 parentId        INT                             NOT NULL,
 house           ENUM('red', 'green', 'blue')    NOT NULL,
-userType        ENUM('initiate', 'member', 'officer') NOT NULL,
+memberStatus    ENUM('initiate', 'member', 'officer') NOT NULL,
 
 PRIMARY KEY (parentId),
 FOREIGN KEY (parentId) REFERENCES user_base(id) ON DELETE CASCADE
@@ -35,7 +35,7 @@ FOREIGN KEY (parentId) REFERENCES user_base(id) ON DELETE CASCADE
 ) ENGINE=INNODB;
 
 CREATE OR REPLACE VIEW users AS
-SELECT id, firstName, lastName, barcodeHash, house, userType, valid
+SELECT id, firstName, lastName, barcodeHash, house, memberStatus, valid
 FROM user_base INNER JOIN user_extensions
 ON user_base.id = user_extensions.parentId;
 
