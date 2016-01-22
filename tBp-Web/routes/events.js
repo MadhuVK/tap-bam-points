@@ -1,45 +1,39 @@
 var express = require('express');
 var router = express.Router();
-//var data = require('../src/data.js');
+var eventData = require('../src/eventData.js');
+var userEventData = require('../src/userEventData.js');
 
 router.route('/')
   .get(function (req, res) {
-    data.getEvents('tbp', function(events) {
-      res.json(events);
-    });
+    eventData.getAll().then(events => res.json(events));
   })
 
   .post(function (req, res) {
-    data.addEvent(req.body, function(event_id) {
-      res.status(201).json(req.body);
-    });
+    eventData.add(req.body).then(id => res.status(201).json(id));
   });
 
 router.route('/:event_id')
   .get(function (req, res) {
-    data.getEventById(req.params.event_id, function(event) {
-      res.status(200).json(event);
-    });
+    eventData.getById(req.params.event_id)
+    .then(id => res.status(200).json(event))
+    .catch(() => res.sendStatus(404));
   })
 
   .patch(function (req, res) {
     var patch = req.body;
-    data.updateEventByPatch(req.params.event_id, patch, function() {
-      res.sendStatus(200);
-    });
+    eventData.patch(req.params.event_id, patch)
+    .then(() => res.sendStatus(200));
   })
 
   .delete(function (req, res) {
-    data.deleteEventById(req.params.event_id, function() {
-      res.sendStatus(200);
-    });
+    eventData.deleteById(req.params.event_id)
+    .then(() => res.sendStatus(200));
   });
 
 router.route('/:event_id/users')
   .get(function (req, res) {
-    data.getEventAttendees(req.params.event_id, function(attendees) {
-      res.json(attendees);
-    });
+    userEventData.getEventAttendees(req.params.event_id)
+    .then(attendees => res.json(attendees));
   });
 
 router.route('/:event_id/users/:user_id')
