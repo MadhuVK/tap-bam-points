@@ -35,11 +35,12 @@ exports.compute = function (userId) {
     "FROM users LEFT OUTER JOIN (user_event JOIN events) " +
     "ON (users.id = user_event.userId AND events.id = user_event.eventId)")
   .then(history => {
+    var points;
     if (userId === undefined)
-      prepAllPoints(history);
+      points = prepAllPoints(history);
     else {
       individualHistory = history.filter(rec => rec.id === userId);
-      prepIndividualPoints(individualHistory);
+      points = prepIndividualPoints(individualHistory);
     }
 
     return points;
@@ -47,10 +48,11 @@ exports.compute = function (userId) {
 };
 
 function prepAllPoints(history) {
-  userIds = history.map(a => a.id).filter(unique);
-  points = userIds.map(function(id) {
-    individualHistory = history.filter(a => a.id === id);
-    preppedUser = prepIndividualPoints(individualHistory);
+  var userIds = history.map(a => a.id).filter(unique);
+  console.log(userIds);
+  var points = userIds.map(function(id) {
+    var individualHistory = history.filter(a => a.id === id);
+    var preppedUser = prepIndividualPoints(individualHistory);
     preppedUser.id = id;
     return preppedUser;
   });
@@ -59,10 +61,10 @@ function prepAllPoints(history) {
 }
 
 function prepIndividualPoints(history) {
-  points = {total: 0};
+  var points = {total: 0};
 
   for (var type in eventTypes) {
-    eventsOfSameType = history.filter(rec => rec.type === type);
+    var eventsOfSameType = history.filter(rec => rec.type === type);
     points[type] = eventsOfSameType.reduce((prev, curr) => prev + curr.pointsEarned, 0);
     points.total += points[type];
   }
