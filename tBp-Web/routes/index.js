@@ -24,12 +24,12 @@ router.get('/me', function(req, res) {
     var notAttended = results[2];
 
     user.history = history;
-    pointStats = historyAnalyze(user.history, user.memberStatus);
+    var pointStats = historyAnalyze(user.history, user.memberStatus);
     res.render('user.html',
       { title: 'Your TBP profile',
-        user: results[0],
+        user: user,
         pointStats: pointStats,
-        unattendedEvents: results[2] }
+        unattendedEvents: notAttended }
     );
   });
 });

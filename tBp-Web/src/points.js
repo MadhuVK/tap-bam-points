@@ -47,9 +47,12 @@ exports.compute = function (userId) {
   });
 };
 
+exports.computeFromHistory = function (history) {
+  return prepIndividualPoints(history);
+}
+
 function prepAllPoints(history) {
   var userIds = history.map(a => a.id).filter(unique);
-  console.log(userIds);
   var points = userIds.map(function(id) {
     var individualHistory = history.filter(a => a.id === id);
     var preppedUser = prepIndividualPoints(individualHistory);
@@ -61,12 +64,13 @@ function prepAllPoints(history) {
 }
 
 function prepIndividualPoints(history) {
-  var points = {total: 0};
+  var points = {total: 0, eventType: {}};
 
   for (var type in eventTypes) {
     var eventsOfSameType = history.filter(rec => rec.type === type);
-    points[type] = eventsOfSameType.reduce((prev, curr) => prev + curr.pointsEarned, 0);
-    points.total += points[type];
+    var typeTotal = eventsOfSameType.reduce((prev, curr) => prev + curr.pointsEarned, 0);
+    points.eventType[type] = typeTotal;
+    points.total += typeTotal;
   }
 
   return points;

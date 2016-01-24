@@ -8,9 +8,10 @@
 
 const userTypes = require("./userTypes.js");
 const eventTypes = require("./eventTypes.js");
+const points = require("./points.js");
 
-module.exports = function(history, status) {
-  var requirements = userTypes[status].requirements;
+module.exports = function(history, memberStatus) {
+  var requirements = userTypes[memberStatus].requirements;
   return analyze(history, requirements);
 };
 
@@ -18,52 +19,28 @@ function analyze(history, requirements) {
   if (requirements === null)
     return [];
 
-  var pointTypeTotals = getPointTypeTotals(history);
-  var totalPoints = getTotalPoints(pointTypeTotals);
+  var pointTotals = points.computeFromHistory(history);
 
   var result = [];
   if (requirements.eventType !== null) {
     for (var type in requirements.eventType) {
-      var total = pointTypeTotals.get(type);
+      var typeTotal = pointTotals.eventType[type];
       var required = requirements.eventType[type];
       result.push({
         type: type,
-        total: total,
+        total: typeTotal,
         required: required,
-        fulfilled: total >= required
+        fulfilled: typeTotal >= required
       });
     }
   }
 
   result.push({
     type: "Total",
-    total: totalPoints,
+    total: pointTotals.total,
     required: requirements.total,
-    fulfilled: totalPoints >= requirements.total
+    fulfilled: pointTotals.total >= requirements.total
   });
 
   return result;
-}
-
-function getPointTypeTotals(history) {
-  var map = initPointsMap();
-  for (var event of history) {
-    var oldValue = map.get(event.type);
-    map.set(event.type, oldValue + event.pointsEarned);
-  }
-  return map;
-}
-
-function initPointsMap() {
-  var map = new Map();
-  for (type in eventTypes)
-    map.set(type, 0);
-  return map;
-}
-
-function getTotalPoints(pointTypeTotals) {
-  var sum = 0;
-  for (var points of pointTypeTotals.values())
-    sum += points;
-  return sum;
 }
