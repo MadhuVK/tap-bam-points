@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const userData = require('../src/userData.js');
+const eventData = require('../src/eventData.js');
+const userEventData = require('../src/userEventData.js');
 const historyAnalyze = require('../src/historyAnalyze.js');
 const session_login = require("../src/session_login.js");
 const points = require('../src/points.js');
@@ -12,14 +14,23 @@ router.get('/', function(req, res, next) {
 
 router.get('/me', function(req, res) {
   const USER = 2;
-  data.getUserById(USER, function(user) {
-    data.getUserAttendanceHistory(USER, function(history) {
-      data.getEventsNotAttendedByUserID(user.id, function(events) {
-        user.history = history;
-        pointStats = historyAnalyze(history, user.memberStatus);
-        res.render('user.html', {title: 'Your TBP profile', user: user, pointStats: pointStats, unattendedEvents:events});
-      });
-    });
+  var personalInfo = userData.getById(USER);
+  var history = userEventData.getUserAttendances(USER);
+  var notAttended = userEventData.getEventsNotAttendedByUserId(USER);
+  Promise.all([personalInfo, history, notAttended])
+  .then(results => {
+    var user = results[0];
+    var history = results[1];
+    var notAttended = results[2];
+
+    user.history = history;
+    pointStats = historyAnalyze(user.history, user.memberStatus);
+    res.render('user.html',
+      { title: 'Your TBP profile',
+        user: results[0],
+        pointStats: pointStats,
+        unattendedEvents: results[2] }
+    );
   });
 });
 
@@ -95,15 +106,15 @@ function validateUserLogin(req, res) {
 }
 
 function adminConsole(req, res) {
-  data.getUsers('tbp', function(retrievedUsers) {
-    data.getEvents('tbp', function(retrievedEvents) {
-      points.addDataToUsers(retrievedUsers, function () {
-        res.render('admin_console.html',
-            { title: 'Admin Console',
-              users: retrievedUsers,
-              events: retrievedEvents});
-      });
-    });
+  var users = userData.getAll().then(points.addDataToUsers);
+  var events = eventData.getAll();
+  Promise.all([users, events])
+  .then(results => {
+    res.render('admin_console.html',
+      { title: 'Admin Console',
+        users:  results[0],
+        events: results[1] }
+    );
   });
 }
 

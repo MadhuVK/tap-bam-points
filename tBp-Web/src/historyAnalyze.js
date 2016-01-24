@@ -49,7 +49,7 @@ function getPointTypeTotals(history) {
   var map = initPointsMap();
   for (var event of history) {
     var oldValue = map.get(event.type);
-    map.set(event.type, oldValue + Number(event.points));
+    map.set(event.type, oldValue + event.pointsEarned);
   }
   return map;
 }
