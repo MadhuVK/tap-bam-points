@@ -107,11 +107,16 @@ function createEvent(req, res) {
   var dateTime = body["eventDate"] + " " + body["eventTime"];
 
   if (dateExp.test(date)) {
-    data.addEvent({name:body["eventName"], datetime:dateTime, points:body["eventPoints"], officer:body["eventOfficer"], type:body["eventCategory"]},
-        function(id) {
-          res.redirect("/admin")
-        });
-
+    eventData.add(
+      { name:     body["eventName"],
+        datetime: dateTime,
+        points:   body["eventPoints"],
+        officer:  body["eventOfficer"],
+        type:     body["eventCategory"],
+        wildcard: body["eventWildcard"] === "on"
+      }
+    )
+    .then(id => res.redirect("/admin#event-tab"));
   }
   else {
     res.render('event_create.html', {errCode:"true"});
