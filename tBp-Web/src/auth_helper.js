@@ -1,4 +1,4 @@
-//const data = require("./data.js");
+const userData = require("./userData.js");
 const crypto = require("crypto");
 const request = require('request');
 
@@ -42,11 +42,9 @@ exports.hash = function(data) {
     return crypto.createHash('sha256').update(data).digest('hex')
 }
 
-exports.login_user = function(pass_hash, afterLogin) {
-    console.log("Trying to log in user...");
-    console.log(pass_hash);
-
-    data.getUserIdByHash(pass_hash.toLowerCase(), afterLogin);
+exports.login_user = function(pass_hash) {
+    return userData.getIdByHash(pass_hash.toLowerCase())
+      .catch(() => -1);
 };
 
 exports.captchaSite = captchaSite;

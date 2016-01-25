@@ -68,9 +68,9 @@ function prepUser(result) {
 
 exports.getIdByHash = function (hash) {
   return pool.query(
-    "SELECT id FROM user WHERE barcodeHash = ? AND user.valid = TRUE",
+    "SELECT id FROM users WHERE barcodeHash = ? AND users.valid = TRUE",
     [hash])
-    .then(prepUser);
+    .then(result => result[0].id);
 };
 
 exports.patch = function (userId, patch) {

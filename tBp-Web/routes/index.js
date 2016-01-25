@@ -76,15 +76,17 @@ function userLogin(req, res) {
 }
 
 function validateUserLogin(req, res) {
-  auth_helper.login_user(auth_helper.hash(req.body["password"]), function onLogin(userId) {
+  var hash = auth_helper.hash(req.body["password"]);
+  process.stdout.write("Logging in user " + hash + "... ");
 
-    console.log(userId);
-
-    if (userId['id'] == -1) {
+  auth_helper.login_user(hash)
+  .then(userId => {
+    if (userId == -1) {
+      console.log("failed");
       res.redirect("/leaderboard");
     } else {
-      console.log(userId)
-      req.session.logged_in = userId['id']
+      console.log("ok");
+      req.session.logged_in = userId;
       res.redirect("/me"); //TODO: Use userId to store session
     }
   });
