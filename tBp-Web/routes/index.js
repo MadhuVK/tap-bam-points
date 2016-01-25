@@ -211,21 +211,18 @@ function addEventToUser(req, res) {
   var u_id = body["u_id"];
   var points = body["points"];
 
-  data.getEventById(e_id, function(e) {
-
+  eventData.getById(e_id)
+  .then(e => {
     var attendance = {
       "id": e.id,
       "name": e.name,
-      "datetime": e.datetime,
-      "points": points,
-      "officer": e.officer,
+      "pointsEarned": points,
       "type": e.type
     };
 
-    data.addUserToEvent(u_id, attendance, function() {
-      res.redirect('/me');
-    });
-  });
+    return userEventData.addUserToEvent(u_id, attendance);
+  })
+  .then(() => res.redirect('/me'));
 }
 
 module.exports = router;

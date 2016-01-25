@@ -26,11 +26,11 @@ exports.getEventAttendees = function (eventId) {
   );
 };
 
-exports.addUserToEvent = function (userId, event) {
-  event.datetime = new Date(event.datetime);
+exports.addUserToEvent = function (userId, attendance) {
+  attendance.datetime = new Date(attendance.datetime);
   return pool.query(
     "INSERT INTO user_event (userId, eventId, pointsEarned, type) VALUES (?, ?, ?, ?)",
-    [userId, event.id, event.pointsEarned, event.type]
+    [userId, attendance.id, attendance.pointsEarned, attendance.type]
   );
 };
 
