@@ -73,7 +73,7 @@
                     <% date = new Date(d)%>
                     <td> <%= date.toDateString() %> </td>
                     <td>
-                        <form action="/event_view" method="post">
+                        <form action="/event_view" method="get">
                             <input type="hidden" name="v_id" value=<%= event.id %> >
                             <input type="submit" value="View" name="viewEvent" >
                         </form>

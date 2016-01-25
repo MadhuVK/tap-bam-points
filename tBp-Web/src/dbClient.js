@@ -1,4 +1,5 @@
 var mysql = require('promise-mysql');
+var config = require('../bin/config')[process.env.NODE_ENV]; 
 
 var poolConfig = {
   host: 'localhost',
@@ -8,7 +9,7 @@ var poolConfig = {
   connectionLimit: 50
 };
 
-var pool = mysql.createPool(poolConfig);
+var pool = mysql.createPool(config.db_connection);
 module.exports = pool;
 
 var totalConnections = 0;

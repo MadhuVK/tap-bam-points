@@ -30,5 +30,11 @@
 			</tr>
 			<% } %>
 		</table>
+                <% if (logged_out) { %> 
+                  <form action="/user_login" method="post"> 
+                    <input type="password" name="password" placeholder="Barcode Hash"><br>
+                    <input type="submit" name="submit">
+                  </form>
+                <% } %> 
 	</body>
 </html>

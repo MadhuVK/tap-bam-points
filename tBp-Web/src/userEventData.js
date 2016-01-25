@@ -26,6 +26,13 @@ exports.getEventAttendees = function (eventId) {
   );
 };
 
+exports.getEventNonAttendees = function (eventId) {
+    return pool.query(
+	  "SELECT user.id, firstName, lastName FROM users " +
+	  "WHERE id NOT IN (SELECT userId FROM user_event where eventId = ? AND valid) AND valid"
+	  [id]);
+};
+
 exports.addUserToEvent = function (userId, attendance) {
   attendance.datetime = new Date(attendance.datetime);
   return pool.query(

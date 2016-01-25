@@ -31,13 +31,22 @@ Date: <%= date.toDateString() %> <br>
     </tbody>
 
 </table>
-Add User: <br>
+<br>
+<% if(addUsers != 0) { %>
+<b>Add User: </b><br>
 
 <form action="/add_event_user" method="post">
     <input type="hidden" name="e_id" value=<%= event.id%>>
-    <input type="text" name="b_code" placeholder="Barcode">
-    <input type="number" name="points" min="0.5" max ="5" step="0.5" value="1">
+    User: <select name="addUserId" >
+        <% addUsers.forEach( function(aUser) { %>
+        <% var uName = aUser.firstName + ' ' + aUser.lastName + ' ' + aUser.id %>
+        <option value="<%=aUser.id%>"><%= uName%></option>
+        <% }) %>
+
+    </select> <br>
+    Points: <input type="number" name="points" min="0.5" max ="5" step="0.5" value="1"> <br>
     <input type="submit" value="Add" name="addUserEvent">
 </form>
+<% } %>
 </body>
 </html>

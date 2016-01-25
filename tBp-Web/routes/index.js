@@ -4,19 +4,29 @@ const userData = require('../src/userData.js');
 const eventData = require('../src/eventData.js');
 const userEventData = require('../src/userEventData.js');
 const historyAnalyze = require('../src/historyAnalyze.js');
-const session_login = require("../src/session_login.js");
+const auth_helper = require("../src/auth_helper");
 const points = require('../src/points.js');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-    res.render('index', { title: 'Express' });
+  if (req.session.logged_in) {
+    res.redirect('/me'); 
+  } else {
+    res.redirect('/leaderboard'); 
+  }
 });
 
 router.get('/me', function(req, res) {
-  const USER = 2;
-  var personalInfo = userData.getById(USER);
-  var history = userEventData.getUserAttendances(USER);
-  var notAttended = userEventData.getEventsNotAttendedByUserId(USER);
+  if (!req.session.logged_in) {
+    res.redirect('/leaderboard'); 
+  }
+
+  var id = req.session.logged_in; 
+
+  var personalInfo = userData.getById(id);
+  var history = userEventData.getUserAttendances(id);
+  var notAttended = userEventData.getEventsNotAttendedByUserId(id);
+
   Promise.all([personalInfo, history, notAttended])
   .then(results => {
     var user = results[0];
@@ -37,84 +47,46 @@ router.get('/me', function(req, res) {
 router.get('/leaderboard', function(req, res) {
   userData.getAll()
   .then(users => points.addDataToUsers(users))
-  .then(users => res.render('leaderboard.html', { title: 'Leaderboard', users: users }));
+  .then(users => {
+    res.render('leaderboard.html',
+	  { title: 'Leaderboard',
+	    users: users,
+        logged_out: !req.session.logged_in
+	  }
+	);
+  });
 });
 
-router.get('/admin', adminLogin); // Generic catch all that will be used by most people
-router.post('/admin', validateAdminLogin);
-
 router.post("/mobile_login", validateMobileLogin);
-
-// TODO: Need to do Cookie Session Access thingies to check if logged in.
-router.get('/admin_login', adminLogin);
-router.get('/admin_console', adminConsole);
-
-router.get('/login', userLogin);
-router.post('/login', validateUserLogin);
-
-
-function adminLogin(req, res) {
-  var loggedIn = false; // TODO
-  if (loggedIn) {
-    res.redirect("/admin_console");
-  } else {
-    res.render('admin_login.html', {sitekey: session_login.captchaSite});
-  }
-}
+router.post('/user_login', validateUserLogin);
 
 function validateMobileLogin(req, res) {
-  var valid = session_login.login_admin("tbp@ucsd.edu", req.body["pass_hash"]);
+  var valid = auth_helper.login_admin("tbp@ucsd.edu", req.body["pass_hash"]);
 
   res.status(200).json(valid);
 }
 
 function userLogin(req, res) {
-  var loggedIn = false;
+  var loggedIn = req.session.logged_in; 
   if (loggedIn) {
     res.redirect("/me");
   } else {
-    res.render("user_login.html", {});
+    res.redirect("/leaderboard"); 
   }
 }
 
-function validateAdminLogin(req, res) {
-  session_login.validate_captcha(req, session_login.captchaSecret, function onValidate(valid_captcha) {
-    if (valid_captcha) {
-      if (session_login.login_admin(req.body["user"], session_login.hash(req.body["password"]))) {
-        res.redirect("/admin_console");
-      } else {
-        res.redirect("/admin_login");
-      }
-    } else {
-      res.redirect("/admin_login");
-    }
-  });
-}
-
 function validateUserLogin(req, res) {
-  session_login.login_user(session_login.hash(req.body["password"]), function onLogin(userId) {
+  auth_helper.login_user(auth_helper.hash(req.body["password"]), function onLogin(userId) {
 
     console.log(userId);
 
     if (userId['id'] == -1) {
-      res.redirect("/login");
+      res.redirect("/leaderboard");
     } else {
       console.log(userId)
+      req.session.logged_in = userId['id']
       res.redirect("/me"); //TODO: Use userId to store session
     }
-  });
-}
-
-function adminConsole(req, res) {
-  var users = userData.getAll().then(points.addDataToUsers);
-  var events = eventData.getAll();
-  Promise.all([users, events])
-  .then(results => {
-    res.render('admin_console.html',
-      { title: 'Admin Console',
-        users:  results[0],
-        events: results[1] }
-    );
   });
 }
 
@@ -135,7 +107,7 @@ function createEvent(req, res) {
   if (dateExp.test(date)) {
     data.addEvent({name:body["eventName"], datetime:dateTime, points:body["eventPoints"], officer:body["eventOfficer"], type:body["eventCategory"]},
         function(id) {
-          res.redirect("/admin_console")
+          res.redirect("/admin")
         });
 
   }
@@ -144,7 +116,6 @@ function createEvent(req, res) {
   }
 
 
-  //res.redirect('/admin_console');
 }
 
 router.post('/event_delete', eventDelete);
@@ -157,27 +128,26 @@ function eventDelete(req, res) {
     if (retrievedUsers.length == 0) {
       data.deleteEventById(id,
           function() {
-            res.redirect("/admin_console");
+            res.redirect("/admin");
           });
     }
     else {
       console.log("Event not empty")
-      res.redirect("/admin_console");
+      res.redirect("/admin");
     }
 
   });
-
-
 }
 
-router.post('/event_view', eventView);
+router.get('/event_view', eventView);
 
 function eventView(req, res) {
-  var body = req.body;
-  var id = body["v_id"];
+  var id = req.param('v_id');
   data.getEventById(id, function(retrievedEvent) {
     data.getEventAttendees(id, function(retrievedUsers) {
-      res.render('event_view.html', {event: retrievedEvent, users: retrievedUsers, errCode :false});
+      data.getEventNonAttendees(id, function(addUsers) {
+        res.render('event_view.html', {event: retrievedEvent, users: retrievedUsers, addUsers:addUsers, errCode: false});
+      });
     });
   });
 }
@@ -187,21 +157,27 @@ router.post('/add_event_user', addUsertoEvent);
 function addUsertoEvent(req, res) {
   var body = req.body;
   var e_id = body["e_id"];
-  var b_code = body["b_code"];
-  var e_code = true;
+  var points = Number(body["points"]);
+  var u_id = body["addUserId"];
   console.log(body);
 
-  data.getUserByBarcode(b_code, function(rUser) {
-    console.log(rUser);
-    data.getEventById(e_id, function(retrievedEvent) {
-      if(rUser.length !=0) {
-        e_code = false;
-        data.addUserToEvent(rUser.id, retrievedEvent, function(){
-        });
-      }
-      res.redirect('/event_view', {v_id:e_id});
+
+  data.getEventById(e_id, function(rEvent) {
+    var attendance = {
+      "id":rEvent.id,
+      "name":rEvent.name,
+      "datetime":rEvent.datetime,
+      "points":points,
+      "officer":rEvent.officer,
+      "type":rEvent.type
+    }
+    data.addUserToEvent(u_id, attendance, function(){
     });
+
+    var path = '?v_id=' + e_id;
+    res.redirect('/event_view' + path);
   });
+
 }
 
 router.post('/add_user_event', addEventToUser);
@@ -209,7 +185,7 @@ function addEventToUser(req, res) {
   var body = req.body;
   var e_id = body["addEventId"];
   var u_id = body["u_id"];
-  var points = body["points"];
+  var points = Number(body["points"]);
 
   eventData.getById(e_id)
   .then(e => {
