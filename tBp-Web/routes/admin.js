@@ -8,11 +8,12 @@ var express = require('express');
 var router = express.Router(); 
 
 
-function manage_admin(req, res) {
+function manage_admin(req, res, next) {
   var loggedIn = req.session.admin_user; 
 
   if (!loggedIn) {
     res.render('admin_login.html', {sitekey: auth_helper.captchaSite});
+    next();
   }
   
   var users = userData.getAll().then(points.addDataToUsers);
