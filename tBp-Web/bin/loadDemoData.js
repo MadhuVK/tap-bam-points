@@ -1,6 +1,6 @@
 // run with `node demoData.js` to add some records to your tBp database
 
-var data = require('./demo.js');
+var data = require('./demoData.js');
 var userData = require('../src/userData.js');
 var eventData = require('../src/eventData.js');
 var userEventData = require('../src/userEventData.js');
