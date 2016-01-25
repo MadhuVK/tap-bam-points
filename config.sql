@@ -43,7 +43,7 @@ CREATE TABLE event_base (
 id              INT                 NOT NULL AUTO_INCREMENT,
 valid           BOOLEAN             NOT NULL DEFAULT True,
 name            VARCHAR(255)        NOT NULL DEFAULT '',
-datetime        DATETIME            NOT NULL DEFAULT CURRENT_TIMESTAMP,
+datetime        DATETIME            NOT NULL,
 
 INDEX(id),
 PRIMARY KEY (id)
