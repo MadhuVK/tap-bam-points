@@ -23,16 +23,16 @@
 			<tr>
 				<td><%= user.firstName %> <%= user.lastName %></td>
 				<td><%= user.memberStatus %></td>
-				<td><%= user.points.academic %></td>
-				<td><%= user.points.community %></td>
-				<td><%= user.points.social %></td>
+				<td><%= user.points.eventType['academic'] %></td>
+				<td><%= user.points.eventType['community'] %></td>
+				<td><%= user.points.eventType['social'] %></td>
 				<td><%= user.points.total %></td>
 			</tr>
 			<% } %>
 		</table>
                 <% if (logged_out) { %> 
                   <form action="/user_login" method="post"> 
-                    <input type="password" name="password" placeholder="Barcode Hash"><br>
+                    <input type="password" name="password" placeholder="Barcode"><br>
                     <input type="submit" name="submit">
                   </form>
                 <% } %> 

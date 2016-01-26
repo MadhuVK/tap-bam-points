@@ -42,9 +42,9 @@
                     <% var name = user.firstName + ' ' + user.lastName %>
                     <td> <%= name %> </td>
                     <td> <%= user.memberStatus %> </td>
-                    <td class="point-cell"> <%= user.points.academic %> </td>
-                    <td class="point-cell"> <%= user.points.community %> </td>
-                    <td class="point-cell"> <%= user.points.social %> </td>
+                    <td class="point-cell"> <%= user.points.eventType['academic'] %> </td>
+                    <td class="point-cell"> <%= user.points.eventType['community'] %> </td>
+                    <td class="point-cell"> <%= user.points.eventType['social'] %> </td>
                     <td class="point-cell"> <%= user.points.total %> </td>
                 </tr>
                 <% }) %>
