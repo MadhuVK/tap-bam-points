@@ -129,18 +129,16 @@ router.post('/event_delete', eventDelete);
 function eventDelete(req, res) {
   var body = req.body;
   var id = body["d_id"];
-  data.getEventAttendees(id, function(retrievedUsers) {
-    if (retrievedUsers.length == 0) {
-      data.deleteEventById(id,
-          function() {
-            res.redirect("/admin");
-          });
+
+  userEventData.getEventAttendees(id)
+  .then(users => {
+    if (users.length == 0) {
+      eventData.deleteById(id).then(() => res.redirect("/admin#event-tab"));
     }
     else {
       console.log("Event not empty")
-      res.redirect("/admin");
+      res.redirect("/admin#event-tab");
     }
-
   });
 }
 
