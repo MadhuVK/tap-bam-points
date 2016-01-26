@@ -100,7 +100,6 @@ function eventForm(req, res) {
 }
 
 function createEvent(req, res) {
-  console.log(req.body);
   var body = req.body;
   var dateExp = /^(20)\d\d([- /.])(0[1-9]|1[012])\2(0[1-9]|[12][0-9]|3[01])$/;
   var date = body["eventDate"];
@@ -130,7 +129,6 @@ router.post('/event_delete', eventDelete);
 function eventDelete(req, res) {
   var body = req.body;
   var id = body["d_id"];
-  console.log(id);
   data.getEventAttendees(id, function(retrievedUsers) {
     if (retrievedUsers.length == 0) {
       data.deleteEventById(id,
@@ -149,42 +147,41 @@ function eventDelete(req, res) {
 router.get('/event_view', eventView);
 
 function eventView(req, res) {
-  var id = req.param('v_id');
-  data.getEventById(id, function(retrievedEvent) {
-    data.getEventAttendees(id, function(retrievedUsers) {
-      data.getEventNonAttendees(id, function(addUsers) {
-        res.render('event_view.html', {event: retrievedEvent, users: retrievedUsers, addUsers:addUsers, errCode: false});
-      });
-    });
-  });
+  var id = req.query.v_id;
+
+  var event = eventData.getById(id);
+  var attendees = userEventData.getEventAttendees(id);
+  var nonAttendees = userEventData.getEventNonAttendees(id);
+
+  Promise.all([event, attendees, nonAttendees])
+  .then(results => res.render('event_view.html',
+    { event:    results[0],
+      users:    results[1],
+      addUsers: results[2],
+      errCode: false
+    }
+  ));
 }
 
-router.post('/add_event_user', addUsertoEvent);
+router.post('/add_event_user', addUserToEvent);
 
-function addUsertoEvent(req, res) {
+function addUserToEvent(req, res) {
   var body = req.body;
   var e_id = body["e_id"];
   var points = Number(body["points"]);
   var u_id = body["addUserId"];
-  console.log(body);
 
-
-  data.getEventById(e_id, function(rEvent) {
-    var attendance = {
-      "id":rEvent.id,
-      "name":rEvent.name,
-      "datetime":rEvent.datetime,
-      "points":points,
-      "officer":rEvent.officer,
-      "type":rEvent.type
-    }
-    data.addUserToEvent(u_id, attendance, function(){
-    });
-
+  eventData.getById(e_id)
+  .then(event => { return {
+      "id":           event.id,
+      "pointsEarned": points,
+      "type":         event.type
+  };})
+  .then(attendance => userEventData.addUserToEvent(u_id, attendance))
+  .then(() => {
     var path = '?v_id=' + e_id;
     res.redirect('/event_view' + path);
   });
-
 }
 
 router.post('/add_user_event', addEventToUser);
@@ -198,7 +195,6 @@ function addEventToUser(req, res) {
   .then(e => {
     var attendance = {
       "id": e.id,
-      "name": e.name,
       "pointsEarned": points,
       "type": e.type
     };

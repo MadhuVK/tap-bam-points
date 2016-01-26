@@ -20,17 +20,17 @@ exports.getEventsNotAttendedByUserId = function (id) {
 
 exports.getEventAttendees = function (eventId) {
   return pool.query(
-    "SELECT user.id, firstName, lastName FROM users INNER JOIN user_event " +
+    "SELECT users.id, firstName, lastName FROM users INNER JOIN user_event " +
     "ON users.id = user_event.userId WHERE user_event.eventId = ? AND user_event.valid",
     [eventId]
   );
 };
 
 exports.getEventNonAttendees = function (eventId) {
-    return pool.query(
-	  "SELECT user.id, firstName, lastName FROM users " +
-	  "WHERE id NOT IN (SELECT userId FROM user_event where eventId = ? AND valid) AND valid"
-	  [id]);
+  return pool.query(
+    "SELECT id, firstName, lastName FROM users " +
+    "WHERE id NOT IN (SELECT userId FROM user_event WHERE eventId = ? AND valid)",
+    [eventId]);
 };
 
 exports.addUserToEvent = function (userId, attendance) {
