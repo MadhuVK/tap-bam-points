@@ -17,17 +17,12 @@ var app = express();
 var session = require('express-session');
 var RedisStore = require('connect-redis')(session);
 
-// var srcPath = __dirname + '/sass';
-// var destPath = __dirname + '/public/stylesheets';
-
 app.use(sassMiddleware({
-    /* Options */
-    // src: __dirname,
     src: path.join(__dirname, 'public/stylesheets'),
     dest: path.join(__dirname, 'public/stylesheets'),
     debug: true,
     outputStyle: 'compressed',
-    prefix:  '/stylesheets'  // Where prefix is at <link rel="stylesheets" href="prefix/style.css"/>
+    prefix:  '/stylesheets',  // Where prefix is at <link rel="stylesheets" href="prefix/style.css"/>
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
