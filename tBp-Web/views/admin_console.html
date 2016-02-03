@@ -24,6 +24,7 @@
     </ul>
 
     <div id="user-tab">
+        <input type="text" id="search" placeholder="Type to search">
         <table id="point-table">
             <thead>
             <tr>
@@ -40,7 +41,7 @@
                 <% users.forEach(function(user){ %>
                 <tr>
                     <% var name = user.firstName + ' ' + user.lastName %>
-                    <td> <%= name %> </td>
+                    <td> <a href="user?u_id=<%= user.id %>"> <%= name %> </a> </td>
                     <td> <%= user.memberStatus %> </td>
                     <td class="point-cell"> <%= user.points.eventType['academic'] %> </td>
                     <td class="point-cell"> <%= user.points.eventType['community'] %> </td>
@@ -52,6 +53,18 @@
             </tbody>
         </table>
     </div>
+
+    <script>
+        var $rows = $('#point-table tbody tr');
+        $('#search').keyup(function() {
+            var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+
+            $rows.show().filter(function() {
+                var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+                return !~text.indexOf(val);
+            }).hide();
+        });
+    </script>
 
     <div id="event-tab">
         <table>

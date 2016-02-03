@@ -18,7 +18,7 @@ router.get('/', function(req, res, next) {
 
 router.get('/me', function(req, res) {
   if (!req.session.logged_in) {
-    res.redirect('/leaderboard'); 
+    res.redirect('/leaderboard');
   }
 
   var id = req.session.logged_in; 
@@ -43,6 +43,34 @@ router.get('/me', function(req, res) {
     );
   });
 });
+
+router.get('/user', showUser);
+
+function showUser(req, res) {
+  var loggedIn = req.session.admin_user;
+  if (loggedIn) {
+    var u_id = req.param('u_id');
+    console.log(u_id);
+    data.getUserById(u_id, function (user) {
+      data.getUserAttendanceHistory(u_id, function (history) {
+        data.getEventsNotAttendedByUserID(user.id, function (events) {
+          user.history = history;
+          pointStats = historyAnalyze(history, user.memberStatus);
+          res.render('user.html', {
+            title: 'Your TBP profile',
+            user: user,
+            pointStats: pointStats,
+            unattendedEvents: events,
+            admin: true
+          });
+        });
+      });
+    });
+  }
+  else {
+    res.redirect('/admin');
+  }
+}
 
 router.get('/leaderboard', function(req, res) {
   userData.getAll()
@@ -199,7 +227,8 @@ function addEventToUser(req, res) {
 
     return userEventData.addUserToEvent(u_id, attendance);
   })
-  .then(() => res.redirect('/me'));
+  .then(() => res.redirect('/user?u_id=' + u_id));
+
 }
 
 module.exports = router;

@@ -69,6 +69,7 @@
                 </tbody>
             </table>
         </section>
+        <% if (admin) { %>
         <% if (unattendedEvents != 0) { %>
         <section id="addevent">
             <h2>Add Event</h2>
@@ -87,6 +88,7 @@
             </form>
 
         </section>
+    <% } %>
     <% } %>
     </body>
 </html>
