@@ -6,6 +6,7 @@ var bodyParser = require('body-parser');
 
 var baseRoutes = require('./routes/index');
 var userRoutes = require('./routes/users');
+var apiBaseRoutes = require('./routes/api');
 var eventRoutes = require('./routes/events');
 var adminRoutes = require('./routes/admin');
 var errorRoutes = require('./routes/errors');
@@ -48,6 +49,7 @@ function routesSetup() {
   app.use(errorRoutes);
   app.use('/', baseRoutes);
   app.use('/admin', adminRoutes); 
+  app.use('/api', apiBaseRoutes); 
   app.use('/api/users', userRoutes);
   app.use('/api/events', eventRoutes);
 }

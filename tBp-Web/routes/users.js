@@ -3,6 +3,31 @@ var router = express.Router();
 var userData = require('../src/userData.js');
 var userEventData = require('../src/userEventData.js');
 
+var jwt = require('jsonwebtoken'); 
+var config = require('../bin/config')[process.env.NODE_ENV]
+
+router.use(function(req, res, next) {
+  var token = req.body["access_token"] || req.query["access_token"] || req.headers['x-access-token'];
+  if (token) {
+    jwt.verify(token, config.jwt_secret, function(err, decoded) {      
+      if (err) {
+        res.status(403).json({ 
+            success: false, 
+            message: 'Failed to authenticate token.' 
+          });    
+      } else {
+        next();
+      }
+    });
+
+  } else {
+    res.status(403).send({ 
+        success: false, 
+        message: 'No token provided.' 
+    });
+  }
+});
+
 router.route('/')
   .get(function (req, res) {
     userData.getAll()

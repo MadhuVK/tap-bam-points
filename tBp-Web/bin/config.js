@@ -11,6 +11,8 @@ module.exports = {
       database: "tBp"
     }, 
 
+    jwt_secret: "jubyjuby23",
+
     port: 3000
   }, 
 
