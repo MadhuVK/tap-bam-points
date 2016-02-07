@@ -21,13 +21,13 @@ namespace tBpShared
 		{
 			return new List<User> {
 				new TBPUser(uid: 0, fname: "Young", lname: "Geezy", barcode: "21822054882867", 
-					status: TBPUser.Status.Active, house: TBPUser.HouseColor.Blue), 
+					status: TBPUser.Status.Member, house: TBPUser.HouseColor.Blue), 
 				new TBPUser(uid: 1, fname: "Madhu", lname: "IsFat", barcode: "21822054855681", 
 					status: TBPUser.Status.Initiate, house: TBPUser.HouseColor.Green), 
 				new TBPUser(uid: 2, fname: "Juby", lname: "Juby", barcode: "21822054826575", 
-					status: TBPUser.Status.Active, house: TBPUser.HouseColor.Red), 
+					status: TBPUser.Status.Member, house: TBPUser.HouseColor.Red), 
 				new TBPUser(uid: 3, fname: "Bobby", lname: "Pendragon", barcode: "333333333", 
-					status: TBPUser.Status.Inactive, house: TBPUser.HouseColor.Red), 
+					status: TBPUser.Status.Member, house: TBPUser.HouseColor.Red), 
 			}; 
 		}
 

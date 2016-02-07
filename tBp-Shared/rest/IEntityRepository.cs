@@ -1,17 +1,16 @@
-﻿using System;
-using RestSharp; 
-
-/* This file is used to interact with the 
- * server database store. Don't interact with 
- * this directly, will be called by a timer. 
+﻿/* This file is used to interact with the 
+ * server database store. 
  */
 using System.Collections.Generic;
+using System; 
 
 
 namespace tBpShared
 {
 	public interface IEntityRepository
 	{
+
+		void AssignClient(Uri baseUrl, string auth_token); 
 
 		List<User> getUsers();
 

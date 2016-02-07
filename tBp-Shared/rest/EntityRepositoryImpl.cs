@@ -12,14 +12,6 @@ namespace tBpShared
 {
 	public class EntityRepositoryImpl : EntityRepository
 	{
-	 	public string BaseURL { get; protected set; } 
-		public IRestClient Client { get; protected set; }
-
-		public EntityRepositoryImpl ()
-		{
-			BaseURL = "127.0.0.1/api"; 
-			Client = new MobileRestClient (BaseURL); 
-		}
 
 		T Execute<T>(IRestRequest request)
 		{
@@ -34,12 +26,21 @@ namespace tBpShared
 			return response.Data; 
 		}
 
+
+
 		bool Execute(IRestRequest request)
 		{
 			var response = Client.Execute (request); 
 			return response.ErrorException != null; 
 		}
 
+		public override void AssignClient(Uri url, string token)
+		{
+			BaseURL = url; 
+			AccessToken = token; 
+			Client = new MobileRestClient (url.ToString ()); 
+			Client.AddDefaultHeader ("x-access-token", AccessToken); 
+		}
 
 		public new List<User> getUsers() 
 		{ 

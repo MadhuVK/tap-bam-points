@@ -1,29 +1,94 @@
 ﻿using System;
+using System.Text; 
+using System.Text.RegularExpressions; 
 using System.Linq; 
 using System.Collections.Generic; 
+using RestSharp; 
+using Newtonsoft.Json; 
+
+
 
 namespace tBpShared
 {
 	public abstract class EntityRepository : IEntityRepository
 	{
+		static readonly string URL_PATTERN = 
+			@"^(?<proto>.*://)?(?<host>[A-Za-z0-9\-\.]+)(?<port>:[0-9]+)?(?<query>.*)$";
+
 		static readonly IEntityRepository connection = new EntityRepositoryImpl(); 
+
+	 	public Uri BaseURL { get; protected set; } 
+		public string AccessToken { get; protected set; }
+		public IRestClient Client { get; protected set; }
 
 		public static IEntityRepository get() {
 			return connection; 
 		}
+
+		public abstract void AssignClient (Uri url, string token); 
+
+		public static string AuthenticateConnection(string baseUrl, string pass) 
+		{
+
+			var url_matches = new Regex (URL_PATTERN).Match(baseUrl); 
+
+			var urlBuilder = new UriBuilder (); 
+			urlBuilder.Scheme = "http";
+
+			string hostName = url_matches.Groups ["host"].Value; 
+			if (String.IsNullOrWhiteSpace (hostName)) {
+				return "No Host Found"; 
+			}
+			urlBuilder.Host = hostName; 
+
+			string port = url_matches.Groups ["port"].Value; 
+			if (!String.IsNullOrEmpty (port)) {
+				urlBuilder.Port = UInt16.Parse (port.Substring(1)); 
+			}
+
+			urlBuilder.Path = "api"; 
+
+			var client = new RestClient (urlBuilder.Uri); 
+			var request = new RestRequest ("authenticate", Method.POST); 
+			var pass_hash = BitConverter.ToString (Crypto.Hash (pass)); 
+			request.AddJsonBody (new {pass_hash}); 
+			request.Timeout = 5000;
+
+			var response = client.Execute (request); 
+			var responseContent = JsonConvert.DeserializeObject
+				<Dictionary<string, string>> (response.Content); 
+
+			string status, token, error; 
+			if (responseContent.TryGetValue ("success", out status)) {
+				if (Boolean.Parse (status)) {
+					responseContent.TryGetValue ("token", out token); 
+					connection.AssignClient (urlBuilder.Uri, token); 
+					return status; 
+				} else {
+					responseContent.TryGetValue ("error", out error); 
+					return error; 
+				}
+
+			}
+
+			return response.Content; 
+		}
+
+		
+		
 
 		/* Dummy implementations */ 
 
 		public virtual List<User> getUsers() {
 			return new List<User> {
 				new TBPUser(uid: 0, fname: "Harry", lname: "Potter", barcode: "123456789", 
-					status: TBPUser.Status.Active, house: TBPUser.HouseColor.Blue), 
+					status: TBPUser.Status.Member, house: TBPUser.HouseColor.Blue), 
 				new TBPUser(uid: 1, fname: "Atticus", lname: "Finch", barcode: "111111111", 
 					status: TBPUser.Status.Initiate, house: TBPUser.HouseColor.Green), 
 				new TBPUser(uid: 2, fname: "Nick", lname: "Davies", barcode: "222222222", 
-					status: TBPUser.Status.Active, house: TBPUser.HouseColor.Red), 
+					status: TBPUser.Status.Member, house: TBPUser.HouseColor.Red), 
 				new TBPUser(uid: 3, fname: "Bobby", lname: "Pendragon", barcode: "333333333", 
-					status: TBPUser.Status.Inactive, house: TBPUser.HouseColor.Red), 
+					status: TBPUser.Status.Member, house: TBPUser.HouseColor.Red), 
 			}; 
 		}
 

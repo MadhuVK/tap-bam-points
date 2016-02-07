@@ -5,7 +5,7 @@ namespace tBpShared
 {
 	public class TBPUser : User
 	{
-		public enum Status { Active, Inactive, Initiate, Officer };
+		public enum Status { Member, Initiate, Officer };
 		public enum HouseColor { Red, Green, Blue };
 
 		public Status MemberStatus { get; set; }

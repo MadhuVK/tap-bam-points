@@ -30,10 +30,7 @@ exports.login_admin = function(user, pass_hash) {
         "e363befcffda20881b47efc26f2a7f1a301d7bee9a1d9c45034e206aa7cc12d6";
 
     var valid_user = user.trim().toLowerCase() == tbp_admin;
-    var valid_password = pass_hash.toLowerCase().replace("-", "") == hash_compare;
-
-    console.log(valid_user);
-    console.log(valid_password);
+    var valid_password = pass_hash.toLowerCase().replace(/-/g, "") == hash_compare;
 
     return valid_user && valid_password;
 };

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net; 
 
 using Android.App;
 using Android.Content;
@@ -6,6 +7,8 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
+
+using tBpShared; 
 
 namespace tBpAndroid
 {
@@ -27,7 +30,12 @@ namespace tBpAndroid
 			EditText server = FindViewById<EditText> (Resource.Id.serverLoginText); 
 			EditText pass = FindViewById<EditText> (Resource.Id.serverPasswordText); 
 
-			bool validCredentials = true; // TODO Actually validate. Just passthrough for now
+
+			var validCredentials = false; 
+			var authResults = EntityRepository.AuthenticateConnection (server.Text, pass.Text); 
+			Boolean.TryParse (authResults, out validCredentials); 
+
+			Android.Util.Log.Info ("LoginActivity", "Validation Result: " + authResults); 
 
 			if (validCredentials) {
 				StartActivity(typeof(EventListActivity)); 
