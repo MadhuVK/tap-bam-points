@@ -2,10 +2,10 @@ using System;
 using RestSharp; 
 
 /* This file is used to interact with the 
- * server database store. Don't interact with 
- * this directly, will be called by a timer. 
+ * server database store. 
  */
 using System.Collections.Generic;
+using System.Linq;
 
  
 namespace tBpShared
@@ -42,19 +42,29 @@ namespace tBpShared
 			Client.AddDefaultHeader ("x-access-token", AccessToken); 
 		}
 
-		public new List<User> getUsers() 
+		public override List<User> getUsers() 
 		{ 
 			var request = new RestRequest ("users", Method.GET); 
 			return Execute<List<User>> (request); 
 		}
 
-		public new List<Event> getEvents() 
+		public override List<User> getUsers(Func<User, bool> condition) 
+		{
+			return getUsers ().Where (condition).ToList(); 
+		}
+
+		public override List<Event> getEvents() 
 		{ 
 			var request = new RestRequest ("events", Method.GET); 
 			return Execute<List<Event>> (request); 
 		}
 
-		public new List<Event> getEventsForUser(int userId) 
+		public override List<Event> getEvents(Func<Event, bool> condition) 
+		{
+			return getEvents ().Where (condition).ToList(); 
+		}
+
+		public override List<Event> getEventsForUser(int userId) 
 		{ 
 			var request = new RestRequest ("users/{id}/events", Method.GET); 
 			request.AddUrlSegment("id", userId.ToString());
@@ -62,7 +72,7 @@ namespace tBpShared
 			return Execute<List<Event>> (request); 
 		}
 
-		public new List<User> getUsersForEvent(int eventId) 
+		public override List<User> getUsersForEvent(int eventId) 
 		{ 
 			var request = new RestRequest ("events/{id}/users", Method.GET); 
 			request.AddUrlSegment("id", eventId.ToString());
@@ -70,7 +80,7 @@ namespace tBpShared
 			return Execute<List<User>> (request); 
 		}
 
-		public new User getUser(int userId) 
+		public override User getUser(int userId) 
 		{ 
 			var request = new RestRequest ("users/{id}", Method.GET); 
 			request.AddUrlSegment("id", userId.ToString());
@@ -78,7 +88,7 @@ namespace tBpShared
 			return Execute<User> (request); 
 		}
 
-		public new Event getEvent(int eventId) 
+		public override Event getEvent(int eventId) 
 		{ 
 			var request = new RestRequest ("events/{id}", Method.GET); 
 			request.AddUrlSegment ("id", eventId.ToString()); 
@@ -86,7 +96,7 @@ namespace tBpShared
 			return Execute<Event> (request); 
 		}
 
-		public new bool addUser(User user) 
+		public override bool addUser(User user) 
 		{ 
 			var request = new RestRequest ("users", Method.POST); 
 			Client.Execute (request); 
@@ -94,14 +104,14 @@ namespace tBpShared
 			return Execute (request); 
 		}
 
-		public new bool addEvent(Event e) 
+		public override bool addEvent(Event e) 
 		{ 
 			var request = new RestRequest ("events", Method.POST); 
 
 			return Execute (request); 
 		}
 
-		public new bool deleteUser(int userId) 
+		public override bool deleteUser(int userId) 
 		{
 			var request = new RestRequest ("users/{id}", Method.DELETE); 
 			request.AddUrlSegment ("id", userId.ToString()); 
@@ -109,7 +119,7 @@ namespace tBpShared
 			return Execute (request); 
 		}
 
-		public new bool deleteEvent(int eventId) 
+		public override bool deleteEvent(int eventId) 
 		{
 			var request = new RestRequest ("users/{id}", Method.DELETE); 
 			request.AddUrlSegment ("id", eventId.ToString()); 
@@ -117,7 +127,7 @@ namespace tBpShared
 			return Execute (request); 
 		}
 
-		public new bool addEventToUser(int userId, int eventId) 
+		public override bool addEventToUser(int userId, int eventId) 
 		{
 			var request = new RestRequest ("users/{uid}/events/{eid}", Method.PUT); 
 			request.AddUrlSegment ("uid", userId.ToString ()); 
@@ -127,7 +137,7 @@ namespace tBpShared
 			
 		}
 
-		public new bool deleteEventOnUser(int userId, int eventId) 
+		public override bool deleteEventOnUser(int userId, int eventId) 
 		{
 			var request = new RestRequest ("users/{uid}/events/{eid}", Method.DELETE); 
 			request.AddUrlSegment ("uid", userId.ToString ()); 

@@ -42,7 +42,7 @@ namespace tBpShared
 
 					// Only handles Json for now since RestSharp is being dumb
 					IDeserializer handler = null; 
-					if (raw.ContentType.Equals("application/json")) {
+					if (raw.ContentType.ToLower().Contains("application/json")) {
 						handler = JsonHandler; 
 					}
 
@@ -72,10 +72,11 @@ namespace tBpShared
 		{
 			public T Deserialize<T> (IRestResponse response)
 			{
-				if (typeof(T) is IEnumerable) {
-					return JsonConvert.DeserializeObject<T> (response.Content, new ListJsonConverter<T> ()); 
+				if (typeof(IEnumerable).IsAssignableFrom(typeof(T))) {
+					var baseType = typeof(T).GetGenericArguments () [0];
+					return JsonConvert.DeserializeObject<T> (response.Content, new MobileJsonConverter (baseType)); 
 				} else {
-					return JsonConvert.DeserializeObject<T> (response.Content, new SingleJsonConverter<T> ()); 
+					return JsonConvert.DeserializeObject<T> (response.Content, new MobileJsonConverter (typeof(T))); 
 				}
 			}
 

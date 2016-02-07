@@ -27,7 +27,7 @@ namespace tBpAndroid
 			base.OnCreate (savedInstanceState);
 
 			// Instantiate the events
-			mEventList = EntityDatabase.get().getEvents(); 
+			mEventList = EntityRepository.get().getEvents(); 
 
 			// Set our view from the "EventList" layout resource:
 			SetContentView (Resource.Layout.EventList);
@@ -110,24 +110,24 @@ namespace tBpAndroid
 			// TODO: Temporary and ugly
 			var e = mEventList[position] as TBPEvent; 
 			if (e != null) {
-				vh.CaptionType.Text = e.Type.ToString (); 
-				switch (e.Type) {
-				case TBPEvent.Category.Academic: 
-					vh.CaptionType.Text = "A";
-					vh.CaptionType.SetBackgroundResource (Resource.Drawable.circle_academic); 
-					break; 
-				case TBPEvent.Category.Community: 
-					vh.CaptionType.Text = "C";
-					vh.CaptionType.SetBackgroundResource (Resource.Drawable.circle_community); 
-					break; 
-				case TBPEvent.Category.Social: 
-					vh.CaptionType.Text = "S";
-					vh.CaptionType.SetBackgroundResource (Resource.Drawable.circle_social); 
-					break; 
-				case TBPEvent.Category.Wildcard: 
+				if (e.Wildcard) {
 					vh.CaptionType.Text = "W";
 					vh.CaptionType.SetBackgroundResource (Resource.Drawable.circle_wildcard); 
-					break; 
+				} else {
+					switch (e.Type) {
+					case TBPEvent.Category.Academic: 
+						vh.CaptionType.Text = "A";
+						vh.CaptionType.SetBackgroundResource (Resource.Drawable.circle_academic); 
+						break; 
+					case TBPEvent.Category.Community: 
+						vh.CaptionType.Text = "C";
+						vh.CaptionType.SetBackgroundResource (Resource.Drawable.circle_community); 
+						break; 
+					case TBPEvent.Category.Social: 
+						vh.CaptionType.Text = "S";
+						vh.CaptionType.SetBackgroundResource (Resource.Drawable.circle_social); 
+						break; 
+					}
 				}
 			}
 		}

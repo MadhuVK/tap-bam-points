@@ -6,10 +6,27 @@ using System.Collections.Generic;
 
 namespace tBpShared
 {
-	public abstract class MobileJsonConverter : JsonConverter
+	public class MobileJsonConverter : JsonConverter
 	{
-		protected abstract object Create (Type objectType, JObject jsonObject);
-		public abstract override bool CanConvert (Type objectType); 
+		public Type T{ get; set; }
+
+		public MobileJsonConverter(Type t) {
+			T = t; 
+		}
+
+		protected object Create (Type objectType, JObject jsonObject) 
+		{
+			if (FieldExists (jsonObject, "datetime")) {
+				return new TBPEvent (); 
+			} else {
+				return new TBPUser (); 
+			}
+		}
+
+		public override bool CanConvert (Type objectType)
+		{
+			return T.IsAssignableFrom(objectType);
+		}
 
 		public override object ReadJson (JsonReader reader, Type objectType,
 		                                  object existingValue, JsonSerializer serializer)
@@ -31,48 +48,4 @@ namespace tBpShared
 
 
 	}
-
-	public class ListJsonConverter<T> : MobileJsonConverter
-	{
-		protected override object Create (Type objectType, JObject jsonObject)
-		{
-			var baseType = typeof(T).GetGenericArguments () [0];
-			if (baseType == typeof(Event)) {
-				return new List<TBPEvent> (); 
-			} else if (baseType == typeof(User)) {
-				return new List<TBPUser> (); 
-			} else {
-				return default(T);
-			}
-		}
-
-		public override bool CanConvert (Type objectType)
-		{
-			var baseType = typeof(T).GetGenericArguments () [0]; 
-			return baseType.IsAssignableFrom (objectType); 
-		}
-
-	}
-
-	public class SingleJsonConverter<T> : MobileJsonConverter
-	{
-		protected override object Create (Type objectType, JObject jsonObject)
-		{
-			if (typeof(T) == typeof(Event)) {
-				return new List<TBPEvent> (); 
-			} else if (typeof(T) == typeof(User)) {
-				return new List<TBPUser> (); 
-			} else {
-				return default(T);
-			}
-		}
-
-		public override bool CanConvert (Type objectType)
-		{
-			return typeof(T).IsAssignableFrom (objectType);
-		}
-	}
-
 }
-
-

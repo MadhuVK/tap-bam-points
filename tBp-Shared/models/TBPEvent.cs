@@ -7,11 +7,12 @@ namespace tBpShared
 	public sealed class TBPEvent : Event
 	{
 
-		public enum Category { Academic, Social, Community, Wildcard };
+		public enum Category { Academic, Social, Community };
 
 		public Category Type { get; set; }
 		public int Points { get; set; }
 		public string Officer { get; set; }
+		public bool Wildcard { get; set; }
 
 
 		public TBPEvent() {}

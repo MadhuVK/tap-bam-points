@@ -26,6 +26,8 @@ namespace tBpShared
 		}
 
 		public abstract void AssignClient (Uri url, string token); 
+		public abstract List<User> getUsers (Func<User, bool> condition); 
+		public abstract List<Event> getEvents (Func<Event, bool> condition); 
 
 		public static string AuthenticateConnection(string baseUrl, string pass) 
 		{
@@ -110,6 +112,7 @@ namespace tBpShared
 					type:TBPEvent.Category.Community, points: 20, officer:"aAron"),
 			}; 
 		}
+
 
 		public virtual List<Event> getEventsForUser(int userId) {
 			var result = from e in getEvents ()
