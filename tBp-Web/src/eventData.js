@@ -1,6 +1,13 @@
 var pool = require('./dbClient.js');
 var jsonpatch = require('fast-json-patch');
 
+// a comparator for event objects
+exports.reverseChronological = (a, b) => {
+  if (a.datetime > b.datetime) return -1;
+  else if (a.datetime < b.datetime) return 1;
+  else return 0;
+};
+
 exports.getAll = function () {
   return pool.query("SELECT * FROM events WHERE valid = TRUE");
 };

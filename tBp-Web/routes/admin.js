@@ -24,7 +24,7 @@ function manage_admin(req, res, next) {
 	res.render('admin_console.html',
 	  { title: 'Admin Console',
 		users: results[0],
-		events: results[1]
+		events: results[1].sort(eventData.reverseChronological)
 	  }
 	);
   });

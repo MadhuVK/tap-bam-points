@@ -34,7 +34,7 @@ router.get('/me', function(req, res) {
     var history = results[1];
     var notAttended = results[2];
 
-    user.history = history;
+    user.history = history.sort(eventData.reverseChronological);
     var pointStats = historyAnalyze(user.history, user.memberStatus);
     res.render('user.html', {
       title: 'Your TBP profile',
