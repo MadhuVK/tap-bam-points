@@ -35,41 +35,41 @@ router.get('/me', function(req, res) {
 
     user.history = history;
     var pointStats = historyAnalyze(user.history, user.memberStatus);
-    res.render('user.html',
-      { title: 'Your TBP profile',
-        user: user,
-        pointStats: pointStats,
-        unattendedEvents: notAttended }
-    );
+    res.render('user.html', {
+      title: 'Your TBP profile',
+      user: user,
+      pointStats: pointStats,
+      unattendedEvents: notAttended,
+      admin: false
+    });
   });
 });
 
 router.get('/user', showUser);
 
-function showUser(req, res) {
+function showUser(req, res, next) {
   var loggedIn = req.session.admin_user;
-  if (loggedIn) {
-    var u_id = req.param('u_id');
-    console.log(u_id);
-    data.getUserById(u_id, function (user) {
-      data.getUserAttendanceHistory(u_id, function (history) {
-        data.getEventsNotAttendedByUserID(user.id, function (events) {
-          user.history = history;
-          pointStats = historyAnalyze(history, user.memberStatus);
-          res.render('user.html', {
-            title: 'Your TBP profile',
-            user: user,
-            pointStats: pointStats,
-            unattendedEvents: events,
-            admin: true
-          });
-        });
-      });
-    });
-  }
-  else {
+  if (!loggedIn) {
     res.redirect('/admin');
+    next();
   }
+
+  var id = req.param('u_id');
+  var user = userData.getById(id);
+  var history = userEventData.getUserAttendances(id);
+  var notAttended = userEventData.getEventsNotAttendedByUserId(id);
+  Promise.all([user, history, notAttended])
+  .then(results => {
+    user.history = results[0];
+    pointStats = historyAnalyze(results[1], user.memberStatus);
+    res.render('user.html', {
+      title: 'tBp user: ' + user.firstName + ' ' + user.lastName,
+      user: user,
+      pointStats: pointStats,
+      unattendedEvents: results[2],
+      admin: true
+    });
+  });
 }
 
 router.get('/leaderboard', function(req, res) {
