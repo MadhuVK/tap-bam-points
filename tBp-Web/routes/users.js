@@ -77,8 +77,13 @@ router.route('/:user_id/events/:event_id')
 
   .patch(function (req, res) {
     var eventPatch = req.body;
-    userEventData.patchAttendance(req.params.user_id, req.params.event_id, eventPatch)
-    .then(() => res.sendStatus(200));
+    if (eventPatch.length !== 1 || eventPatch[0].path !== '/type') {
+      res.sendStatus(400);
+    }
+    else {
+      userEventData.patchAttendance(req.params.user_id, req.params.event_id, eventPatch)
+      .then(() => res.sendStatus(200));
+    }
   })
 
   .delete(function (req, res) {

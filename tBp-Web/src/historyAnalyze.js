@@ -27,7 +27,7 @@ function analyze(history, requirements) {
       var typeTotal = pointTotals.eventType[type];
       var required = requirements.eventType[type];
       result.push({
-        type: type,
+        type: eventTypes[type].name,
         total: typeTotal,
         required: required,
         fulfilled: typeTotal >= required

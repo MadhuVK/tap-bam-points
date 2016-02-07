@@ -6,6 +6,7 @@ const userEventData = require('../src/userEventData.js');
 const historyAnalyze = require('../src/historyAnalyze.js');
 const auth_helper = require("../src/auth_helper");
 const points = require('../src/points.js');
+const eventTypes = require('../src/eventTypes.js');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -40,7 +41,8 @@ router.get('/me', function(req, res) {
       user: user,
       pointStats: pointStats,
       unattendedEvents: notAttended,
-      admin: false
+      admin: false,
+      eventTypes: eventTypes
     });
   });
 });
@@ -76,12 +78,11 @@ router.get('/leaderboard', function(req, res) {
   userData.getAll()
   .then(users => points.addDataToUsers(users))
   .then(users => {
-    res.render('leaderboard.html',
-	  { title: 'Leaderboard',
+    res.render('leaderboard.html', {
+      title: 'Leaderboard',
 	    users: users,
-        logged_out: !req.session.logged_in
-	  }
-	);
+      logged_out: !req.session.logged_in
+	  });
   });
 });
 

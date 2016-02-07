@@ -42,13 +42,21 @@ exports.addUserToEvent = function (userId, attendance) {
 };
 
 exports.getAttendance = function (userId, eventId) {
-  return pool.query("SELECT * FROM user_event WHERE userId = ? AND eventId = ? AND valid")
+  return pool.query("SELECT * FROM user_event WHERE userId = ? AND eventId = ? AND valid",
+    [userId, eventId])
     .then(result => result.length === 0 ? Promise.reject() : result[0]);
 };
 
 exports.patchAttendance = function (userId, eventId, patch) {
-  return getUserEventAttendance(userId, eventId)
-    .then(oldAttendance => jsonpatch.apply(oldAttendance, patch))
+  return exports.getAttendance(userId, eventId)
+    .then(oldAttendance => {
+      if (jsonpatch.apply(oldAttendance, patch)) {
+        return oldAttendance;
+      }
+      else {
+        Promise.reject(`Couldn't apply patch: $(patch)`);
+      }
+    })
     .then(updateAttendance);
 };
 

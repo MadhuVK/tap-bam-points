@@ -12,7 +12,7 @@ exports.users = [
 exports.events = [
   { "name": "The Chocolate Room", "datetime": "2015-10-01 10:30:00", "points": 1, "officer": "Augustus Gloop", "type": "social", "wildcard": false },
   { "name": "Dodgeball", "datetime": "2015-11-19 23:30:00", "points": 2, "officer": "Augustus Gloop", "type": "social", "wildcard": false },
-  { "name": "Jules Witch Burning", "datetime": "2015-10-31 23:59:00", "points": 5, "officer": "Magus Gee", "type": "community", "wildcard": false },
+  { "name": "Jules Witch Burning", "datetime": "2015-10-31 23:59:00", "points": 5, "officer": "Magus Gee", "type": "community", "wildcard": true },
   { "name": "Study Party", "datetime": "2016-01-11 20:01:00", "points": 3, "officer": "RHsiao", "type": "academic", "wildcard": false },
   { "name": "River Cleanup", "datetime": "2016-02-14 07:30:00", "points": 2, "officer": "Henrietta", "type": "community", "wildcard": false },
   { "name": "Bent Polishing", "datetime": "2016-02-01 13:40:30", "points": 1, "officer": "Bronze Lady", "type": "social", "wildcard": true },
