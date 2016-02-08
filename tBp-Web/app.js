@@ -28,25 +28,23 @@ app.use(sassMiddleware({
 app.use(express.static(path.join(__dirname, 'public')));
 
 function baseSetup() {
-    app.use(logger('dev'));
-    app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({
-        extended: false
-    }));
+  app.use(express.static(path.join(__dirname, 'public')));
+  app.use(logger('dev'));
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: false }));
 
-    app.use(cookieParser());
-    app.use(session({
-        store: new RedisStore({
-            host: 'localhost',
-            port: 6379,
-            db: 2,
-            pass: "jubyjuby22"
-        }),
-        secret: "MY_SECRET_KEY"
-    }));
+  app.use(cookieParser());
+  app.use(session({
+    store: new RedisStore({
+      host: 'localhost', 
+      port: 6379,
+      db: 2, 
+      pass: "jubyjuby22"
+    }), 
+    secret: "MY_SECRET_KEY"
+  })); 
 
-    app.use(express.static(path.join(__dirname, 'public')));
-    app.set('json spaces', 2);
+  app.set('json spaces', 2);
 }
 
 function viewEngineSetup() {
