@@ -41,7 +41,7 @@
                 <% users.forEach(function(user){ %>
                 <tr>
                     <% var name = user.firstName + ' ' + user.lastName %>
-                    <td> <a href="user?u_id=<%= user.id %>"> <%= name %> </a> </td>
+                    <td> <a href="user?id=<%= user.id %>"> <%= name %> </a> </td>
                     <td> <%= user.memberStatus %> </td>
                     <td class="point-cell"> <%= user.points.eventType['academic'] %> </td>
                     <td class="point-cell"> <%= user.points.eventType['community'] %> </td>

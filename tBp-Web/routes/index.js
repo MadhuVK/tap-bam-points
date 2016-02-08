@@ -49,26 +49,27 @@ router.get('/me', function(req, res) {
 router.get('/user', showUser);
 
 function showUser(req, res, next) {
-  var loggedIn = req.session.admin_user;
-  if (!loggedIn) {
+  if (!req.jwt.admin) {
     res.redirect('/admin');
-    next();
+    return next();
   }
 
-  var id = req.param('u_id');
+  var id = req.query.id;
   var user = userData.getById(id);
   var history = userEventData.getUserAttendances(id);
   var notAttended = userEventData.getEventsNotAttendedByUserId(id);
   Promise.all([user, history, notAttended])
   .then(results => {
-    user.history = results[0];
+    user = results[0];
+    user.history = results[1];
     pointStats = historyAnalyze(results[1], user.memberStatus);
     res.render('user.html', {
       title: 'tBp user: ' + user.firstName + ' ' + user.lastName,
       user: user,
       pointStats: pointStats,
       unattendedEvents: results[2],
-      admin: true
+      admin: true,
+      eventTypes: eventTypes
     });
   });
 }
@@ -92,15 +93,6 @@ function validateMobileLogin(req, res) {
   var valid = auth_helper.login_admin("tbp@ucsd.edu", req.body["pass_hash"]);
 
   res.status(200).json(valid);
-}
-
-function userLogin(req, res) {
-  var loggedIn = req.loggedIn;
-  if (loggedIn) {
-    res.redirect('/me');
-  } else {
-    res.redirect('/leaderboard');
-  }
 }
 
 function validateUserLogin(req, res) {
@@ -226,7 +218,7 @@ function addEventToUser(req, res) {
 
     return userEventData.addUserToEvent(u_id, attendance);
   })
-  .then(() => res.redirect('/user?u_id=' + u_id));
+  .then(() => res.redirect('/user?id=' + u_id));
 
 }
 
