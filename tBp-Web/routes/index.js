@@ -21,7 +21,7 @@ router.get('/me', function(req, res) {
     return res.redirect('/leaderboard');
   }
 
-  var id = req.token.id;
+  var id = req.jwt.sub;
 
   var personalInfo = userData.getById(id);
   var history = userEventData.getUserAttendances(id);
@@ -95,28 +95,27 @@ function validateMobileLogin(req, res) {
 }
 
 function userLogin(req, res) {
-  var loggedIn = req.session.logged_in; 
+  var loggedIn = req.loggedIn;
   if (loggedIn) {
-    res.redirect("/me");
+    res.redirect('/me');
   } else {
-    res.redirect("/leaderboard"); 
+    res.redirect('/leaderboard');
   }
 }
 
 function validateUserLogin(req, res) {
-  var hash = auth_helper.hash(req.body["password"]);
-  process.stdout.write("Logging in user " + hash + "... ");
+  var barcode = req.body['password'];
+  var hash = auth_helper.hash(barcode);
 
-  auth_helper.login_user(hash)
-  .then(userId => {
-    if (userId == -1) {
-      console.log("failed");
-      res.redirect("/leaderboard");
-    } else {
-      console.log("ok");
-      req.session.logged_in = userId;
-      res.redirect("/me"); //TODO: Use userId to store session
-    }
+  userData.getByHash(hash.toLowerCase())
+  .then(user => {
+    console.log(`[auth] ${user.firstName} ${user.lastName} logged in (id: ${user.id})`);
+    auth_helper.addJwtToResponse(res, user);
+    res.redirect('/me');
+  })
+  .catch(err => {
+    console.log(`[auth] Login failed with barcode ${barcode}: ${err}`);
+    res.redirect('/leaderboard');
   });
 }
 

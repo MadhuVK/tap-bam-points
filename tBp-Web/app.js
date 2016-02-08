@@ -16,8 +16,6 @@ var errorRoutes = require('./routes/errors');
 var config = require('./bin/config')[process.env.NODE_ENV];
 
 var app = express();
-var session = require('express-session');
-var RedisStore = require('connect-redis')(session);
 
 app.use(sassMiddleware({
     src: path.join(__dirname, 'public/stylesheets'),

@@ -1,8 +1,8 @@
-const userData = require("./userData.js");
-const crypto = require("crypto");
-const request = require('request');
-const jwt = require('jsonwebtoken');
 const config = require('../bin/config')[process.env.NODE_ENV];
+const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
+const request = require('request');
+const userData = require('./userData');
 
 const captchaSite = "6LfuTg4TAAAAABkpca63EfsbuSIZk7egO8EYRIOG";
 const captchaSecret = "6LfuTg4TAAAAAIKMgPpnkYEM6zcLhEbTB0oIqOnv";
@@ -41,16 +41,11 @@ exports.hash = function(data) {
     return crypto.createHash('sha256').update(data).digest('hex')
 }
 
-exports.login_user = function(pass_hash) {
-    return userData.getIdByHash(pass_hash.toLowerCase())
-      .catch(() => -1);
-};
-
 // This middleware attaches to / . Every request gets its attached JWT
-// evaluated for validity. If valid, req.loggedIn = true and req.token
+// evaluated for validity. If valid, req.loggedIn = true and req.jwt
 // is the payload of the JWT.
 exports.checkToken = function (req, res, next) {
-  var token = req.cookies.token;
+  var token = req.cookies.jwt;
 
   if (!token) {
     req.loggedIn = false;
@@ -65,9 +60,28 @@ exports.checkToken = function (req, res, next) {
     }
 
     req.loggedIn = true;
-    req.token = jwt.decode(token);
+    req.jwt = jwt.decode(token);
     return next();
   });
+}
+
+exports.addJwtToResponse = function (res, user) {
+  var token = jwtForUser(user);
+  res.append('Set-Cookie', `jwt=${token}; HttpOnly`);
+}
+
+function jwtForUser(user) {
+  var options = {
+    expiresIn: '7d',
+    subject: user.id,
+    jwtid: crypto.randomBytes(64).toString('base64'),
+  };
+
+  var payload = {
+    admin: user.memberStatus == 'officer',
+  }
+
+  return jwt.sign(payload, config.jwt_secret, options);
 }
 
 exports.captchaSite = captchaSite;

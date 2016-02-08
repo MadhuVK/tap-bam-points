@@ -1,4 +1,5 @@
 var pool = require('./dbClient.js');
+var auth_helper = require('./auth_helper.js');
 var jsonpatch = require('fast-json-patch');
 //var hashFunction = require('./auth_helper.js').hash;
 
@@ -48,30 +49,27 @@ exports.getById = function (id) {
     .then(prepUser);
 };
 
-exports.getByBarcode = function (bcode) {
-  var bhash = bcode; //hashFunction(bcode);
+exports.getByHash = function (hash) {
   return pool.query(
     "SELECT * FROM users WHERE barcodeHash = ? AND valid = TRUE",
-    [bhash])
+    [hash])
     .then(prepUser);
+};
+
+exports.getByBarcode = function (bcode) {
+  var bhash = auth_helper.hash(bcode);
+  return exports.getByHash(bhash);
 };
 
 // TODO: extract this, too
 function prepUser(result) {
-  if (result.length === 0) return Promise.reject();
+  if (result.length === 0) return Promise.reject('User not found');
 
   var user = result[0];
   delete user.valid;
   delete user.parentId;
   return user;
 }
-
-exports.getIdByHash = function (hash) {
-  return pool.query(
-    "SELECT id FROM users WHERE barcodeHash = ? AND users.valid = TRUE",
-    [hash])
-    .then(result => result[0].id);
-};
 
 exports.patch = function (userId, patch) {
   return exports.getUserById(userId)
