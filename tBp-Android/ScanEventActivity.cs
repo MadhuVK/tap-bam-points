@@ -24,7 +24,11 @@ namespace tBpAndroid
 	{
 		MobileBarcodeScanner scanner;
 		bool inProg; 
+		JsonSerializerSettings settings;
+		IEntityDatabase database;
 
+		const int SIGN_IN_REQUEST = 0;
+		const int CREATE_MEMBER_REQUEST = 1;
 
 		protected override void OnCreate (Bundle bundle)
 		{
@@ -33,7 +37,10 @@ namespace tBpAndroid
 			MobileBarcodeScanner.Initialize (Application);
 			scanner = new MobileBarcodeScanner ();
 			SetContentView (Resource.Layout.ScanEvent);
-	
+			settings = new JsonSerializerSettings { 
+				TypeNameHandling = TypeNameHandling.All
+			}; 
+			database = EntityDatabase.get ();
 			Button scan = FindViewById<Button> (Resource.Id.buttonScan);
 			scan.Click += async delegate {
 				inProg = true;
@@ -61,36 +68,51 @@ namespace tBpAndroid
 		void HandleScanResult(ZXing.Result result)
 		{
 			if (result != null && !string.IsNullOrEmpty (result.Text)) {
-				var database = EntityDatabase.get ();
 				User u = (TBPUser)database.getUserByBarcode (result.Text);
 				if (u == null) {
-					this.RunOnUiThread (() => Toast.MakeText (this, "Not a valid Barcode", ToastLength.Short).Show ());
+					var cMemberAct = new Intent (this, typeof(CreateMemberActivity));
+					cMemberAct.PutExtra ("barcode", result.Text);
+					StartActivityForResult (cMemberAct, CREATE_MEMBER_REQUEST);
 					return;
 				}
-				var mSignInAct = new Intent (this, typeof(MemberSignInActivity));
-				var settings = new JsonSerializerSettings { 
-					TypeNameHandling = TypeNameHandling.All
-				}; 
-				mSignInAct.PutExtra ("event", Intent.GetStringExtra ("event"));
-				mSignInAct.PutExtra ("user", JsonConvert.SerializeObject (u, settings));
-				//StartActivity (mSignInAct);
-				StartActivityForResult (mSignInAct, 0);
+				signInUser (u);
 			} else {
 				this.RunOnUiThread (() => Toast.MakeText (this, "Scanning Cancelled", ToastLength.Short).Show ());
 				inProg = false;
 			}
 		}
 
+		void signInUser(User u) 
+		{
+			var mSignInAct = new Intent (this, typeof(MemberSignInActivity));
+			mSignInAct.PutExtra ("event", Intent.GetStringExtra ("event"));
+			mSignInAct.PutExtra ("user", JsonConvert.SerializeObject (u, settings));
+			StartActivityForResult (mSignInAct, SIGN_IN_REQUEST);
+		}
+
 		protected override void OnActivityResult (int requestCode, Android.App.Result resultCode, Intent data)
 		{
 
 			base.OnActivityResult (requestCode, resultCode, data);
-			if (requestCode == 0) {
-				if (resultCode == Android.App.Result.Ok) {
-					var names = FindViewById<TextView> (Resource.Id.scanEventNames);
-					names.Append(data.GetStringExtra("userName") + "\n");
-				}
+			switch (requestCode) 
+			{
+				case SIGN_IN_REQUEST:
+					if (resultCode == Android.App.Result.Ok) {
+						var names = FindViewById<TextView> (Resource.Id.scanEventNames);
+						names.Append (data.GetStringExtra ("userName") + "\n");
+					}
+					break;
+				case CREATE_MEMBER_REQUEST:
+					if (resultCode == Android.App.Result.Ok) {
+						string user_string = data.GetStringExtra ("user");
+						TBPUser user = JsonConvert.DeserializeObject<TBPUser> (user_string);
+						database.saveUser (user);
+						this.RunOnUiThread (() => Toast.MakeText (this, "New User Created", ToastLength.Short).Show ());
+				
+					}
+				break;
 			}
+
 					
 		}
 			

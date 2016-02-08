@@ -13,17 +13,17 @@ namespace tBpShared
 
 		public TBPUser() {}
 		public TBPUser(int? uid, string fname, string lname, string barcode,
-			Status status, HouseColor house) : base(uid, fname, lname, barcode)
+			Status status, HouseColor? house) : base(uid, fname, lname, barcode)
 		{
 			MemberStatus = status; 
-			House = house; 
+			House = default (HouseColor); 
 		}
 
 		public TBPUser(int? uid, string fname, string lname, byte[] barcodeHash,
-			Status status, HouseColor house) : base(uid, fname, lname, barcodeHash)
+			Status status, HouseColor? house) : base(uid, fname, lname, barcodeHash)
 		{
 			MemberStatus = status; 
-			House = house; 
+			House = default(HouseColor);
 		}
 
 		public override int? save() 

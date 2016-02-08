@@ -108,9 +108,8 @@ namespace tBpShared
 			var result = from u in getUsers() 
 					where u.BarcodeHash.SequenceEqual(bHash)
 				select u;
-			
-
-			return result == null ? null : result.ElementAt(0);
+		
+			return !result.Any() ? null : result.ElementAt(0);
 		}
 
 		public virtual Event getEvent(int eventId)
