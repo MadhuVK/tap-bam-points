@@ -7,21 +7,20 @@ var auth_helper = require('../src/auth_helper');
 
 router.route('/authenticate')
   .post(function (req, res) {
-    var valid = auth_helper.login_admin("tbp@ucsd.edu", req.body["pass_hash"]); 
-
-    if (valid) {
-      var jwt_token = jwt.sign({user: "tbp@ucsd.edu"} , config.jwt_secret); 
+    auth_helper.check_admin_credentials('tbp@ucsd.edu', req.body['pass'])
+    .then(() => {
+      var jwt_token = jwt.sign({user: 'tbp@ucsd.edu'} , config.jwt_secret);
       res.status(200).json({
         success: true, 
         token: jwt_token
-      }); 
-    } else {
-      res.status(403).json({
+      });
+    })
+    .catch(err => {
+      res.status(401).json({
         success: false, 
-        error: "Invalid Authentication"
-      }); 
-    }
+        error: err
+      });
+    });
   });
-
 
 module.exports = router;
