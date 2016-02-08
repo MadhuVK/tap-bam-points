@@ -2,7 +2,8 @@ exports.users = [
   { "firstName": "Antonio", "lastName": "Ngonye", "barcodeHash": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3", "house": "red", "memberStatus": "initiate" },
   { "firstName": "Mel", "lastName": "D", "barcodeHash": "456", "house": "blue", "memberStatus": "initiate" },
   { "firstName": "Mad", "lastName": "Brown Dog", "barcodeHash": "789", "house": "red", "memberStatus": "member" },
-  { "firstName": "Spencer", "lastName": "Beard", "barcodeHash": "090", "house": "green", "memberStatus": "officer" },
+  { "firstName": "Spencer", "lastName": "Beard", "barcodeHash":
+  "b3a8e0e1f9ab1bfe3a36f231f676f78bb30a519d2b21e6c530c0eee8ebb4a5d0", "house": "green", "memberStatus": "officer" },
   { "firstName": "Sam", "lastName": "Wong", "barcodeHash": "666", "house": "green", "memberStatus": "officer" },
   { "firstName": "Satch", "lastName": "Boogie", "barcodeHash": "018", "house": "red", "memberStatus": "member" },
   { "firstName": "Donald", "lastName": "Kanooth", "barcodeHash": "111", "house": "red", "memberStatus": "initiate" },

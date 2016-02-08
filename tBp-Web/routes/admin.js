@@ -9,9 +9,7 @@ var router = express.Router();
 
 
 function manage_admin(req, res, next) {
-  var loggedIn = req.session.admin_user; 
-
-  if (!loggedIn) {
+  if (!req.jwt.admin) {
     res.render('admin_login.html', {sitekey: auth_helper.captchaSite});
     next();
   }
@@ -21,24 +19,27 @@ function manage_admin(req, res, next) {
 
   Promise.all([users, events])
   .then(results => {
-	res.render('admin_console.html',
-	  { title: 'Admin Console',
-		users: results[0],
-		events: results[1].sort(eventData.reverseChronological)
-	  }
-	);
+    res.render('admin_console.html', {
+      title: 'tBp Admin Console',
+      users: results[0],
+      events: results[1].sort(eventData.reverseChronological)
+      }
+    );
   });
 }
 
 function validateAdminLogin(req, res) {
-  auth_helper.validate_captcha(req, auth_helper.captchaSecret, function onValidate(valid_captcha) {
-    if (valid_captcha) {
-      if (auth_helper.login_admin(req.body["user"], auth_helper.hash(req.body["password"]))) {
-        req.session.admin_user = true;
-      }
-    }
-    res.redirect("/admin"); 
-  });
+  var username = req.body['user'];
+  var password = req.body['password'];
+
+  auth_helper.validate_captcha(req, auth_helper.captchaSecret)
+  .then(() => auth_helper.check_admin_credentials(username, password))
+  .then(() => {
+    console.log('[auth] Admin logged in');
+    auth_helper.addAdminJwtToResponse(res);
+  })
+  .catch(err => console.log(`[auth] Admin login failed: ${err}`))
+  .then(() => res.redirect('/admin'));
 }
 
 router.post('/', validateAdminLogin); 
