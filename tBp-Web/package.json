@@ -30,8 +30,6 @@
     "serve-favicon": "~2.2.1"
   },
   "devDependencies": {
-    "connect-redis": "^3.0.2",
-    "express-session": "^1.13.0",
     "supertest": "^1.1.0"
   }
 }

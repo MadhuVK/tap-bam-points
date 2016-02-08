@@ -1,6 +1,8 @@
 const userData = require("./userData.js");
 const crypto = require("crypto");
 const request = require('request');
+const jwt = require('jsonwebtoken');
+const config = require('../bin/config')[process.env.NODE_ENV];
 
 const captchaSite = "6LfuTg4TAAAAABkpca63EfsbuSIZk7egO8EYRIOG";
 const captchaSecret = "6LfuTg4TAAAAAIKMgPpnkYEM6zcLhEbTB0oIqOnv";
@@ -43,6 +45,30 @@ exports.login_user = function(pass_hash) {
     return userData.getIdByHash(pass_hash.toLowerCase())
       .catch(() => -1);
 };
+
+// This middleware attaches to / . Every request gets its attached JWT
+// evaluated for validity. If valid, req.loggedIn = true and req.token
+// is the payload of the JWT.
+exports.checkToken = function (req, res, next) {
+  var token = req.cookies.token;
+
+  if (!token) {
+    req.loggedIn = false;
+    return next();
+  }
+
+  jwt.verify(token, config.jwt_secret, (err, decoded) => {
+    if (err) {
+      console.log('[auth] Rejected token: ' + JSON.stringify(err));
+      req.loggedIn = false;
+      return next();
+    }
+
+    req.loggedIn = true;
+    req.token = jwt.decode(token);
+    return next();
+  });
+}
 
 exports.captchaSite = captchaSite;
 exports.captchaSecret = captchaSecret;

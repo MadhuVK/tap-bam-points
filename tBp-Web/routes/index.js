@@ -8,9 +8,8 @@ const auth_helper = require("../src/auth_helper");
 const points = require('../src/points.js');
 const eventTypes = require('../src/eventTypes.js');
 
-/* GET home page. */
 router.get('/', function(req, res, next) {
-  if (req.session.logged_in) {
+  if (req.loggedIn) {
     res.redirect('/me'); 
   } else {
     res.redirect('/leaderboard'); 
@@ -18,11 +17,11 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/me', function(req, res) {
-  if (!req.session.logged_in) {
-    res.redirect('/leaderboard');
+  if (!req.loggedIn) {
+    return res.redirect('/leaderboard');
   }
 
-  var id = req.session.logged_in; 
+  var id = req.token.id;
 
   var personalInfo = userData.getById(id);
   var history = userEventData.getUserAttendances(id);
@@ -81,7 +80,7 @@ router.get('/leaderboard', function(req, res) {
     res.render('leaderboard.html', {
       title: 'Leaderboard',
 	    users: users,
-      logged_out: !req.session.logged_in
+      logged_out: !req.loggedIn
 	  });
   });
 });
