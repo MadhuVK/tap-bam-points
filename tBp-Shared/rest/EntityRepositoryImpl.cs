@@ -7,6 +7,8 @@ using RestSharp;
 using System.Collections.Generic;
 using System.Linq;
 
+using Newtonsoft.Json.Linq; 
+
  
 namespace tBpShared
 {
@@ -127,7 +129,7 @@ namespace tBpShared
 			return Execute (request); 
 		}
 
-		public override bool addEventToUser(int userId, int eventId) 
+		public override bool addEventToUser(int userId, int eventId, JObject obj) 
 		{
 			var request = new RestRequest ("users/{uid}/events/{eid}", Method.PUT); 
 			request.AddUrlSegment ("uid", userId.ToString ()); 

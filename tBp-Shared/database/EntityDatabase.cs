@@ -3,6 +3,7 @@
  */
 
 using System; 
+using System.IO; 
 using System.Linq;
 using System.Collections.Generic; 
 
@@ -15,6 +16,20 @@ namespace tBpShared
 		public static IEntityDatabase get ()
 		{
 			return connection;
+		}
+
+		public virtual string GetAccessToken()
+		{
+			var documents = Environment.GetFolderPath (Environment.SpecialFolder.MyDocuments);
+			var filename = Path.Combine (documents, "tbp_access.db");
+			return File.ReadAllText (filename); 
+		}
+
+		public virtual void SaveAccessToken (string token)
+		{
+			var documents = Environment.GetFolderPath (Environment.SpecialFolder.MyDocuments);
+			var filename = Path.Combine (documents, "tbp_access.db");
+			File.WriteAllText(filename, token);
 		}
 
 		public virtual List<User> getUsers() 
@@ -41,19 +56,19 @@ namespace tBpShared
 		{
 			return new List<Event> {
 				new TBPEvent(id: 0, name: "Event1", date: new DateTime(1994, 03, 01), 
-					type:TBPEvent.Category.Community, points: 20, officer:"ATonyGuy"),
+					type:TBPEvent.Category.Community, points: 20, officer:"ATonyGuy", wildcard: true),
 				new TBPEvent(id: 1, name: "Event2", date: new DateTime(2000, 04, 01), 
-					type:TBPEvent.Category.Wildcard, points: 20, officer:"Juby"),
+					type:TBPEvent.Category.Academic, points: 20, officer:"Juby", wildcard: false),
 				new TBPEvent(id: 2, name: "Event3", date: new DateTime(2015, 05, 01), 
-					type:TBPEvent.Category.Academic, points: 20, officer:"BeardedOne"),
+					type:TBPEvent.Category.Academic, points: 20, officer:"BeardedOne", wildcard: true),
 				new TBPEvent(id: 3, name: "Event4", date: new DateTime(2016, 06, 01), 
-					type:TBPEvent.Category.Social, points: 20, officer:"aAron"),
+					type:TBPEvent.Category.Social, points: 20, officer:"aAron", wildcard: false),
 				new TBPEvent(id: 4, name: "Event5", date: new DateTime(2016, 07, 01), 
-					type:TBPEvent.Category.Community, points: 20, officer:"aAron"),
+					type:TBPEvent.Category.Community, points: 20, officer:"aAron", wildcard: false),
 				new TBPEvent(id: 5, name: "Event6", date: new DateTime(2016, 08, 01), 
-					type:TBPEvent.Category.Social, points: 20, officer:"aAron"),
+					type:TBPEvent.Category.Social, points: 20, officer:"aAron", wildcard: false),
 				new TBPEvent(id: 6, name: "Event7", date: new DateTime(2016, 09, 30), 
-					type:TBPEvent.Category.Community, points: 20, officer:"aAron"),
+					type:TBPEvent.Category.Community, points: 20, officer:"aAron", wildcard: true),
 			}; 
 		}
 

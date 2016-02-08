@@ -21,6 +21,7 @@ namespace tBpAndroid
 		RecyclerView.LayoutManager mLayoutManager;
 		EventListAdapter mAdapter;
 		List<Event> mEventList;
+		int mBackPressedCount; 
 
 		protected override void OnCreate (Bundle savedInstanceState)
 		{
@@ -45,6 +46,23 @@ namespace tBpAndroid
 			temporaryButton.Click += (sender, e) => 
 				Toast.MakeText(this, "Clicked temporary button", ToastLength.Short).Show(); 
 			temporaryButton.Visibility = ViewStates.Gone;
+		}
+
+		public override void OnBackPressed ()
+		{
+			if(mBackPressedCount >= 1)
+			{
+				Intent intent = new Intent(Intent.ActionMain);
+				intent.AddCategory(Intent.CategoryHome);
+				intent.SetFlags(ActivityFlags.NewTask);
+				StartActivity(intent);
+			}
+			else
+			{
+				Toast.MakeText(this, 
+					"Press the back button once again to close the application.", ToastLength.Short).Show();
+				mBackPressedCount++;
+			}
 		}
 
 	}

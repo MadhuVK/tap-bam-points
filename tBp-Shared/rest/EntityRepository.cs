@@ -5,6 +5,7 @@ using System.Linq;
 using System.Collections.Generic; 
 using RestSharp; 
 using Newtonsoft.Json; 
+using Newtonsoft.Json.Linq; 
 
 
 
@@ -61,10 +62,11 @@ namespace tBpShared
 				<Dictionary<string, string>> (response.Content); 
 
 			string status, token, error; 
-			if (responseContent.TryGetValue ("success", out status)) {
+			if (responseContent != null && responseContent.TryGetValue ("success", out status)) {
 				if (Boolean.Parse (status)) {
 					responseContent.TryGetValue ("token", out token); 
 					connection.AssignClient (urlBuilder.Uri, token); 
+					EntityDatabase.get ().SaveAccessToken (token); 
 					return status; 
 				} else {
 					responseContent.TryGetValue ("error", out error); 
@@ -76,8 +78,7 @@ namespace tBpShared
 			return response.Content; 
 		}
 
-		
-		
+
 
 		/* Dummy implementations */ 
 
@@ -97,19 +98,19 @@ namespace tBpShared
 		public virtual List<Event> getEvents() {
 			return new List<Event> {
 				new TBPEvent(id: 0, name: "Event1", date: new DateTime(1994, 03, 01), 
-					type:TBPEvent.Category.Community, points: 20, officer:"ATonyGuy"),
+					type:TBPEvent.Category.Community, points: 20, officer:"ATonyGuy", wildcard: true),
 				new TBPEvent(id: 1, name: "Event2", date: new DateTime(2000, 04, 01), 
-					type:TBPEvent.Category.Wildcard, points: 20, officer:"Juby"),
+					type:TBPEvent.Category.Academic, points: 20, officer:"Juby", wildcard: false),
 				new TBPEvent(id: 2, name: "Event3", date: new DateTime(2015, 05, 01), 
-					type:TBPEvent.Category.Academic, points: 20, officer:"BeardedOne"),
+					type:TBPEvent.Category.Academic, points: 20, officer:"BeardedOne", wildcard: false),
 				new TBPEvent(id: 3, name: "Event4", date: new DateTime(2016, 06, 01), 
-					type:TBPEvent.Category.Social, points: 20, officer:"aAron"),
+					type:TBPEvent.Category.Social, points: 20, officer:"aAron", wildcard: false),
 				new TBPEvent(id: 4, name: "Event5", date: new DateTime(2016, 07, 01), 
-					type:TBPEvent.Category.Community, points: 20, officer:"aAron"),
+					type:TBPEvent.Category.Community, points: 20, officer:"aAron", wildcard: true),
 				new TBPEvent(id: 5, name: "Event6", date: new DateTime(2016, 08, 01), 
-					type:TBPEvent.Category.Social, points: 20, officer:"aAron"),
+					type:TBPEvent.Category.Social, points: 20, officer:"aAron", wildcard: true),
 				new TBPEvent(id: 6, name: "Event7", date: new DateTime(2016, 09, 30), 
-					type:TBPEvent.Category.Community, points: 20, officer:"aAron"),
+					type:TBPEvent.Category.Community, points: 20, officer:"aAron", wildcard: false),
 			}; 
 		}
 
@@ -160,7 +161,7 @@ namespace tBpShared
 			return false; 
 		}
 
-		public virtual bool addEventToUser(int userId, int eventId) {
+		public virtual bool addEventToUser(int userId, int eventId, JObject obj) {
 			return false; 
 		}
 
@@ -169,16 +170,16 @@ namespace tBpShared
 		}
 
 		/* PATCH is not allowed in this revision */
-		public bool updateEventOnUser(int userId, int eventId) 
+		public bool updateEventOnUser(int userId, int eventId, JObject obj) 
 		{
 			throw new NotImplementedException ("Updating not allowed in app."); 
 		}
 
-		public bool updateUser(int userId) 
+		public bool updateUser(int userId, JObject obj) 
 		{
 			throw new NotImplementedException ("Updating not allowed in app."); 
 		}
-		public bool updateEvent(int eventId)
+		public bool updateEvent(int eventId, JObject obj)
 		{
 			throw new NotImplementedException ("Updating not allowed in app."); 
 		}

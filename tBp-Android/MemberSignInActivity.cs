@@ -66,6 +66,7 @@ namespace tBpAndroid
 
 		void signInMember(int hours)
 		{
+			var repo = EntityRepository.get (); 
 			string u = user.FirstName + " " + user.LastName + ": " + hours.ToString ();
 			Intent mIntent = new Intent (this, typeof(ScanEventActivity));
 			mIntent.PutExtra ("userName", u);

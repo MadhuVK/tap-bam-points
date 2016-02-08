@@ -6,6 +6,9 @@ namespace tBpShared
 {
 	public interface IEntityDatabase
 	{
+		string GetAccessToken ();
+		void SaveAccessToken(string token); 
+
 		List<User> getUsers(); 
 
 		/** Example Usage: 

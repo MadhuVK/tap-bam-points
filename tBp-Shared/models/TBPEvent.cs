@@ -17,11 +17,12 @@ namespace tBpShared
 
 		public TBPEvent() {}
 		public TBPEvent(int? id, string name, DateTime? date, 
-			Category type, int points, string officer) : base(id, name, date)
+			Category type, int points, string officer, bool wildcard) : base(id, name, date)
 		{
 			Type = type; 
 			Points = points; 
 			Officer = officer; 
+			Wildcard = wildcard; 
 		}
 
 		public override int? save() 

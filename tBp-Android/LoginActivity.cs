@@ -23,27 +23,60 @@ namespace tBpAndroid
 			SetContentView (Resource.Layout.Login);
 
 			Button button = FindViewById<Button> (Resource.Id.serverLoginButton);
-			button.Click += (sender, e) => validateLogin(); 
+			button.Click += (sender, e) => new LoginTask (this).Execute (); 
 		}
 
-		void validateLogin() {
-			EditText server = FindViewById<EditText> (Resource.Id.serverLoginText); 
-			EditText pass = FindViewById<EditText> (Resource.Id.serverPasswordText); 
+		class LoginTask : AsyncTask<Object, Object, bool> 
+		{
+			ProgressDialog progress; 
+			Activity activity; 
 
+			public LoginTask(Activity a) 
+			{
+				progress = new ProgressDialog(a); 
+				activity = a; 
+			}
 
-			var validCredentials = false; 
-			var authResults = EntityRepository.AuthenticateConnection (server.Text, pass.Text); 
-			Boolean.TryParse (authResults, out validCredentials); 
+			protected override void OnPreExecute ()
+			{
+				progress.SetMessage ("Receiving Authorization Token"); 
+				progress.Show (); 
+			}
 
-			Android.Util.Log.Info ("LoginActivity", "Validation Result: " + authResults); 
+			protected override bool RunInBackground (params Object[] @params)
+			{
+			
+				EditText server = activity.FindViewById<EditText> (Resource.Id.serverLoginText); 
+				EditText pass = activity.FindViewById<EditText> (Resource.Id.serverPasswordText); 
 
-			if (validCredentials) {
-				StartActivity(typeof(EventListActivity)); 
-			} else {
-				Toast.MakeText (this, "Invalid Password", ToastLength.Long).Show (); 
+				var validCredentials = false; 
+				var authResults = EntityRepository.AuthenticateConnection (server.Text, pass.Text); 
+				Boolean.TryParse (authResults, out validCredentials); 
+
+				Android.Util.Log.Info ("LoginActivity", "Validation Result: " + authResults); 
+				return validCredentials; 
+
+			}
+
+			protected override void OnPostExecute (bool result)
+			{
+				if (progress.IsShowing) {
+					progress.Dismiss (); 
+				}
+
+				if (result) {
+					Toast.MakeText (activity, "Sucessful Login", ToastLength.Short).Show (); 
+					activity.StartActivity (typeof(EventListActivity)); 
+					activity.Finish (); 
+				} else {
+					Toast.MakeText (activity, "Invalid Server/Pass", ToastLength.Short).Show (); 
+				}
+
 			}
 		}
+
 	}
+
 }
 
 
