@@ -7,6 +7,9 @@ var jwt = require('jsonwebtoken');
 var config = require('../bin/config')[process.env.NODE_ENV]
 
 router.use(function(req, res, next) {
+  if (req.jwt.admin)
+    return next();
+
   var token = req.body["access_token"] || req.query["access_token"] || req.headers['x-access-token'];
   if (token) {
     jwt.verify(token, config.jwt_secret, function(err, decoded) {      
