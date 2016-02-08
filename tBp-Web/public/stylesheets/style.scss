@@ -1,0 +1,64 @@
+@import 'bourbon/bourbon';
+@include font-face("robotolight", "../fonts/Roboto-Light", $file-formats: ttf eot);
+@include font-face("robotocon", "../fonts/RobotoCondensed-Regular", $file-formats: ttf eot);
+@include font-face("robotoreg", "../fonts/Roboto-Regular", $file-formats: ttf eot);
+@include font-face("robotomed", "../fonts/Roboto-Medium", $file-formats: ttf eot);
+@import 'user-page';
+@import 'leader-page';
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+}
+body {
+    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+    background: rgb(251,251,251);
+}
+.content-wrapper {
+    max-width: 750px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    height: 100%;
+    &.main-wrap {
+        padding-top: 125px;
+    }
+}
+.material-card {
+    border-radius: 2px;
+    background: rgb(255,255,255);
+    box-sizing: border-box;
+    padding: 24px;
+    margin-bottom: 30px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    color: #505050;
+    .card-title {
+        font-size: 1.4em;
+        color: #333;
+        margin-bottom: 20px;
+    }
+}
+.header {
+    background: #4285f4;
+    width: 100%;
+    color: #fafafa;
+    box-shadow: 0 0 15px rgb(101, 101, 101);
+    box-sizing: border-box;
+    height: 80px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    .logo {
+        position: absolute;
+        left: 30px;
+        font-size: 1em;
+        height: 80px;
+        top: 0;
+        line-height: 80px;
+    }
+    .content-wrapper {
+        line-height: 80px;
+        height: 80px;
+        font-size: 1.6em;
+    }
+}

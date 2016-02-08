@@ -1,0 +1,35 @@
+#user-page {
+    font-family: "robotoregular", sans-serif;
+    #bio-details {
+        text-transform: capitalize;
+        font-size: 1.4em;
+    }
+    #points {
+        margin-top: 40px;
+        table {
+            text-transform: capitalize;
+            table-layout: fixed;
+            width: 100%;
+            font-size: 14px;
+            thead th {
+                color: #444;
+                text-align: left;
+            }
+        }
+    }
+    #events {
+        table {
+            text-transform: capitalize;
+            table-layout: fixed;
+            width: 100%;
+            font-size: 14px;
+            thead th {
+                color: #444;
+                text-align: left;
+            }
+        }
+    }
+    #add-event {
+        display: none;
+    }
+}

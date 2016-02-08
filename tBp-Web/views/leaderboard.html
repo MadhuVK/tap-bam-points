@@ -1,40 +1,68 @@
 <!DOCTYPE html>
 
 <html>
-	<head>
-		<title><%= title %></title>
-		<link rel="stylesheet" href="/stylesheets/leaderboard.css">
-    </head>
 
-    <body>
-   		<table id="leaderboard">
-   			<thead>
-   				<th>Name</th>
-   				<th>Member Type</th>
-   				<th>Academic</th>
-   				<th>Community Service</th>
-   				<th>Social</th>
-   				<th>Total</th>
-   			</thead>
+<head>
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
 
-			<% for (user of users.sort(function (a, b) {
-				return a.points.total - b.points.total;
-				}).reverse()) { %>
-			<tr>
-				<td><%= user.firstName %> <%= user.lastName %></td>
-				<td><%= user.memberStatus %></td>
-				<td><%= user.points.eventType['academic'] %></td>
-				<td><%= user.points.eventType['community'] %></td>
-				<td><%= user.points.eventType['social'] %></td>
-				<td><%= user.points.total %></td>
-			</tr>
-			<% } %>
-		</table>
-                <% if (logged_out) { %> 
-                  <form action="/user_login" method="post"> 
-                    <input type="password" name="password" placeholder="Barcode"><br>
+<body>
+    <% var title = 'Leaderboard' %>
+    <% include common/header.html %>
+
+    <div id="leader-page" class="content-wrapper main-wrap">
+        <div class="material-card">
+            <div class="card-title">
+                Points Ranking
+            </div>
+            <table id="leaderboard">
+                <thead>
+                    <th width="20%">Name</th>
+                    <th width="20%">Member Type</th>
+                    <th width="15%">Academic</th>
+                    <th width="15%">Community Service</th>
+                    <th width="15%">Social</th>
+                    <th width="10%">Total</th>
+                </thead>
+
+                <% for (user of users.sort(function (a, b) {
+                return a.points.total - b.points.total;
+                }).reverse()) { %>
+                    <tr>
+                        <td>
+                            <%= user.firstName %>
+                                <%= user.lastName %>
+                        </td>
+                        <td>
+                            <%= user.memberStatus %>
+                        </td>
+                        <td>
+                            <%= user.points.eventType['academic'] %>
+                        </td>
+                        <td>
+                            <%= user.points.eventType['community'] %>
+                        </td>
+                        <td>
+                            <%= user.points.eventType['social'] %>
+                        </td>
+                        <td>
+                            <%= user.points.total %>
+                        </td>
+                    </tr>
+                    <% } %>
+            </table>
+            <% if (logged_out) { %>
+                <form action="/user_login" method="post">
+                    <input type="password" name="password" placeholder="Barcode">
+                    <br>
                     <input type="submit" name="submit">
-                  </form>
-                <% } %> 
-	</body>
+                </form>
+                <% } %>
+        </div>
+    </div>
+</body>
+
 </html>

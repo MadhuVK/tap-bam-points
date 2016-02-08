@@ -6,109 +6,123 @@
         <script src="/wildcardChange.js" defer></script>
         <script type="text/javascript">const USERID = <%= user.id %></script>
     </head>
-
     <body>
-        <section id="top">
-            <div id="bio">
-                <div id="bio-name">
-                    <h1><%= user.firstName %> <%= user.lastName %></h1>
+
+        <% var title = user.firstName + ' ' + user.lastName %>
+        <% include common/header.html %>
+
+        <div id="user-page" class="content-wrapper main-wrap">
+
+            <section id="top">
+                <div class="material-card">
+                    <div id="bio-details">
+                        <span><%= user.memberStatus %>, <%= user.house %> house</span>
+                    </div>
                 </div>
-                <div id="bio-details">
-                    <span><%= user.memberStatus %>, <%= user.house %> house</span>
+            </section>
+
+            <section id="points">
+                <% if (pointStats.length > 0) { %>
+                <div class="content-wrapper">
+                    <div id="point-stats-div" class="material-card">
+                        <div class="card-title">
+                            Your Points
+                        </div>
+                        <table id="point-stats">
+                            <thead>
+                                <th>Event Type</th>
+                                <th class="right">Total</th>
+                                <th class="right">Required</th>
+                            </thead>
+
+                            <% pointStats.forEach(function (stat) { %>
+                            <% if (stat.fulfilled) { %>
+                            <tr class="fulfilled">
+                                <td><%= stat.type %></td>
+                                <td class="right"><%= stat.total %></td>
+                                <td class="right"><%= stat.required %></td>
+                            <% } else { %>
+                            </tr>
+                            <tr class="unfulfilled">
+                                <td><%= stat.type %></td>
+                                <td class="right"><%= stat.total %></td>
+                                <td class="right"><%= stat.required %></td>
+                            </tr>
+                            <% } }) %>
+                        </table>
+                    </div>
                 </div>
-            </div>
-
-            <% if (pointStats.length > 0) { %>
-            <div id="point-stats-div">
-                <table id="point-stats">
-                    <thead>
-                        <th>Event Type</th>
-                        <th class="right">Total</th>
-                        <th class="right">Required</th>
-                    </thead>
-
-                    <% pointStats.forEach(function (stat) { %>
-                    <% if (stat.fulfilled) { %>
-                    <tr class="fulfilled">
-                        <td><%= stat.type %></td>
-                        <td class="right"><%= stat.total %></td>
-                        <td class="right"><%= stat.required %></td>
-                    <% } else { %>
-
-                    <tr class="unfulfilled">
-                        <td><%= stat.type %></td>
-                        <td class="right"><%= stat.total %></td>
-                        <td class="right"><%= stat.required %></td>
-                    </tr>
-                    <% } }) %>
-                </table>
-            </div>
-            <% } %>
-        </section>
-
-        <section id="events">
-            <h2>Events</h2>
-            <table id="history">
-                <thead>
-                    <th>Name</th>
-                    <th>Points</th>
-                    <th>Type</th>
-                    <th>Date</th>
-                </thead>
-
-                <tbody>
-                <% if (user.history.length > 0) { %>
-                  <% user.history.forEach(function (attendance) { %>
-                    <tr id=<%= 'event_' + attendance.eventId %>
-                    <% if (attendance.wildcard) { %>
-                    class="wildcard_event"
-                    <% } %>
-                    >
-                        <td><%= attendance.name %></td>
-                        <td class="center"><%= attendance.pointsEarned %></td>
-                        <td>
-                        <% if (attendance.wildcard) { %>
-                            <select name="setWildcard">
-                            <% for (var type in eventTypes) { %>
-                              <option value=<%= type %>
-                                <% if (type === attendance.type) { %>
-                                selected
-                                <% } %>
-                              ><%= eventTypes[type].name %></option>
-                            <% } %>
-                            </select>
-                        <% } else { %>
-                        <%= eventTypes[attendance.type].name %>
-                        <% } %>
-                        </td>
-
-                        <td><%= attendance.datetime %></td>
-                    </tr>
-                    <% }) %>
-                <% } else { %>
-                    <tr><td colspan="6" class="center">No events attended</tr></td>
                 <% } %>
-                </tbody>
-            </table>
-        </section>
-        <% if (admin && unattendedEvents.length > 0) { %>
-        <section id="addevent">
-            <h2>Add Event</h2>
+            </section>
 
-            <form action="add_user_event" method="post" name="addEvent">
-                <input type="hidden" name="u_id" value= <%=user.id %> >
-                Event: <select name="addEventId">
-                    <% unattendedEvents.forEach( function (event) { %>
-                    <% var eDate = new Date(event.datetime) %>
-                    <option value="<%= event.id%>"><%= event.name%> <%= eDate.toDateString()%></option>
-                    <% }) %>
-                </select> <br>
+            <section id="events">
+                <div class="material-card">
+                    <div class="card-title">
+                        Events Attended
+                    </div>
+                    <table id="history">
+                        <thead>
+                            <th>Name</th>
+                            <th>Points</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                        </thead>
 
-                Points: <input type="number" name="points" min="0.5" max ="5" step="0.5" value="1"> <br>
-                <input type="submit" value="Add">
-            </form>
+                        <tbody>
+                        <% if (user.history.length > 0) { %>
+                          <% user.history.forEach(function (attendance) { %>
+                            <tr id=<%= 'event_' + attendance.eventId %>
+                            <% if (attendance.wildcard) { %>
+                            class="wildcard_event"
+                            <% } %>
+                            >
+                                <td><%= attendance.name %></td>
+                                <td class="center"><%= attendance.pointsEarned %></td>
+                                <td>
+                                <% if (attendance.wildcard) { %>
+                                    <select name="setWildcard">
+                                    <% for (var type in eventTypes) { %>
+                                      <option value=<%= type %>
+                                        <% if (type === attendance.type) { %>
+                                        selected
+                                        <% } %>
+                                      ><%= eventTypes[type].name %></option>
+                                    <% } %>
+                                    </select>
+                                <% } else { %>
+                                <%= eventTypes[attendance.type].name %>
+                                <% } %>
+                                </td>
 
-        </section>
-    <% } %>
+                                <td><%= attendance.datetime.toDateString() %></td>
+                            </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr><td colspan="6" class="center">No events attended</tr></td>
+                        <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <% if (admin && unattendedEvents.length > 0) { %>
+            <section id="addevent">
+                <h2>Add Event</h2>
+
+                <form action="add_user_event" method="post" name="addEvent">
+                    <input type="hidden" name="u_id" value= <%=user.id %> >
+                    Event: <select name="addEventId">
+                        <% unattendedEvents.forEach( function (event) { %>
+                        <% var eDate = new Date(event.datetime) %>
+                        <option value="<%= event.id%>"><%= event.name%> <%= eDate.toDateString()%></option>
+                        <% }) %>
+                    </select> <br>
+
+                    Points: <input type="number" name="points" min="0.5" max ="5" step="0.5" value="1"> <br>
+                    <input type="submit" value="Add">
+                </form>
+
+            </section>
+            <% } %>
+        </div>
     </body>
 </html>
