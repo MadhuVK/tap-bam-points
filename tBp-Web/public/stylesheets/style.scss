@@ -16,7 +16,9 @@ body {
     background: rgb(251,251,251);
 }
 .content-wrapper {
-    max-width: 750px;
+    box-sizing: border-box;
+    padding: 0 25px;
+    max-width: 800px;
     margin: 0 auto;
     box-sizing: border-box;
     height: 100%;
@@ -37,6 +39,14 @@ body {
         color: #333;
         margin-bottom: 20px;
     }
+    tr td {
+        border-bottom: 1px solid rgb(242, 242, 242);
+        padding: 8px 0;
+    }
+
+    tr:last-child td {
+        border: none;
+    }
 }
 .header {
     background: #4285f4;
@@ -44,21 +54,33 @@ body {
     color: #fafafa;
     box-shadow: 0 0 15px rgb(101, 101, 101);
     box-sizing: border-box;
-    height: 80px;
+    height: 100px;
     position: fixed;
     top: 0;
     left: 0;
+    .content-wrapper {
+        line-height: 125px;
+        height: 100px;
+        font-size: 1.6em;
+        position: relative;
+    }
     .logo {
         position: absolute;
-        left: 30px;
-        font-size: 1em;
-        height: 80px;
-        top: 0;
-        line-height: 80px;
+        left: 25px;
+        top: 27px;
+        font-size: 0.65em;
+        line-height: 1em;
     }
-    .content-wrapper {
-        line-height: 80px;
-        height: 80px;
-        font-size: 1.6em;
+    .logout {
+        position: absolute;
+        right: 20px;
+        top: 38px;
+
+        &:hover {
+            cursor: pointer;
+            svg path {
+                fill: #bdcde7;
+            }
+        }
     }
 }
