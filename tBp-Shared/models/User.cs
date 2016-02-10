@@ -8,7 +8,7 @@ namespace tBpShared
 		public int? Id { get; set; }
 		public string LastName { get; set; } 
 		public string FirstName { get; set; }
-		public byte[] BarcodeHash { get; set; }
+		public string BarcodeHash { get; set; }
 
 		protected User() {}
 		protected User(int? uid, string fname, string lname, string barcode)
@@ -16,7 +16,8 @@ namespace tBpShared
 			Id = uid;
 			FirstName = fname; 
 			LastName = lname; 
-			BarcodeHash = Crypto.Hash (barcode);
+			byte[] bHash =  Crypto.Hash (barcode);
+			BarcodeHash = BitConverter.ToString (bHash).ToLower ().Replace ("-", "");
 		}
 
 		protected User(int? uid, string fname, string lname, byte[] barcodeHash)
@@ -24,7 +25,7 @@ namespace tBpShared
 			Id = uid;
 			FirstName = fname; 
 			LastName = lname; 
-			BarcodeHash = barcodeHash; 
+			BarcodeHash = BitConverter.ToString (barcodeHash).ToLower ().Replace ("-", "");
 		}
 
 		public abstract int? save (); 

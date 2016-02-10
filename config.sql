@@ -26,7 +26,7 @@ PRIMARY KEY (id)
 
 CREATE TABLE user_extensions (
 parentId        INT                             NOT NULL,
-house           ENUM('red', 'green', 'blue')    NOT NULL,
+house           ENUM('red', 'green', 'blue', 'black')    NOT NULL,
 memberStatus    ENUM('initiate', 'member', 'officer') NOT NULL,
 
 PRIMARY KEY (parentId),

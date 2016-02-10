@@ -1,13 +1,19 @@
 exports.users = [
   { "firstName": "Antonio", "lastName": "Ngonye", "barcodeHash": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3", "house": "red", "memberStatus": "initiate" },
   { "firstName": "Mel", "lastName": "D", "barcodeHash": "456", "house": "blue", "memberStatus": "initiate" },
-  { "firstName": "Mad", "lastName": "Brown Dog", "barcodeHash": "789", "house": "red", "memberStatus": "member" },
-  { "firstName": "Spencer", "lastName": "Beard", "barcodeHash":
-  "b3a8e0e1f9ab1bfe3a36f231f676f78bb30a519d2b21e6c530c0eee8ebb4a5d0", "house": "green", "memberStatus": "officer" },
+  { "firstName": "Spencer", "lastName": "Beard", "barcodeHash": "b3a8e0e1f9ab1bfe3a36f231f676f78bb30a519d2b21e6c530c0eee8ebb4a5d0", "house": "green", "memberStatus": "officer" },
+  { "firstName": "Mad", "lastName": "Brown Dog", "barcodeHash": "9c627ec9d5082d357417b01b44a03299c8573fb01f6f000bf2a1ffb7bc00dce2", "house": "red", "memberStatus": "member" },
   { "firstName": "Sam", "lastName": "Wong", "barcodeHash": "666", "house": "green", "memberStatus": "officer" },
   { "firstName": "Satch", "lastName": "Boogie", "barcodeHash": "018", "house": "red", "memberStatus": "member" },
   { "firstName": "Donald", "lastName": "Kanooth", "barcodeHash": "111", "house": "red", "memberStatus": "initiate" },
   { "firstName": "Rish", "lastName": "l'Bish", "barcodeHash": "424", "house": "blue", "memberStatus": "initiate" },
+  { "firstName": "Aaron", "lastName": "Gee", "barcodeHash": "14156607c661b8816e38accaeb9492ac753925549a511c31e399a62e402810b3", "house": "blue", "memberStatus": "officer" },
+  { "firstName": "Jessie", "lastName": "Qin", "barcodeHash": "806ce62bb68f106c032197685d1024a8647451396b6818be5e4a08f8a9f83035", "house": "blue", "memberStatus": "officer" },
+  { "firstName": "Rachel", "lastName": "Hiswang", "barcodeHash": "0d12edbb2000f0eb243b11b12b93d592230bcb22ec4fcf138f842ed2b7c7be77", "house": "blue", "memberStatus": "officer" },
+
+
+
+
 ];
 
 exports.events = [

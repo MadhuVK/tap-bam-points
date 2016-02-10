@@ -56,7 +56,7 @@ namespace tBpAndroid
 			if (Event.Id == null) {
 				throw new Exception ("Invalid event id on load"); 
 			} else {
-				Users = EntityDatabase.get ().getUsersForEvent (Event.Id.GetValueOrDefault ()); 
+				Users = EntityRepository.get ().getUsersForEvent (Event.Id.GetValueOrDefault ()); 
 			}
 
 			SetContentView (Resource.Layout.IndividualEventCardView); 

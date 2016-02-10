@@ -23,6 +23,7 @@ namespace tBpAndroid
 		TBPEvent cEvent;
 		TBPUser user;
 		const int maxhours = 5;
+
 		protected override void OnCreate (Bundle bundle)
 		{
 			base.OnCreate (bundle);
@@ -43,6 +44,7 @@ namespace tBpAndroid
 			Spinner hours = FindViewById<Spinner> (Resource.Id.memberSignInPoints);
 			ArrayAdapter hAdapt = new ArrayAdapter<int> (this, Android.Resource.Layout.SimpleListItem1, Enumerable.Range (1, maxhours).ToList ());
 			hours.Adapter = hAdapt;
+
 			if (cEvent.Points >= maxhours)
 				hours.SetSelection (hAdapt.GetPosition (maxhours));
 			else
@@ -57,6 +59,9 @@ namespace tBpAndroid
 					cat.SetSelection (i);
 			}
 
+			if (!cEvent.Wildcard) {
+				cat.Enabled = false;
+			}
 
 
 			done.Click += (sender, e) => signInMember ((int)hours.SelectedItem);
@@ -69,6 +74,9 @@ namespace tBpAndroid
 			string u = user.FirstName + " " + user.LastName + ": " + hours.ToString ();
 			Intent mIntent = new Intent (this, typeof(ScanEventActivity));
 			mIntent.PutExtra ("userName", u);
+
+			//TO DO: ADD USER TO EVENT
+		
 			SetResult (Android.App.Result.Ok, mIntent);
 			Finish ();
 		}

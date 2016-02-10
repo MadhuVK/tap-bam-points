@@ -23,7 +23,7 @@ namespace tBpAndroid
 	public class ScanEventActivity : Activity
 	{
 		MobileBarcodeScanner scanner;
-		bool inProg; 
+		bool continueScan; 
 		JsonSerializerSettings settings;
 		IEntityDatabase database;
 
@@ -33,7 +33,7 @@ namespace tBpAndroid
 		protected override void OnCreate (Bundle bundle)
 		{
 			base.OnCreate (bundle);
-			inProg = false;
+			continueScan = false;
 			MobileBarcodeScanner.Initialize (Application);
 			scanner = new MobileBarcodeScanner ();
 			SetContentView (Resource.Layout.ScanEvent);
@@ -43,23 +43,27 @@ namespace tBpAndroid
 			database = EntityDatabase.get ();
 			Button scan = FindViewById<Button> (Resource.Id.buttonScan);
 			scan.Click += async delegate {
-				inProg = true;
+				continueScan = false;
 				var result = await scanner.Scan();
 				HandleScanResult(result);
 			};
+			Button done = FindViewById<Button> (Resource.Id.buttonScanEventDone);
 
+			done.Click += (sender, e) => Finish(); 
 
 		}
 
 		protected override void OnResume ()
 		{
 			base.OnResume ();
-			if(inProg)	
+			if (continueScan) {
 				doScan ();
+			}
 		}
 
 		async void doScan()
 		{
+			continueScan = false;
 			var result = await scanner.Scan ();
 			HandleScanResult (result);
 		}
@@ -68,7 +72,10 @@ namespace tBpAndroid
 		void HandleScanResult(ZXing.Result result)
 		{
 			if (result != null && !string.IsNullOrEmpty (result.Text)) {
-				User u = (TBPUser)database.getUserByBarcode (result.Text);
+				byte[] barcodeHash = Crypto.Hash (result.Text);
+				string hexstring = BitConverter.ToString (barcodeHash).ToLower ().Replace ("-", "");
+				List<User> lookupResults = EntityRepository.get ().getUsers (user => user.BarcodeHash == hexstring);
+				User u = lookupResults.Count == 0 ? null :(TBPUser) lookupResults.ElementAt(0);
 				if (u == null) {
 					var cMemberAct = new Intent (this, typeof(CreateMemberActivity));
 					cMemberAct.PutExtra ("barcode", result.Text);
@@ -76,9 +83,10 @@ namespace tBpAndroid
 					return;
 				}
 				signInUser (u);
+				continueScan = true;
 			} else {
 				this.RunOnUiThread (() => Toast.MakeText (this, "Scanning Cancelled", ToastLength.Short).Show ());
-				inProg = false;
+				continueScan = false;
 			}
 		}
 
@@ -96,20 +104,23 @@ namespace tBpAndroid
 			base.OnActivityResult (requestCode, resultCode, data);
 			switch (requestCode) 
 			{
-				case SIGN_IN_REQUEST:
-					if (resultCode == Android.App.Result.Ok) {
-						var names = FindViewById<TextView> (Resource.Id.scanEventNames);
-						names.Append (data.GetStringExtra ("userName") + "\n");
-					}
-					break;
-				case CREATE_MEMBER_REQUEST:
-					if (resultCode == Android.App.Result.Ok) {
-						string user_string = data.GetStringExtra ("user");
-						TBPUser user = JsonConvert.DeserializeObject<TBPUser> (user_string);
-						database.saveUser (user);
-						this.RunOnUiThread (() => Toast.MakeText (this, "New User Created", ToastLength.Short).Show ());
-				
-					}
+			case SIGN_IN_REQUEST:
+				if (resultCode == Android.App.Result.Ok) {
+					var names = FindViewById<TextView> (Resource.Id.scanEventNames);
+					names.Append (data.GetStringExtra ("userName") + "\n");
+				} else {
+					this.RunOnUiThread (() => Toast.MakeText (this, "User Not Signed In", ToastLength.Short).Show ());
+				}
+				break;
+			case CREATE_MEMBER_REQUEST:
+				if (resultCode == Android.App.Result.Ok) {
+					string user_string = data.GetStringExtra ("user");
+					TBPUser user = JsonConvert.DeserializeObject<TBPUser> (user_string);
+					signInUser (user);
+					this.RunOnUiThread (() => Toast.MakeText (this, "New User Created", ToastLength.Short).Show ());
+				} else {
+					this.RunOnUiThread (() => Toast.MakeText (this, "User Not Created", ToastLength.Short).Show ());
+				}
 				break;
 			}
 

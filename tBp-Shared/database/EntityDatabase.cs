@@ -106,7 +106,7 @@ namespace tBpShared
 			
 			byte[] bHash = Crypto.Hash (barcode);
 			var result = from u in getUsers() 
-					where u.BarcodeHash.SequenceEqual(bHash)
+					where u.BarcodeHash == barcode
 				select u;
 		
 			return !result.Any() ? null : result.ElementAt(0);
