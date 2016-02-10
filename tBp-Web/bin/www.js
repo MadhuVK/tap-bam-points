@@ -6,8 +6,14 @@
 
 var app = require('../app');
 var debug = require('debug')('tBp-Web:server');
-var http = require('http');
+var https = require('https');
+var fs = require('fs');
 
+const options = {
+  key: fs.readFileSync('rsa/server.key'),
+  cert: fs.readFileSync('rsa/server.crt'),
+  passphrase: 'bee98eb898ce2b220ec15ab79680f2a6ae849a1d5cadaed48b863bdaf7f2dd59',
+};
 
 /**
  * Get port from environment and store in Express.
@@ -17,10 +23,10 @@ var port = normalizePort(app.config.port);
 app.set('port', port);
 
 /**
- * Create HTTP server.
+ * Create HTTPS server.
  */
 
-var server = http.createServer(app);
+var server = https.createServer(options, app);
 
 /**
  * Listen on provided port, on all network interfaces.

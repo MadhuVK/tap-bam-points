@@ -8,6 +8,11 @@ const STATUS_CODES = require('http').STATUS_CODES;
 const captchaSite = "6LfuTg4TAAAAABkpca63EfsbuSIZk7egO8EYRIOG";
 const captchaSecret = "6LfuTg4TAAAAAIKMgPpnkYEM6zcLhEbTB0oIqOnv";
 
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: true,
+};
+
 
 exports.validate_captcha = function(req, captcha_secret) {
   var options = {
@@ -91,7 +96,7 @@ exports.checkToken = function (req, res, next) {
 
 exports.addJwtToResponse = function (res, user) {
   var token = jwtForUser(user);
-  res.append('Set-Cookie', `jwt=${token}; HttpOnly`);
+  res.cookie('jwt', token, COOKIE_OPTIONS);
 }
 
 // See above for note about this temporary logic
@@ -102,7 +107,8 @@ exports.addAdminJwtToResponse = function (res) {
   };
 
   var admin_token = jwt.sign({}, config.jwt_secret, options);
-  res.append('Set-Cookie', `jwt_admin=${admin_token}; HttpOnly`);
+  console.log(COOKIE_OPTIONS);
+  res.cookie('jwt_admin', token, COOKIE_OPTIONS);
 }
 
 function jwtForUser(user) {
