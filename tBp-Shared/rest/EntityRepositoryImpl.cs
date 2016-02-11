@@ -117,7 +117,7 @@ namespace tBpShared
 		{
 			var request = new RestRequest ("users/{id}", Method.DELETE); 
 			request.AddUrlSegment ("id", userId.ToString()); 
-
+			request.addqu
 			return Execute (request); 
 		}
 
