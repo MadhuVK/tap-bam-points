@@ -36,7 +36,7 @@ namespace tBpShared
 			var url_matches = new Regex (URL_PATTERN).Match(baseUrl); 
 
 			var urlBuilder = new UriBuilder (); 
-			urlBuilder.Scheme = "http";
+			urlBuilder.Scheme = "https";
 
 			string hostName = url_matches.Groups ["host"].Value; 
 			if (String.IsNullOrWhiteSpace (hostName)) {
@@ -161,7 +161,7 @@ namespace tBpShared
 			return false; 
 		}
 
-		public virtual bool addEventToUser(int userId, int eventId, JObject obj) {
+		public virtual bool addEventToUser(int userId, int eventId, int points, TBPEvent.Category type) {
 			return false; 
 		}
 

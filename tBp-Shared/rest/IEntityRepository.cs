@@ -35,7 +35,7 @@ namespace tBpShared
 		bool deleteUser(int userId); 
 		bool deleteEvent(int eventId); 
 
-		bool addEventToUser (int userId, int eventId, JObject obj); 
+		bool addEventToUser (int userId, int eventId, int points, TBPEvent.Category type); 
 		bool updateEventOnUser(int userId, int eventId, JObject obj); 
 		bool deleteEventOnUser(int userId, int eventId); 
 

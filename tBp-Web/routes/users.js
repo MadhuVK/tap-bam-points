@@ -50,7 +50,9 @@ router.route('/:user_id/events/:event_id')
   })
 
   .put(acl(['admin']), function (req, res) {
-    userEventData.addUserToEvent(req.params.user_id, req.body)
+    var attendance = { "id": req.body["eventId"], "pointsEarned": req.body["pointsEarned"], "type": req.body["type"] };
+    console.log(attendance);
+    userEventData.addUserToEvent(req.params.user_id, attendance)
     .then(() => res.sendStatus(201));
   })
 

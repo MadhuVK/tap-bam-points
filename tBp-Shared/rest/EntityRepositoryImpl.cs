@@ -117,7 +117,6 @@ namespace tBpShared
 		{
 			var request = new RestRequest ("users/{id}", Method.DELETE); 
 			request.AddUrlSegment ("id", userId.ToString()); 
-			request.addqu
 			return Execute (request); 
 		}
 
@@ -129,11 +128,15 @@ namespace tBpShared
 			return Execute (request); 
 		}
 
-		public override bool addEventToUser(int userId, int eventId, JObject obj) 
+		public override bool addEventToUser(int userId, int eventId, int points, TBPEvent.Category type) 
 		{
 			var request = new RestRequest ("users/{uid}/events/{eid}", Method.PUT); 
 			request.AddUrlSegment ("uid", userId.ToString ()); 
 			request.AddUrlSegment ("eid", eventId.ToString ()); 
+			request.AddParameter ("eventId", eventId);
+			request.AddParameter ("pointsEarned", points);
+			request.AddParameter ("type", type);
+
 
 			return Execute (request); 
 			

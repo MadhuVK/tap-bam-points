@@ -22,8 +22,14 @@ namespace tBpAndroid
 
 			SetContentView (Resource.Layout.Login);
 
+
 			Button button = FindViewById<Button> (Resource.Id.serverLoginButton);
 			button.Click += (sender, e) => new LoginTask (this).Execute (); 
+
+			ServicePointManager.ServerCertificateValidationCallback += delegate
+			{
+				return true;
+			};
 		}
 
 		class LoginTask : AsyncTask<Object, Object, bool> 
