@@ -107,8 +107,7 @@ exports.addAdminJwtToResponse = function (res) {
   };
 
   var admin_token = jwt.sign({}, config.jwt_secret, options);
-  console.log(COOKIE_OPTIONS);
-  res.cookie('jwt_admin', token, COOKIE_OPTIONS);
+  res.cookie('jwt_admin', admin_token, COOKIE_OPTIONS);
 }
 
 function jwtForUser(user) {
