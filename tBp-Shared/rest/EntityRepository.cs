@@ -53,8 +53,8 @@ namespace tBpShared
 
 			var client = new RestClient (urlBuilder.Uri); 
 			var request = new RestRequest ("authenticate", Method.POST); 
-			var pass_hash = BitConverter.ToString (Crypto.Hash (pass)); 
-			request.AddJsonBody (new {pass_hash}); 
+			// var pass_hash = BitConverter.ToString (Crypto.Hash (pass)); 
+			request.AddJsonBody (new {pass}); 
 			request.Timeout = 5000;
 
 			var response = client.Execute (request); 
