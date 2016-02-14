@@ -49,10 +49,17 @@ function viewEngineSetup() {
 
 function routesSetup() {
   app.use(errorRoutes);
-  app.use('/', auth_helper.checkToken);
-  app.use('/', baseRoutes);
+  app.use(addHSTSHeaderToResponse);
+  app.use(auth_helper.checkToken);
+  app.use(baseRoutes);
   app.use('/admin', adminRoutes); 
   app.use('/api', apiBaseRoutes); 
   app.use('/api/users', userRoutes);
   app.use('/api/events', eventRoutes);
+}
+
+function addHSTSHeaderToResponse(req, res, next) {
+  var oneYearInSeconds = 31536000;
+  res.append('Strict-Transport-Security', `max-age=${oneYearInSeconds}`);
+  next();
 }
