@@ -11,7 +11,6 @@ var userRoutes = require('./routes/users');
 var apiBaseRoutes = require('./routes/api');
 var eventRoutes = require('./routes/events');
 var adminRoutes = require('./routes/admin');
-var errorRoutes = require('./routes/errors');
 
 var config = require('./bin/config')[process.env.NODE_ENV];
 
@@ -48,7 +47,6 @@ function viewEngineSetup() {
 }
 
 function routesSetup() {
-  app.use(errorRoutes);
   app.use(addHSTSHeaderToResponse);
   app.use(auth_helper.checkToken);
   app.use(baseRoutes);
