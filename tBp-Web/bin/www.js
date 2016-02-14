@@ -7,6 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('tBp-Web:server');
 var https = require('https');
+var http = require('http');
 var fs = require('fs');
 
 const options = {
@@ -19,43 +20,29 @@ const options = {
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(app.config.port); 
+var port = app.config.httpsPort;
 app.set('port', port);
 
 /**
- * Create HTTPS server.
+ * Create HTTPS and HTTP servers.
  */
 
 var server = https.createServer(options, app);
+var redirector = http.createServer(redirectToHttps);
 
 /**
- * Listen on provided port, on all network interfaces.
+ * Listen on provided ports, on all network interfaces.
  */
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+server.listen(port, () =>
+  console.log(`Server listening on port ${port}`));
 
-console.log('Server Listening on port ' + port);
+redirector.listen(app.config.httpPort, () =>
+  console.log(`HTTP redirector listening on port ${app.config.httpPort}`));
 
-/**
- * Normalize a port into a number, string, or false.
- */
-
-function normalizePort(val) {
-  var port = parseInt(val, 10);
-
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
-
-  if (port >= 0) {
-    // port number
-    return port;
-  }
-
-  return false;
+for (var server of [server, redirector]) {
+  server.on('error', onError);
+  server.on('listening', onListening);
 }
 
 /**
@@ -96,6 +83,14 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
+}
+
+function redirectToHttps(req, res) {
+  res.writeHead(301, {
+    'Location': `https://${req.headers.host}${req.url}`,
+  });
+
+  res.end();
 }
 
 module.exports = app

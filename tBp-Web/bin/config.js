@@ -13,7 +13,8 @@ module.exports = {
 
     jwt_secret: "jubyjuby23",
 
-    port: 3000
+    httpsPort: 443,
+    httpPort: 80
   }, 
 
   test: {
@@ -25,10 +26,13 @@ module.exports = {
       database: "tBp_test"
     }, 
 
-    port: 5000
+    httpsPort: 5000,
+    httpPort: 5001
   }, 
 
   production: {
+    httpsPort: 443,
+    httpPort: 80
   }
 
 }
