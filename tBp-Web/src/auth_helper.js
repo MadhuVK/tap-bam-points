@@ -13,6 +13,33 @@ const COOKIE_OPTIONS = {
   secure: true,
 };
 
+// Returns a middleware to be attached to API routes to restrict access
+// on the basis of membership to any of the following groups:
+//  - admin
+//  - owner (i.e., a user seeing his/her own data)
+// @param groups is an array like ['admin', 'owner']
+exports.acl = function (groups) {
+  return (req, res, next) => {
+    for (group of groups) {
+      switch (group) {
+        case 'admin':
+          if (req.jwt.admin) return next();
+          break;
+        case 'owner':
+          var id = (req.baseUrl + req.path).match(/users\/(\d+)/)[1];
+          if (id == req.jwt.sub) return next();
+          break;
+        default:
+          console.log(`Invalid group in ACL: ${group}`);
+      }
+    };
+
+    return res.status(403).json({
+      success: false,
+      message: 'Insufficient privileges to access this resource'
+    });
+  };
+}
 
 exports.validate_captcha = function(req, captcha_secret) {
   var options = {
@@ -60,8 +87,8 @@ exports.hash = function(data) {
 }
 
 // This middleware attaches to / . Every request gets its attached JWT
-// evaluated for validity. If valid, req.loggedIn = true and req.jwt
-// is the payload of the JWT.
+// evaluated for validity. If valid, req.jwt is the payload of the JWT and
+// req.loggedIn is set to true iff the payload had a user ID in the sub field
 exports.checkToken = function (req, res, next) {
   var token = req.cookies.jwt;
   req.jwt = {};
@@ -69,25 +96,13 @@ exports.checkToken = function (req, res, next) {
   if (token) {
     try {
       jwt.verify(token, config.jwt_secret);
-      req.loggedIn = true;
       req.jwt = jwt.decode(token);
+      if (req.jwt.sub)
+        req.loggedIn = true;
     }
     catch (err) {
       console.log(`[auth] Rejected token: ${err.message}`);
       req.loggedIn = false;
-    }
-  }
-
-  // TODO: jwt_admin is a temporary separate JWT to convey admin status
-  // If it is present and valid, forcibly set req.jwt.admin to true
-  // When the standalone admin login is removed, this will be removed
-  if (req.cookies.jwt_admin) {
-    try {
-      jwt.verify(req.cookies.jwt_admin, config.jwt_secret);
-      req.jwt.admin = true;
-    }
-    catch (err) {
-      console.log(`[auth] Rejected jwt_admin token: ${err.message}`);
     }
   }
 
@@ -99,15 +114,19 @@ exports.addJwtToResponse = function (res, user) {
   res.cookie('jwt', token, COOKIE_OPTIONS);
 }
 
-// See above for note about this temporary logic
+// For the standalone admin login at /admin
 exports.addAdminJwtToResponse = function (res) {
+  var admin_token = exports.getAdminToken();
+  res.cookie('jwt', admin_token, COOKIE_OPTIONS);
+}
+
+exports.getAdminToken = function () {
   var options = {
     expiresIn: '7d',
     jwtid: crypto.randomBytes(64).toString('base64'),
   };
 
-  var admin_token = jwt.sign({}, config.jwt_secret, options);
-  res.cookie('jwt_admin', admin_token, COOKIE_OPTIONS);
+  return jwt.sign({admin: true}, config.jwt_secret, options);
 }
 
 function jwtForUser(user) {
