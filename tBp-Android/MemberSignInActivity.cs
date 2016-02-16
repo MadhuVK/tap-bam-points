@@ -23,13 +23,15 @@ namespace tBpAndroid
 		TBPEvent cEvent;
 		TBPUser user;
 		Spinner cat;
+		String jsonEvent;
+		String jsonUser;
 		const int maxhours = 5;
 
 		protected override void OnCreate (Bundle bundle)
 		{
 			base.OnCreate (bundle);
-			string jsonEvent = Intent.GetStringExtra ("event"); 
-			string jsonUser = Intent.GetStringExtra ("user");
+			jsonEvent = Intent.GetStringExtra ("event"); 
+			jsonUser = Intent.GetStringExtra ("user");
 			JsonSerializerSettings settings = new JsonSerializerSettings
 			{
 				TypeNameHandling = TypeNameHandling.All
@@ -72,9 +74,8 @@ namespace tBpAndroid
 		void signInMember(int hours)
 		{
 			var repo = EntityRepository.get (); 
-			string u = user.FirstName + " " + user.LastName + ": " + hours.ToString ();
-			Intent mIntent = new Intent (this, typeof(ScanEventActivity));
-			mIntent.PutExtra ("userName", u);
+			Intent mIntent = new Intent (this, typeof(IndividualEventActivity));
+			mIntent.PutExtra ("user", jsonUser);
 
 			TBPEvent.Category type = (TBPEvent.Category)Enum.Parse(typeof(TBPEvent.Category), cat.SelectedItem.ToString());
 			repo.addEventToUser ((int)user.Id, (int)cEvent.Id, hours, type);

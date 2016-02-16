@@ -101,6 +101,7 @@ namespace tBpShared
 		public override bool addUser(User user) 
 		{ 
 			var request = new RestRequest ("users", Method.POST); 
+			request.AddBody (user);
 			Client.Execute (request); 
 
 			return Execute (request); 

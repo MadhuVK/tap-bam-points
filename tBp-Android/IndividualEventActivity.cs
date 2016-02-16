@@ -11,6 +11,8 @@ using Android.Views;
 using Android.Widget;
 using Android.Support.V7.Widget;
 using Newtonsoft.Json;
+using ZXing;
+using ZXing.Mobile;
 
 using tBpShared;
 
@@ -28,6 +30,13 @@ namespace tBpAndroid
 		RecyclerView mRecyclerView;
 		RecyclerView.LayoutManager mLayoutManager;
 		UserListAdapter mAdapter;
+
+		MobileBarcodeScanner scanner;
+		MobileBarcodeScanningOptions scanOptions;
+		bool continueScan; 
+
+		const int SIGN_IN_REQUEST = 0;
+		const int CREATE_MEMBER_REQUEST = 1;
 
 
 		Event GetEvent (string jsonEvent)
@@ -71,13 +80,116 @@ namespace tBpAndroid
 			NameField.Text = Event.Name; 
 			DateField.Text = Event.DateTime.ToString ("M"); 
 
-			var scanActivity = new Intent (this, typeof(ScanEventActivity));
-			scanActivity.PutExtra ("event", jsonEvent);
+			continueScan = false;
+			MobileBarcodeScanner.Initialize (Application);
+			scanner = new MobileBarcodeScanner ();
+			scanOptions = new MobileBarcodeScanningOptions ();
+			scanOptions.PossibleFormats = new List<ZXing.BarcodeFormat> () {
+				ZXing.BarcodeFormat.CODABAR
+			};
 
-			ScanButton.Click += (sender, e) => StartActivity (scanActivity);
+
+			ScanButton.Click += async delegate {
+				continueScan = false;
+				var result = await scanner.Scan(scanOptions);
+				HandleScanResult(result);
+			};
+		}
+
+		protected override void OnResume ()
+		{
+			base.OnResume ();
+			if (continueScan) {
+				doScan ();
+			}
+		}
+
+		async void doScan()
+		{
+			continueScan = false;
+			var result = await scanner.Scan (scanOptions);
+			HandleScanResult (result);
+		}
+
+		void HandleScanResult(ZXing.Result result)
+		{
+			if (result != null && !string.IsNullOrEmpty (result.Text)) {
+				byte[] barcodeHash = Crypto.Hash (result.Text);
+				string hexstring = BitConverter.ToString (barcodeHash).ToLower ().Replace ("-", "");
+				List<User> lookupResults = EntityRepository.get ().getUsers (user => user.BarcodeHash == hexstring);
+				User u = lookupResults.Count == 0 ? null :(TBPUser) lookupResults.ElementAt(0);
+				if (u == null) {
+					var cMemberAct = new Intent (this, typeof(CreateMemberActivity));
+					cMemberAct.PutExtra ("barcode", result.Text);
+					StartActivityForResult (cMemberAct, CREATE_MEMBER_REQUEST);
+					return;
+				}
+				if (!DidUserAttendEvent(u)){
+					this.RunOnUiThread (() => Toast.MakeText (this, "User already signed in", ToastLength.Short).Show ());
+					return;
+				}
+				signInUser (u);
+				continueScan = true;
+			} else {
+				this.RunOnUiThread (() => Toast.MakeText (this, "Scanning Cancelled", ToastLength.Short).Show ());
+				continueScan = false;
+			}
+		}
+
+		bool DidUserAttendEvent(User user) {
+			var result = from u in Users
+					where u.BarcodeHash.Equals(user.BarcodeHash)
+			             select u;
+			return result != null;
+							
+		}
+
+		void signInUser(User u) 
+		{
+			var mSignInAct = new Intent (this, typeof(MemberSignInActivity));
+			mSignInAct.PutExtra ("event", Intent.GetStringExtra ("event"));
+			JsonSerializerSettings settings = new JsonSerializerSettings { 
+				TypeNameHandling = TypeNameHandling.All
+			}; 
+			mSignInAct.PutExtra ("user", JsonConvert.SerializeObject (u, settings));
+			StartActivityForResult (mSignInAct, SIGN_IN_REQUEST);
+		}
+
+		protected override void OnActivityResult (int requestCode, Android.App.Result resultCode, Intent data)
+		{
+
+			base.OnActivityResult (requestCode, resultCode, data);
+			switch (requestCode) 
+			{
+			case SIGN_IN_REQUEST:
+				if (resultCode == Android.App.Result.Ok) {
+					TBPUser user = JsonConvert.DeserializeObject<TBPUser> (data.GetStringExtra ("user"));
+					Users.Add (user);
+					mAdapter.NotifyDataSetChanged ();
+
+				} else {
+					this.RunOnUiThread (() => Toast.MakeText (this, "User Not Signed In", ToastLength.Short).Show ());
+				}
+				break;
+			case CREATE_MEMBER_REQUEST:
+				if (resultCode == Android.App.Result.Ok) {
+					string user_string = data.GetStringExtra ("user");
+					TBPUser user = JsonConvert.DeserializeObject<TBPUser> (user_string);
+					this.RunOnUiThread (() => Toast.MakeText (this, "New User Created", ToastLength.Short).Show ());
+					signInUser (user);
+					continueScan = true;
+				} else {
+					this.RunOnUiThread (() => Toast.MakeText (this, "User Not Created", ToastLength.Short).Show ());
+				}
+				break;
+			}
+
+
 		}
 
 	}
+
+
 
 	public class UserViewHolder : RecyclerView.ViewHolder
 	{

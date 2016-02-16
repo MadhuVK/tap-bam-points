@@ -70,8 +70,7 @@ namespace tBpAndroid
 			string user_string = JsonConvert.SerializeObject (newUser, settings);
 			cIntent.PutExtra ("user", user_string);
 			SetResult (Result.Ok, cIntent);
-
-			//TO DO: ADD USER TO REST
+			EntityRepository.get ().addUser (newUser);
 
 			Finish ();
 		}
