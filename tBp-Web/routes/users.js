@@ -13,12 +13,7 @@ router.route('/')
     .then(users => res.status(200).json(users));
   })
 
-<<<<<<< HEAD
   .post(acl(['admin']), function (req, res) {
-=======
-  .post(function (req, res) {
-    console.log(req.body);
->>>>>>> removed second scan page, implemented rest for sign in, fixed scan issue
     userData.add(req.body)
     .then(userId => res.status(201).json({'id': userId}));
   });
