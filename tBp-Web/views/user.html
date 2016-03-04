@@ -23,34 +23,32 @@
 
             <section id="points">
                 <% if (pointStats.length > 0) { %>
-                <div class="content-wrapper">
-                    <div id="point-stats-div" class="material-card">
-                        <div class="card-title">
-                            Your Points
-                        </div>
-                        <table id="point-stats">
-                            <thead>
-                                <th>Event Type</th>
-                                <th class="right">Total</th>
-                                <th class="right">Required</th>
-                            </thead>
-
-                            <% pointStats.forEach(function (stat) { %>
-                            <% if (stat.fulfilled) { %>
-                            <tr class="fulfilled">
-                                <td><%= stat.type %></td>
-                                <td class="right"><%= stat.total %></td>
-                                <td class="right"><%= stat.required %></td>
-                            <% } else { %>
-                            </tr>
-                            <tr class="unfulfilled">
-                                <td><%= stat.type %></td>
-                                <td class="right"><%= stat.total %></td>
-                                <td class="right"><%= stat.required %></td>
-                            </tr>
-                            <% } }) %>
-                        </table>
+                <div id="point-stats-div" class="material-card">
+                    <div class="card-title">
+                        Your Points
                     </div>
+                    <table id="point-stats">
+                        <thead>
+                            <th>Event Type</th>
+                            <th class="right">Total</th>
+                            <th class="right">Required</th>
+                        </thead>
+
+                        <% pointStats.forEach(function (stat) { %>
+                        <% if (stat.fulfilled) { %>
+                        <tr class="fulfilled">
+                            <td><%= stat.type %></td>
+                            <td class="right"><%= stat.total %></td>
+                            <td class="right"><%= stat.required %></td>
+                        <% } else { %>
+                        </tr>
+                        <tr class="unfulfilled">
+                            <td><%= stat.type %></td>
+                            <td class="right"><%= stat.total %></td>
+                            <td class="right"><%= stat.required %></td>
+                        </tr>
+                        <% } }) %>
+                    </table>
                 </div>
                 <% } %>
             </section>
